@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../sgebase.h"
-#include "../log/Log.h"
+#include <sgebase.h>
+#include <sgecore/log/Log.h>
 
 #define	SGE_TEST_CASE(TestClass, TestFunc) \
 	do{ \

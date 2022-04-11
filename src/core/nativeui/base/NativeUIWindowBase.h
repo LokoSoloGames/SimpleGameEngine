@@ -1,6 +1,6 @@
 #pragma once
 
-#include <math/Rect2.h>
+#include <sgecore/math/Rect2.h>
 #include <sgebase.h>
 
 namespace SimpleGameEngine {

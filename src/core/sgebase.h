@@ -1,6 +1,6 @@
 #pragma once
 
-#include "detect_platform/sge_detect_platform.h"
+#include "sgecore/detect_platform/sge_detect_platform.h"
 #include "sgemacro.h"
 
 #include <cassert>

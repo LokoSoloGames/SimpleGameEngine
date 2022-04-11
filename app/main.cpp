@@ -1,5 +1,6 @@
-#include "nativeui/NativeUI.h"
-#include <log/Log.h>
+#include <nativeui/NativeUI.h>
+#include <sgecore/log/Log.h>
+#include "Renderer.h"
 
 namespace SimpleGameEngine {
 
@@ -18,19 +19,30 @@ namespace SimpleGameEngine {
 
 			NativeUIWindow::CreateDesc winDesc;
 			winDesc.isMainWindow = true;
+			winDesc.rect = {10, 10, 1024, 768};
 			_mainWin.create(winDesc);
 			_mainWin.setWindowTitle("Simple Game Engine Editor");
 
-			SGE_LOG("Hello {}", 10);
+			RendererBase::CreateDesc renderDesc;
+			renderDesc.platform = 1; // Define Platform
+			renderDesc.wh = {1024, 768};
+			_renderer = Renderer::create(renderDesc);
+			_renderer->init(_mainWin, renderDesc);
+		}
 
-//		_renderer.create(_mainWin);
+		virtual void onUpdate() override {
+			_renderer->render();
+		}
+
+		virtual void onQuit() override{
+			_renderer->cleanUp();
+			Base::onQuit();
 		}
 
 	private:
-		MainWin		_mainWin;
-//	Renderer	_renderer;
+		MainWin			_mainWin;
+		RendererBase*	_renderer;
 	};
-
 }
 
 int main() {

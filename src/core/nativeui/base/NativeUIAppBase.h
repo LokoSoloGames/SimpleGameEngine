@@ -15,6 +15,7 @@ namespace SimpleGameEngine {
 	protected:
 		virtual void onCreate(CreateDesc& desc) {}
 		virtual void onRun() {}
+		virtual void onUpdate() {}
 		virtual	void onQuit() {}
 
 		int _exitCode = 0;

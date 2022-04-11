@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../string/String.h"
-#include "../string/Fmt.h"
+#include <sgecore/string/String.h>
+#include <sgecore/string/Fmt.h>
 
 #define SGE_ERROR(...) Error(SGE_SRC_LOC, Fmt(__VA_ARGS__))
 

@@ -1,5 +1,5 @@
 #include "NativeUIWindowWin32.h"
-#include <string/UtfUtil.h>
+#include <sgecore/string/UtfUtil.h>
 
 #if SGE_OS_WINDOWS
 
@@ -68,12 +68,14 @@ void NativeUIWindowWin32::onCreate(CreateDesc& desc) {
 		auto screenSize = Vec2f((float)GetSystemMetrics(SM_CXSCREEN), (float)GetSystemMetrics(SM_CYSCREEN));
 		rect.pos = (screenSize - rect.size) / 2;
 	}
+	RECT wr = {0, 0, (long)rect.w, (long)rect.h};
+	::AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, false);
 
 	_hwnd = ::CreateWindowEx(dwExStyle, clsName, clsName, dwStyle,
 								(int)desc.rect.x,
 								(int)desc.rect.y,
-								(int)desc.rect.w,
-								(int)desc.rect.h,
+								wr.right - wr.left,
+								wr.bottom - wr.top,
 								nullptr, nullptr, hInstance, this);
 	if (!_hwnd) {
 		throw SGE_ERROR("cannot create native window");

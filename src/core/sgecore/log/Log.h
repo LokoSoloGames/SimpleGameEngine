@@ -1,8 +1,8 @@
 #pragma once
 
 #include <sgebase.h>
-#include <string/Fmt.h>
-#include <string/String.h>
+#include <sgecore/string/Fmt.h>
+#include <sgecore/string/String.h>
 
 #define SGE_LOG(...)       do{ SimpleGameEngine::g_log.write(SimpleGameEngine::Log::Level::Info,    __VA_ARGS__); } while(false)
 #define SGE_LOG_WARN(...)  do{ SimpleGameEngine::g_log.write(SimpleGameEngine::Log::Level::Warning, __VA_ARGS__); } while(false)

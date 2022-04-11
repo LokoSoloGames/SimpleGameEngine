@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../sgebase.h"
+#include <sgebase.h>
 #include "Fmt.h"
 
 namespace SimpleGameEngine {
