@@ -15,9 +15,17 @@ namespace SimpleGameEngine {
 		virtual void onRender() override;
 		virtual void onCleanUp() override;
 	private:
+		struct Color {
+			union {
+				struct { float r, g, b, a;};
+				float data[4];
+			};
+			Color(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) { }
+		};
+
 		struct VERTEX {
 			FLOAT X, Y, Z;	// position
-			float* Color;	// color
+			Color color;	// color
 		};
 
 		IDXGISwapChain *swapchain;				// the pointer to the swap chain interface

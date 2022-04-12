@@ -76,9 +76,9 @@ namespace SimpleGameEngine {
 		float b[4] = {0.0f, 1.0f, 0.0f, 1.0f};
 		float c[4] = {0.0f, 0.0f, 1.0f, 1.0f};
 		VERTEX OurVertices[] = {
-		{0.0f, 0.5f, 0.0f, a},
-		{0.45f, -0.5, 0.0f, b},
-		{-0.45f, -0.5f, 0.0f, c}
+		{0.0f, 0.5f, 0.0f, Color(1.0f, 0.0f, 0.0f, 1.0f)},
+		{0.45f, -0.5, 0.0f, Color(0.0f, 1.0f, 0.0f, 1.0f)},
+		{-0.45f, -0.5f, 0.0f, Color(0.0f, 0.0f, 1.0f, 1.0f)}
 		};
 
 		// create the vertex buffer
@@ -116,7 +116,7 @@ namespace SimpleGameEngine {
 	void DirectX11Renderer::onRender() {
 		float color[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
 		// clear the back buffer to a deep blue
-		devcon->ClearRenderTargetView(backbuffer, color);
+		devcon->ClearRenderTargetView(backbuffer, Color(0.0f, 0.2f, 0.4f, 1.0f).data);
 		// select which vertex buffer to display
 		UINT stride = sizeof(VERTEX);
 		UINT offset = 0;
