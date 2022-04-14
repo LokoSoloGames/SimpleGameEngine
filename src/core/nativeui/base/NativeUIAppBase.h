@@ -6,7 +6,9 @@ namespace SimpleGameEngine {
 
 	class NativeUIAppBase : public NonCopyable {
 	public:
-		class CreateDesc {};
+		struct CreateDesc {
+			int renderer;
+		};
 
 		int  run(CreateDesc& desc);
 		void quit(int returnCode);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sgebase.h>
+#include <sgecore/error/Error.h>
 
 #if SGE_OS_WINDOWS
 

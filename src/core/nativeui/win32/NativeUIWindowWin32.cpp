@@ -29,6 +29,10 @@ void NativeUIWindowWin32::onCreate(CreateDesc& desc) {
 		wc.style |= CS_NOCLOSE;
 	}
 
+	if (!desc.ownContext) {
+		wc.style |= CS_OWNDC;
+	}
+
 	DWORD dwStyle = 0;
 	DWORD dwExStyle = WS_EX_ACCEPTFILES;
 	if (desc.alwaysOnTop) dwExStyle |= WS_EX_TOPMOST;

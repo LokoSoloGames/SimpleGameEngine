@@ -114,7 +114,6 @@ namespace SimpleGameEngine {
 	}
 
 	void DirectX11Renderer::onRender() {
-		float color[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
 		// clear the back buffer to a deep blue
 		devcon->ClearRenderTargetView(backbuffer, Color(0.0f, 0.2f, 0.4f, 1.0f).data);
 		// select which vertex buffer to display

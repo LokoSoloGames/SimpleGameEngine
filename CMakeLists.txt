@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_TOOLCHAIN_FILE "./externals/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 set(CMAKE_CXX_STANDARD 14)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(PROJECT_NAME Loko-SimpleGameEngine)
 project(${PROJECT_NAME})
 

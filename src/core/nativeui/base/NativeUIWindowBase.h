@@ -19,6 +19,7 @@ namespace SimpleGameEngine {
 					, maxButton(true)
 					, centerToScreen(true)
 					, alwaysOnTop(false)
+					, ownContext(false)
 			{}
 
 			enum class Type {
@@ -40,6 +41,7 @@ namespace SimpleGameEngine {
 			bool		maxButton		: 1;
 			bool		centerToScreen	: 1;
 			bool		alwaysOnTop		: 1;
+			bool		ownContext		: 1;
 		};
 
 		void create			(CreateDesc& desc)	{ onCreate(desc); }

@@ -20,6 +20,7 @@ namespace SimpleGameEngine {
 			NativeUIWindow::CreateDesc winDesc;
 			winDesc.isMainWindow = true;
 			winDesc.rect = {10, 10, 1024, 768};
+			winDesc.ownContext = desc.renderer == 1;
 			_mainWin.create(winDesc);
 			_mainWin.setWindowTitle("Simple Game Engine Editor");
 
@@ -48,6 +49,7 @@ namespace SimpleGameEngine {
 int main() {
 	SimpleGameEngine::EditorApp app;
 	SimpleGameEngine::EditorApp::CreateDesc desc;
+	desc.renderer = 1;
 	app.run(desc);
 
 	return 0;
