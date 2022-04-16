@@ -1,14 +1,36 @@
 #include <nativeui/NativeUI.h>
 #include <sgecore/log/Log.h>
-#include "Renderer.h"
+#include <sgecore/file/FilePath.h>
+#include <Renderer.h>
+#include <RenderContext.h>
 
 namespace SimpleGameEngine {
 
 	class MainWin : public NativeUIWindow {
+		using Base = NativeUIWindow;
 	public:
+		void onCreate(CreateDesc& desc) {
+			Base::onCreate(desc);
+
+			RenderContext::CreateDesc renderContextDesc;
+			renderContextDesc.window = this;
+
+			_renderContext.reset(RenderContext::create(renderContextDesc));
+		}
+
 		virtual void onCloseButton() override {
 			NativeUIApp::current()->quit(0);
 		}
+
+		virtual void onDraw() {
+			Base::onDraw();
+			if (_renderContext) {
+				_renderContext->render();
+			}
+			drawNeeded();
+		}
+
+		UPtr<RenderContext>	_renderContext;
 	};
 
 	class EditorApp : public NativeUIApp {
@@ -17,39 +39,38 @@ namespace SimpleGameEngine {
 		virtual void onCreate(CreateDesc& desc) override {
 			Base::onCreate(desc);
 
+			{
+				String file = getExecutableFilename();
+				String path = FilePath::getDir(file);
+				path.append("/../assets");
+				setCurrentDir(path);
+			}
+
+
+			Renderer::CreateDesc renderDesc;
+			//renderDesc.apiType = OpenGL;
+			Renderer::create(renderDesc);
+
 			NativeUIWindow::CreateDesc winDesc;
 			winDesc.isMainWindow = true;
 			winDesc.rect = {10, 10, 1024, 768};
-			winDesc.ownContext = desc.renderer == 1;
+			winDesc.ownContext = renderDesc.apiType == Renderer::ApiType::OpenGL;
 			_mainWin.create(winDesc);
 			_mainWin.setWindowTitle("Simple Game Engine Editor");
-
-			RendererBase::CreateDesc renderDesc;
-			renderDesc.platform = 1; // Define Platform
-			renderDesc.wh = {1024, 768};
-			_renderer = Renderer::create(renderDesc);
-			_renderer->init(_mainWin, renderDesc);
 		}
 
 		virtual void onUpdate() override {
-			_renderer->render();
-		}
-
-		virtual void onQuit() override{
-			_renderer->cleanUp();
-			Base::onQuit();
+			_mainWin.onUpdate();
 		}
 
 	private:
 		MainWin			_mainWin;
-		RendererBase*	_renderer;
 	};
 }
 
 int main() {
 	SimpleGameEngine::EditorApp app;
 	SimpleGameEngine::EditorApp::CreateDesc desc;
-	desc.renderer = 1;
 	app.run(desc);
 
 	return 0;

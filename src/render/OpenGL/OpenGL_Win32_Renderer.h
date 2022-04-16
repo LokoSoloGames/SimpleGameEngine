@@ -1,22 +1,16 @@
 #pragma once
 
-#include "../base/RendererBase.h"
+#include "../Renderer.h"
+#include "Common.h"
 
-#if SGE_OS_WINDOWS
-#include <gl/glew.h>
-#include <gl/wglew.h>
-#pragma comment(lib, "glew32.lib")
-
+#if SGE_RENDER_HAS_OPENGL
 namespace SimpleGameEngine {
-	class OpenGL_Win32_Renderer : public RendererBase { // TODO Refactor to OpenGL_Base_Renderer
+	class OpenGL_Win32_Renderer : public Renderer { // TODO Refactor to OpenGL_Base_Renderer
+	public:
+		static OpenGL_Win32_Renderer* current() { return static_cast<OpenGL_Win32_Renderer*>(_current); }
+
 	protected:
-		virtual void onInit(NativeUIWindow &window, CreateDesc &desc) override;
-		virtual void onRender() override;
-		virtual void onCleanUp() override;
-	private:
-		HWND	m_hwnd = nullptr;
-		HDC		m_dc = nullptr;
-		HGLRC	m_rc = nullptr;
+		virtual RenderContext*	onCreateContext(RenderContextCreateDesc& desc);
 	};
 }
 #endif

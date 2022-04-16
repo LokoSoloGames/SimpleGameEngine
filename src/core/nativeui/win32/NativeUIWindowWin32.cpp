@@ -67,12 +67,12 @@ void NativeUIWindowWin32::onCreate(CreateDesc& desc) {
 		}
 	}
 
-	auto rect = desc.rect;
+	viewRect = desc.rect;
 	if (desc.centerToScreen) {
 		auto screenSize = Vec2f((float)GetSystemMetrics(SM_CXSCREEN), (float)GetSystemMetrics(SM_CYSCREEN));
-		rect.pos = (screenSize - rect.size) / 2;
+		viewRect.pos = (screenSize - viewRect.size) / 2;
 	}
-	RECT wr = {0, 0, (long)rect.w, (long)rect.h};
+	RECT wr = {0, 0, (long)viewRect.w, (long)viewRect.h};
 	::AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, false);
 
 	_hwnd = ::CreateWindowEx(dwExStyle, clsName, clsName, dwStyle,
@@ -95,6 +95,10 @@ void NativeUIWindowWin32::onSetWindowTitle(StrView title) {
 	::SetWindowText(_hwnd, tmp.c_str());
 }
 
+void NativeUIWindowWin32::onDrawNeeded() {
+	::InvalidateRect(_hwnd, nullptr, false);
+}
+
 LRESULT WINAPI NativeUIWindowWin32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
 		case WM_CREATE: {
@@ -110,6 +114,15 @@ LRESULT WINAPI NativeUIWindowWin32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam
 				thisObj->_hwnd = nullptr;
 				sge_delete(thisObj);
 			}
+		}break;
+
+		case WM_PAINT: {
+			PAINTSTRUCT ps;
+			BeginPaint(hwnd, &ps);
+			if (auto* thisObj = s_getThis(hwnd)) {
+				thisObj->onDraw();
+			}
+			EndPaint(hwnd, &ps);
 		}break;
 
 		case WM_CLOSE: {

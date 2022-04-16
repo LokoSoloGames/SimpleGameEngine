@@ -1,45 +1,35 @@
 #pragma once
 
-#include "../base/RendererBase.h"
+#if SGE_RENDER_HAS_DX11
+#include <Renderer.h>
+#include "Common.h"
 
-#if SGE_OS_WINDOWS
-#include <d3d11.h>
-#include <d3dcompiler.h>
-
-#pragma comment (lib, "d3d11.lib")
-#pragma comment (lib, "d3dcompiler.lib")
 namespace SimpleGameEngine {
-	class DirectX11Renderer : public RendererBase {
+	class DirectX11Renderer : public Renderer {
+		using Base = Renderer;
+		using Util = DX11Util;
+	public:
+		static DirectX11Renderer* current() { return static_cast<DirectX11Renderer*>(_current); }
+
+		DirectX11Renderer(CreateDesc& desc);
+
+		DX11_IDXGIFactory*		dxgiFactory()		{ return _dxgiFactory; }
+		DX11_IDXGIDevice*		dxgiDevice()		{ return _dxgiDevice; }
+		DX11_IDXGIAdapter*		dxgiAdapter()		{ return _dxgiAdapter; }
+
+		DX11_ID3DDevice*		d3dDevice()			{ return _d3dDevice; }
+		DX11_ID3DDeviceContext* d3dDeviceContext()	{ return _d3dDeviceContext; }
+		DX11_ID3DDebug*			d3dDebug()			{ return _d3dDebug; }
 	protected:
-		virtual void onInit(NativeUIWindow &window, CreateDesc &desc) override;
-		virtual void onRender() override;
-		virtual void onCleanUp() override;
-	private:
-		struct Color {
-			union {
-				struct { float r, g, b, a;};
-				float data[4];
-			};
-			Color(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) { }
-		};
+		virtual RenderContext*	onCreateContext(RenderContextCreateDesc& desc);
 
-		struct VERTEX {
-			FLOAT X, Y, Z;	// position
-			Color color;	// color
-		};
+		ComPtr<DX11_IDXGIFactory>		_dxgiFactory;
+		ComPtr<DX11_IDXGIDevice>		_dxgiDevice;
+		ComPtr<DX11_IDXGIAdapter>		_dxgiAdapter;
 
-		IDXGISwapChain *swapchain;				// the pointer to the swap chain interface
-		ID3D11Device *dev;						// the pointer to our Direct3D device interface
-		ID3D11DeviceContext *devcon;			// the pointer to our Direct3D device context
-		ID3D11RenderTargetView *backbuffer;
-
-		ID3D11VertexShader *pVS;	// the vertex shader
-		ID3D11PixelShader *pPS;		// the pixel shader
-		ID3D11Buffer *pVBuffer;		// the vertex buffer
-		ID3D11InputLayout *pLayout;	// the input layout
-
-		void initPipeline(CreateDesc &desc);
-		void initGraphics(CreateDesc &desc);
+		ComPtr<DX11_ID3DDevice>			_d3dDevice;
+		ComPtr<DX11_ID3DDeviceContext>	_d3dDeviceContext;
+		ComPtr<DX11_ID3DDebug>			_d3dDebug;
 	};
 }
 #endif

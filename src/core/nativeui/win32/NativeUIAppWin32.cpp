@@ -1,4 +1,6 @@
 #include "NativeUIAppWin32.h"
+#include <sgecore/error/Error.h>
+#include <sgecore/string/UtfUtil.h>
 
 #if SGE_OS_WINDOWS
 
@@ -31,6 +33,28 @@ namespace SimpleGameEngine {
 		Base::onQuit();
 
 		::PostQuitMessage(_exitCode);
+	}
+
+	String NativeUIAppWin32::onGetExecutableFilename() {
+		wchar_t tmp[MAX_PATH + 1];
+		if (!::GetModuleFileName(nullptr, tmp, MAX_PATH))
+			throw SGE_ERROR("");
+
+		String o = UtfUtil::toString(tmp);
+		return o;
+	}
+
+	String NativeUIAppWin32::onGetCurrentDir() {
+		wchar_t tmp[MAX_PATH+1];
+		if (!::GetCurrentDirectory(MAX_PATH, tmp))
+			throw SGE_ERROR("getCurrentDir");
+		String o = UtfUtil::toString(tmp);
+		return o;
+	}
+
+	void NativeUIAppWin32::onSetCurrentDir(StrView dir) {
+		TempStringW tmp = UtfUtil::toStringW(dir);
+		::SetCurrentDirectory(tmp.c_str());
 	}
 }
 

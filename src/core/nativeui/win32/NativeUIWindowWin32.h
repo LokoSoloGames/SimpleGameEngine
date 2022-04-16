@@ -14,8 +14,10 @@ public:
 
 	virtual void onCreate(CreateDesc& desc) override;
 	virtual void onSetWindowTitle(StrView title) override;
+	virtual void onDrawNeeded() override;
 
 	HWND _hwnd;
+	Rect2f viewRect;
 
 private:
 	static LRESULT WINAPI s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
