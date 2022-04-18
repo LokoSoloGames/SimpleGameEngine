@@ -3,6 +3,8 @@
 #include <sgecore/file/FilePath.h>
 #include <Renderer.h>
 #include <RenderContext.h>
+#include <command/RenderMesh.h>
+#include <command/RenderCommand_Draw.h>
 
 namespace SimpleGameEngine {
 
@@ -16,6 +18,19 @@ namespace SimpleGameEngine {
 			renderContextDesc.window = this;
 
 			_renderContext.reset(RenderContext::create(renderContextDesc));
+
+			Mesh mesh;
+			Position3f pos1 = {0.0f, 0.5f, 0.0f};
+			Color4b color1 = {255, 0, 0, 255};
+			mesh.add(pos1, color1);
+			Position3f pos2 = {0.5f, -0.5f, 0.0f};
+			Color4b color2 = {0, 255, 0, 255};
+			mesh.add(pos2, color2);
+			Position3f pos3 = {-0.5f, -0.5f, 0.0f};
+			Color4b color3 = {0, 0, 255, 255};
+			mesh.add(pos3, color3);
+			_renderMesh.reset(new RenderMesh(mesh));
+			_shaderPass.reset(new ShaderPass(_renderMesh.get(), L"shaders.shader"));
 		}
 
 		virtual void onCloseButton() override {
@@ -25,11 +40,16 @@ namespace SimpleGameEngine {
 		virtual void onDraw() {
 			Base::onDraw();
 			if (_renderContext) {
-				_renderContext->render();
+				RenderCommand_Draw cmd;
+				cmd.primitive = PrimitiveTopology::TriangleList;
+				cmd.renderMesh = _renderMesh.get();
+				cmd.shaderPass = _shaderPass.get();
+				_renderContext->render(cmd);
 			}
 			drawNeeded();
 		}
-
+		UPtr<RenderMesh> _renderMesh;
+		UPtr<ShaderPass> _shaderPass;
 		UPtr<RenderContext>	_renderContext;
 	};
 
@@ -45,7 +65,6 @@ namespace SimpleGameEngine {
 				path.append("/../assets");
 				setCurrentDir(path);
 			}
-
 
 			Renderer::CreateDesc renderDesc;
 			//renderDesc.apiType = OpenGL;

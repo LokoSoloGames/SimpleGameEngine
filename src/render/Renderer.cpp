@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-#include "DirectX11/DirectX11Renderer.h"
+#include "graphic_api/DirectX11/DirectX11_Renderer.h"
 
 namespace SimpleGameEngine {
 
@@ -19,10 +19,9 @@ namespace SimpleGameEngine {
 	Renderer* Renderer::create(CreateDesc& desc) {
 		Renderer* p = nullptr;
 		switch (desc.apiType) {
-			case ApiType::DX11: p = new DirectX11Renderer(desc); break;
+			case ApiType::DX11: p = new DirectX11_Renderer(desc); break;
 			default: throw SGE_ERROR("unsupport graphic api");
 		}
-		SGE_LOG("Created Renderer");
 		return p;
 	}
 

@@ -1,25 +1,24 @@
 #pragma once
 
-#if SGE_RENDER_HAS_DX11
-
 #include <nativeui/NativeUI.h>
 #include <RenderContext.h>
-#include "DirectX11Renderer.h"
-#include "Common.h"
+#include "DirectX11_Renderer.h"
+
+#if SGE_RENDER_HAS_DX11
 
 namespace SimpleGameEngine {
 	struct DirectX11RenderContextCreateDesc : public RenderContextCreateDesc {
 		NativeUIWindowWin32*	window = nullptr;
 	};
 
-	class DirectX11RenderContext : public RenderContext {
+	class DirectX11_RenderContext : public RenderContext {
 		using Base = RenderContext;
 		using Util = DX11Util;
 	public:
-		DirectX11RenderContext(DirectX11RenderContextCreateDesc& desc);
+		DirectX11_RenderContext(DirectX11RenderContextCreateDesc& desc);
 
 	protected:
-		DirectX11Renderer*	_renderer = nullptr;
+		DirectX11_Renderer*	_renderer = nullptr;
 
 		ComPtr<DX11_IDXGISwapChain>			_swapChain;
 		ComPtr<DX11_ID3DRenderTargetView>	_renderTargetView;
@@ -34,7 +33,7 @@ namespace SimpleGameEngine {
 		virtual void onBeginRender() override;
 		virtual void onEndRender() override;
 
-		virtual void onRender() override;
+		virtual void onRender(RenderCommand_Draw& cmd) override;
 
 		virtual void onClearBuffers() override;
 		virtual void onSwapBuffers() override;

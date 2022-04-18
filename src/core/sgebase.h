@@ -75,6 +75,7 @@ namespace SimpleGameEngine {
 	template<class T, size_t N, bool bEnableOverflow = true> using Vector_ = eastl::fixed_vector<T, N, bEnableOverflow>;
 
 	template<class T> using Vector = eastl::vector<T>;
+	template<typename... T> using Tuple = eastl::tuple<T...>;
 
 	template<class T> using StrViewT = eastl::basic_string_view<T>;
 	using StrViewA = StrViewT<char>;

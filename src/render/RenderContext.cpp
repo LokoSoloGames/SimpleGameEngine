@@ -4,14 +4,13 @@
 namespace SimpleGameEngine {
 
 	RenderContext* RenderContext::create(RenderContextCreateDesc& desc) {
-		SGE_LOG("Singleton create render context");
 		return Renderer::current()->onCreateContext(desc);
 	}
 
-	void RenderContext::render() {
+	void RenderContext::render(RenderCommand_Draw& cmd) {
 		onBeginRender();
 		onClearBuffers();
-		onRender();
+		onRender(cmd);
 		onSwapBuffers();
 		onEndRender();
 	}

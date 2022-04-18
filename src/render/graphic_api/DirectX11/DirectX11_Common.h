@@ -1,5 +1,8 @@
 #pragma once
 
+#include <render-pch.h>
+#include <Renderer.h>
+
 #if SGE_RENDER_HAS_DX11
 #include <sgecore/error/Error.h>
 

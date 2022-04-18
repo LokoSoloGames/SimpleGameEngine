@@ -1,17 +1,16 @@
 #pragma once
 
-#if SGE_RENDER_HAS_DX11
-#include <Renderer.h>
-#include "Common.h"
+#include "DirectX11_Common.h"
 
+#if SGE_RENDER_HAS_DX11
 namespace SimpleGameEngine {
-	class DirectX11Renderer : public Renderer {
+	class DirectX11_Renderer : public Renderer {
 		using Base = Renderer;
 		using Util = DX11Util;
 	public:
-		static DirectX11Renderer* current() { return static_cast<DirectX11Renderer*>(_current); }
+		static DirectX11_Renderer* current() { return static_cast<DirectX11_Renderer*>(_current); }
 
-		DirectX11Renderer(CreateDesc& desc);
+		DirectX11_Renderer(CreateDesc& desc);
 
 		DX11_IDXGIFactory*		dxgiFactory()		{ return _dxgiFactory; }
 		DX11_IDXGIDevice*		dxgiDevice()		{ return _dxgiDevice; }
@@ -30,6 +29,15 @@ namespace SimpleGameEngine {
 		ComPtr<DX11_ID3DDevice>			_d3dDevice;
 		ComPtr<DX11_ID3DDeviceContext>	_d3dDeviceContext;
 		ComPtr<DX11_ID3DDebug>			_d3dDebug;
+
+		virtual void onCreateBuffer(void* data, size_t& byteWidth, void*& pBuffer) override;
+		virtual void onReleaseBuffer(void* pBuffer) override;
+		virtual void onCompileVertexShader(wchar_t* fileName, VertexLayout* layout, void*& pShader, void*& pVertexLayout) override;
+		virtual void onCompilePixelShader(wchar_t* fileName, void*& pShader) override;
+		virtual void onReleaseShader(void* pShader) override;
+		virtual void onReleaseVertexLayout(void* pVertexLayout) override;
+	private:
+		void onReleaseCOM(void* pCOM);
 	};
 }
 #endif

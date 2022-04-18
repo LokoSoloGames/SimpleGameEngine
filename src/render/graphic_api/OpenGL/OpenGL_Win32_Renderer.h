@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Renderer.h"
-#include "Common.h"
+#include <Renderer.h>
+#include "OpenGL_Common.h"
 
 #if SGE_RENDER_HAS_OPENGL
 namespace SimpleGameEngine {
