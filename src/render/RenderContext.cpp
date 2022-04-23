@@ -4,7 +4,7 @@
 namespace SimpleGameEngine {
 
 	RenderContext* RenderContext::create(RenderContextCreateDesc& desc) {
-		return Renderer::current()->onCreateContext(desc);
+		return Renderer::current()->createContext(desc);
 	}
 
 	void RenderContext::render(RenderCommand_Draw& cmd) {

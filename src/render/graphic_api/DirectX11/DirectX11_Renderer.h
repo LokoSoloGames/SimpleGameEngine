@@ -20,8 +20,6 @@ namespace SimpleGameEngine {
 		DX11_ID3DDeviceContext* d3dDeviceContext()	{ return _d3dDeviceContext; }
 		DX11_ID3DDebug*			d3dDebug()			{ return _d3dDebug; }
 	protected:
-		virtual RenderContext*	onCreateContext(RenderContextCreateDesc& desc);
-
 		ComPtr<DX11_IDXGIFactory>		_dxgiFactory;
 		ComPtr<DX11_IDXGIDevice>		_dxgiDevice;
 		ComPtr<DX11_IDXGIAdapter>		_dxgiAdapter;
@@ -30,9 +28,9 @@ namespace SimpleGameEngine {
 		ComPtr<DX11_ID3DDeviceContext>	_d3dDeviceContext;
 		ComPtr<DX11_ID3DDebug>			_d3dDebug;
 
-		virtual void onCreateBuffer(void* data, size_t& byteWidth, void*& pBuffer) override;
-		virtual void onReleaseBuffer(void* pBuffer) override;
-		virtual void onCompileVertexShader(wchar_t* fileName, VertexLayout* layout, void*& pShader, void*& pVertexLayout) override;
+		virtual RenderContext*	onCreateContext(RenderContextCreateDesc& desc) override;
+		virtual RenderGpuBuffer* onCreateGpuBuffer(RenderGpuBufferCreateDesc& desc) override;
+		virtual void onCompileVertexShader(wchar_t* fileName, const VertexLayout* layout, void*& pShader, void*& pVertexLayout) override;
 		virtual void onCompilePixelShader(wchar_t* fileName, void*& pShader) override;
 		virtual void onReleaseShader(void* pShader) override;
 		virtual void onReleaseVertexLayout(void* pVertexLayout) override;

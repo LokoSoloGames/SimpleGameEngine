@@ -19,18 +19,21 @@ namespace SimpleGameEngine {
 
 			_renderContext.reset(RenderContext::create(renderContextDesc));
 
-			Mesh mesh;
-			Position3f pos1 = {0.0f, 0.5f, 0.0f};
+			EditMesh mesh;
+			Tuple3f pos1 = {0.0f, 0.5f, 0.0f};
 			Color4b color1 = {255, 0, 0, 255};
-			mesh.add(pos1, color1);
-			Position3f pos2 = {0.5f, -0.5f, 0.0f};
+			mesh.pos.emplace_back(pos1);
+			mesh.color.emplace_back(color1);
+			Tuple3f pos2 = {0.5f, -0.5f, 0.0f};
 			Color4b color2 = {0, 255, 0, 255};
-			mesh.add(pos2, color2);
-			Position3f pos3 = {-0.5f, -0.5f, 0.0f};
+			mesh.pos.emplace_back(pos2);
+			mesh.color.emplace_back(color2);
+			Tuple3f pos3 = {-0.5f, -0.5f, 0.0f};
 			Color4b color3 = {0, 0, 255, 255};
-			mesh.add(pos3, color3);
-			_renderMesh.reset(new RenderMesh(mesh));
-			_shaderPass.reset(new ShaderPass(_renderMesh.get(), L"shaders.shader"));
+			mesh.pos.emplace_back(pos3);
+			mesh.color.emplace_back(color3);
+			_renderMesh.create(mesh);
+			_shaderPass.reset(new ShaderPass(_renderMesh, L"shaders.shader"));
 		}
 
 		virtual void onCloseButton() override {
@@ -41,14 +44,13 @@ namespace SimpleGameEngine {
 			Base::onDraw();
 			if (_renderContext) {
 				RenderCommand_Draw cmd;
-				cmd.primitive = PrimitiveTopology::TriangleList;
-				cmd.renderMesh = _renderMesh.get();
+				cmd.renderMesh = &_renderMesh;
 				cmd.shaderPass = _shaderPass.get();
 				_renderContext->render(cmd);
 			}
 			drawNeeded();
 		}
-		UPtr<RenderMesh> _renderMesh;
+		RenderMesh _renderMesh;
 		UPtr<ShaderPass> _shaderPass;
 		UPtr<RenderContext>	_renderContext;
 	};

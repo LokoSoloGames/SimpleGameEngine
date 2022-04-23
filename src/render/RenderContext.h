@@ -20,10 +20,10 @@ namespace SimpleGameEngine {
 		virtual ~RenderContext() = default;
 
 	protected:
-		virtual void onBeginRender() {};
-		virtual void onRender(RenderCommand_Draw& cmd) {};
-		virtual void onEndRender() {};
-		virtual void onClearBuffers() {}
-		virtual void onSwapBuffers() {}
+		virtual void onBeginRender() = 0;
+		virtual void onRender(RenderCommand_Draw& cmd) = 0;
+		virtual void onEndRender() = 0;
+		virtual void onClearBuffers() = 0;
+		virtual void onSwapBuffers()  = 0;
 	};
 }

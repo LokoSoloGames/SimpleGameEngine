@@ -1,4 +1,5 @@
 #include "DirectX11_RenderContext.h"
+#include "DirectX11_RenderGpuBuffer.h"
 
 namespace SimpleGameEngine {
 	DirectX11_RenderContext::DirectX11_RenderContext(DirectX11RenderContextCreateDesc& desc) : Base(desc) {
@@ -67,13 +68,16 @@ namespace SimpleGameEngine {
 		SGE_LOG("Finished Set View Port");
 
 		// select which primitive type we are using
-		switch (cmd.primitive) {
-			case PrimitiveTopology::TriangleList: {
+		switch (cmd.renderMesh->primitive()) {
+			case RenderPrimitiveType::Triangles: {
 				ctx->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			} break;
-			case PrimitiveTopology::TriangleStrip: {
-				ctx->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+			case RenderPrimitiveType::Lines: {
+				ctx->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 			} break;
+			default:
+				SGE_LOG("Unhandled RenderPrimitiveType");
+				break;
 		}
 		SGE_LOG("Finished Set Topology");
 		// set the input layout we are using
@@ -81,15 +85,16 @@ namespace SimpleGameEngine {
 		SGE_LOG("Finished Set Input Layout");
 		// select which vertex buffer to display
 		UINT offset = 0;
-		UINT stride = cmd.renderMesh->vertexStride;
-		DX11_ID3DBuffer* pVBuffer[] = { static_cast<DX11_ID3DBuffer*>(cmd.renderMesh->vertexBuffer)};
+		UINT stride = cmd.renderMesh->layout()->stride;
+		DirectX11_RenderGpuBuffer* vertexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.renderMesh->vertexBuf());
+		DX11_ID3DBuffer* pVBuffer[] = { vertexBuffer->getBuffer() };
 		ctx->IASetVertexBuffers(0, 1, pVBuffer, &stride, &offset);
-		ctx->IASetIndexBuffer(static_cast<DX11_ID3DBuffer*>(cmd.renderMesh->indexBuffer), DXGI_FORMAT_R32_UINT, 0);
+		//ctx->IASetIndexBuffer(static_cast<DirectX11_RenderGpuBuffer*>(cmd.renderMesh->indexBuf().getBuffer()), DXGI_FORMAT_R32_UINT, 0);
 		SGE_LOG("Finished Set Buffer");
 		ctx->VSSetShader(static_cast<DX11_ID3DVertexShader*>(cmd.shaderPass->vertexShader), 0, 0);
 		ctx->PSSetShader(static_cast<DX11_ID3DPixelShader*>(cmd.shaderPass->pixelShader), 0, 0);
 
-		ctx->Draw(cmd.renderMesh->count, 0); // Not using Index Buffer now
+		ctx->Draw(cmd.renderMesh->vertexCount(), 0); // Not using Index Buffer now
 		SGE_LOG("Finished Draw");
 	}
 

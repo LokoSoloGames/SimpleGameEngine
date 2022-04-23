@@ -2,6 +2,7 @@
 
 namespace SimpleGameEngine {
 	enum class VertexSemantic {
+		NONE,
 		POSITION,
 		COLOR,
 	};
@@ -14,6 +15,7 @@ namespace SimpleGameEngine {
 	}
 
 	enum class RenderDataType {
+		NONE,
 		FLOAT32x3,
 		FLOAT32x4,
 		UNORM8x4,
@@ -33,24 +35,17 @@ namespace SimpleGameEngine {
 		u8 r, g, b, a;
 	};
 
-	struct Position3f {
-		float x, y, z;
-	};
-
-	struct Vertex_PosColor {
-		Position3f position;
-		Color4b color;
-	};
-
 	struct VertexLayout {
 		struct Element {
-			VertexSemantic semantic;
-			RenderDataType type;
+			VertexSemantic semantic = VertexSemantic::NONE;
+			RenderDataType type = RenderDataType::NONE;
+			intptr_t offset	= 0;
 
-			Element(VertexSemantic s, RenderDataType t) : semantic(s), type(t) {}
+			Element(VertexSemantic s, RenderDataType t, intptr_t o) : semantic(s), type(t), offset(o) { }
 		};
 
 		Vector<Element> elements;
+		size_t stride = 0;
 
 		static VertexLayout PosColor;
 	};

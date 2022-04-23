@@ -51,6 +51,7 @@ struct DX11Util {
 		return true;
 	}
 	static void reportError();
+	static UINT castUINT(size_t v) { SGE_ASSERT(v < UINT_MAX); return static_cast<UINT>(v); }
 
 private:
 	static bool _isSuccess(HRESULT hr) {

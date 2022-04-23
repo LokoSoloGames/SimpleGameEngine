@@ -6,6 +6,9 @@ namespace SimpleGameEngine {
 	class RenderContext;
 	struct RenderContextCreateDesc;
 
+	class RenderGpuBuffer;
+	struct RenderGpuBufferCreateDesc;
+
 	class Renderer : public NonCopyable {
 	public:
 		static Renderer*	current() { return _current; }
@@ -27,10 +30,9 @@ namespace SimpleGameEngine {
 		Renderer();
 		virtual ~Renderer();
 
-		virtual RenderContext*	onCreateContext(RenderContextCreateDesc& desc) = 0;
-		void createBuffer(void* data, size_t& byteWidth, void*& pBuffer) { onCreateBuffer(data, byteWidth, pBuffer); }
-		void releaseBuffer(void* pBuffer) { onReleaseBuffer(pBuffer); }
-		void compileVertexShader(wchar_t* fileName, VertexLayout* layout, void*& pShader, void*& pVertexLayout) { onCompileVertexShader(fileName, layout, pShader, pVertexLayout); }
+		RenderContext*	createContext(RenderContextCreateDesc& desc) { return onCreateContext(desc); }
+		RenderGpuBuffer* createGpuBuffer(RenderGpuBufferCreateDesc& desc) { return onCreateGpuBuffer(desc); }
+		void compileVertexShader(wchar_t* fileName, const VertexLayout* layout, void*& pShader, void*& pVertexLayout) { onCompileVertexShader(fileName, layout, pShader, pVertexLayout); }
 		void compilePixelShader(wchar_t* fileName, void*& pShader) { onCompilePixelShader(fileName, pShader); }
 		void releaseShader(void* pShader) { onReleaseShader(pShader); }
 		void releaseVertexLayout(void* pVertexLayout) { onReleaseVertexLayout(pVertexLayout); }
@@ -40,11 +42,11 @@ namespace SimpleGameEngine {
 	protected:
 		static Renderer*	_current;
 		bool _vsync : 1;
-		virtual void onCreateBuffer(void* data, size_t& byteWidth, void*& pBuffer) {}
-		virtual void onReleaseBuffer(void* pBuffer) {}
-		virtual void onCompileVertexShader(wchar_t* fileName, VertexLayout* layout, void*& pShader, void*& pVertexLayout) {}
-		virtual void onCompilePixelShader(wchar_t* fileName, void*& pShader) {}
-		virtual void onReleaseShader(void* pShader) {}
-		virtual void onReleaseVertexLayout(void* pVertexLayout) {}
+		virtual RenderContext* onCreateContext(RenderContextCreateDesc& desc) = 0;
+		virtual RenderGpuBuffer* onCreateGpuBuffer(RenderGpuBufferCreateDesc& desc) = 0;
+		virtual void onCompileVertexShader(wchar_t* fileName, const VertexLayout* layout, void*& pShader, void*& pVertexLayout) = 0;
+		virtual void onCompilePixelShader(wchar_t* fileName, void*& pShader) = 0;
+		virtual void onReleaseShader(void* pShader) = 0;
+		virtual void onReleaseVertexLayout(void* pVertexLayout) = 0;
 	};
 }

@@ -68,14 +68,11 @@ namespace SimpleGameEngine {
 	using f128 = long double;
 
 	template<class T> using UPtr = eastl::unique_ptr<T>;
-	template<class T> using SPtr = eastl::shared_ptr<T>;
-	template<class T> using WPtr = eastl::weak_ptr<T>;
 
 	template<class T> using Span = eastl::span<T>;
 	template<class T, size_t N, bool bEnableOverflow = true> using Vector_ = eastl::fixed_vector<T, N, bEnableOverflow>;
 
 	template<class T> using Vector = eastl::vector<T>;
-	template<typename... T> using Tuple = eastl::tuple<T...>;
 
 	template<class T> using StrViewT = eastl::basic_string_view<T>;
 	using StrViewA = StrViewT<char>;
@@ -145,7 +142,6 @@ namespace SimpleGameEngine {
 		void operator=(const NonCopyable&) = delete;
 	};
 
-
 	template<class T>
 	class ComPtr : public NonCopyable {
 	public:
@@ -178,6 +174,106 @@ namespace SimpleGameEngine {
 		T* _p = nullptr;
 	};
 
+	class RefCountBase : public NonCopyable {
+	public:
+		std::atomic_int	_refCount;
+	};
+
+	class Object : public RefCountBase {
+	public:
+	};
+
 	template<class T> inline void sge_delete(T* p) { delete p; }
+
+	template<class T>
+	class SPtr : public NonCopyable {
+	public:
+		SPtr() = default;
+
+		SPtr(T* p)		{ reset(p); }
+		SPtr(SPtr && r)	{ reset(r._p); r._p = nullptr; }
+
+		void operator=(T* p)		{ if (p == _p) return; reset(p); }
+		void operator=(SPtr && r)	{ if (r._p == _p) return; reset(r._p); r._p = nullptr; }
+
+		~SPtr() noexcept { reset(nullptr); }
+
+		T* operator->() noexcept		{ return _p; }
+		operator T*() noexcept			{ return _p; }
+
+		T* ptr() noexcept				{ return _p; }
+		const T* ptr() const noexcept	{ return _p; }
+
+		void reset(T* p) {
+			static_assert(std::is_base_of<RefCountBase, T>::value, "");
+
+			if (p == _p) return;
+			if (_p) {
+				auto c = --_p->_refCount;
+				if (c <= 0) {
+					sge_delete(_p);
+				}
+				_p = nullptr;
+			}
+
+			_p = p;
+			if (_p) {
+				_p->_refCount++;
+			}
+		}
+
+		T* detach() { T* o = _p; _p = nullptr; return o; }
+	private:
+		T* _p = nullptr;
+	};
+
+	template<class T>
+	struct Tuple2 {
+		using ElementType = T;
+		static const size_t kElementCount = 2;
+
+		union {
+			struct { T x, y; };
+			T data[kElementCount];
+		};
+
+		Tuple2(const T& x_, const T& y_) : x(x_), y(y_) {}
+	};
+
+	template<class T>
+	struct Tuple3 {
+		using ElementType = T;
+		static const size_t kElementCount = 3;
+
+		union {
+			struct { T x, y, z; };
+			T data[kElementCount];
+		};
+
+		Tuple3(const T& x_, const T& y_, const T& z_)
+				: x(x_) , y(y_), z(z_) {}
+	};
+
+	template<class T>
+	struct Tuple4 {
+		using ElementType = T;
+		static const size_t kElementCount = 4;
+
+		union {
+			struct { T x, y, z, w; };
+			T data[kElementCount];
+		};
+
+		Tuple4(const T& x_, const T& y_, const T& z_, const T& w_)
+				: x(x_), y(y_), z(z_), w(w_) {}
+	};
+
+	using Tuple2f = Tuple2<float>;
+	using Tuple3f = Tuple3<float>;
+	using Tuple4f = Tuple4<float>;
+
+	using Tuple2d = Tuple2<double>;
+	using Tuple3d = Tuple3<double>;
+	using Tuple4d = Tuple4<double>;
 
 } // namespace

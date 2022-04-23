@@ -1,5 +1,6 @@
 #include "DirectX11_Renderer.h"
 #include "DirectX11_RenderContext.h"
+#include "DirectX11_RenderGpuBuffer.h"
 
 #if SGE_RENDER_HAS_DX11
 namespace SimpleGameEngine {
@@ -60,40 +61,16 @@ namespace SimpleGameEngine {
 		return new DirectX11_RenderContext(dx11Desc);
 	}
 
+	RenderGpuBuffer* DirectX11_Renderer::onCreateGpuBuffer(RenderGpuBufferCreateDesc& desc) {
+		return new DirectX11_RenderGpuBuffer(desc);
+	}
+
 	void DirectX11_Renderer::onReleaseCOM(void *pCOM) {
 		if(pCOM == nullptr) return;
 		((IUnknown*) pCOM)->Release();
 	}
 
-	void DirectX11_Renderer::onCreateBuffer(void* data, size_t& byteWidth, void*& pBuffer) {
-		SGE_LOG("Create Buffer");
-		HRESULT hr;
-
-		DX11_ID3DBuffer* pD3DBuffer;
-
-		D3D11_BUFFER_DESC bd = {};
-		bd.Usage 			= D3D11_USAGE_DYNAMIC;			// write access access by CPU and GPU
-		bd.ByteWidth 		= byteWidth;
-		bd.BindFlags		= D3D11_BIND_VERTEX_BUFFER;		// use as a vertex buffer
-		bd.CPUAccessFlags 	= D3D11_CPU_ACCESS_WRITE;		// allow CPU to write in buffer
-		hr = _d3dDevice->CreateBuffer(&bd, nullptr, &pD3DBuffer);  // create the buffer
-		Util::throwIfError(hr);
-
-		// copy the vertices into the buffer
-		D3D11_MAPPED_SUBRESOURCE ms = {};
-		hr = _d3dDeviceContext->Map(pD3DBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &ms); // map the buffer
-		Util::throwIfError(hr);
-
-		memcpy(ms.pData, data, bd.ByteWidth); // copy the data
-		_d3dDeviceContext->Unmap(pD3DBuffer, 0);     // unmap the buffer
-		pBuffer = pD3DBuffer;
-	}
-
-	void DirectX11_Renderer::onReleaseBuffer(void* pBuffer){
-		onReleaseCOM(pBuffer);
-	}
-
-	void DirectX11_Renderer::onCompileVertexShader(wchar_t* fileName, VertexLayout* layout, void*& pShader, void*& pVertexLayout) {
+	void DirectX11_Renderer::onCompileVertexShader(wchar_t* fileName, const VertexLayout* layout, void*& pShader, void*& pVertexLayout) {
 		HRESULT hr;
 
 		ComPtr <DX11_ID3DBlob> bytecode;
