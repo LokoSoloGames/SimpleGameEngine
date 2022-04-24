@@ -42,7 +42,7 @@ struct fmt::formatter<SimpleGameEngine::StrViewW> {
 	auto format(const SimpleGameEngine::StrViewW& v, fmt::format_context& ctx) {
 		auto it = *ctx.out();
 		for (const auto& c : v) {
-			it = c;
+			it = static_cast<char>(c);
 			it++;
 		}
 		return ctx.out();

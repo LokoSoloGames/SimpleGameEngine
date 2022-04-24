@@ -2,7 +2,7 @@
 
 #include <RenderCommon.h>
 #include <buffer/RenderGpuBuffer.h>
-#include "VertexLayout.h"
+#include <vertex/Vertex.h>
 #include "EditMesh.h"
 
 namespace SimpleGameEngine {

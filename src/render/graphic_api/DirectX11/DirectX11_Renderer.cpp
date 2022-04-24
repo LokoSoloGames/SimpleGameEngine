@@ -82,46 +82,26 @@ namespace SimpleGameEngine {
 		Util::throwIfError(hr);
 		pShader = pD3DShader;
 
-		D3D11_INPUT_ELEMENT_DESC* inputDesc = new D3D11_INPUT_ELEMENT_DESC[layout->elements.size()];
+		Vector<D3D11_INPUT_ELEMENT_DESC> inputDesc;
 		DX11_ID3DInputLayout* pD3DLayout;
 
-		int index = 0; int size = 0;
-		for (auto it = begin (layout->elements); it != end (layout->elements); ++it) {
-			D3D11_INPUT_ELEMENT_DESC desc;
-    		desc.SemanticName = VertexSemanticToStringC(it->semantic);
-			desc.SemanticIndex = 0;
-			switch (it->type) {
-				case RenderDataType::FLOAT32x3: {
-					desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-				} break;
-				case RenderDataType::FLOAT32x4: {
-					desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-				} break;
-				case RenderDataType::UNORM8x4: {
-					desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-				} break;
-				case RenderDataType::UINT32x4: {
-					desc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
-				} break;
-			}
+		for (auto& e : layout->elements) {
+			auto& desc = inputDesc.emplace_back();
+			auto semanticType = Vertex_SemanticUtil::getType(e.semantic);
+    		desc.SemanticName = DX11Util::getSemanticName(semanticType);
+			desc.SemanticIndex = Vertex_SemanticUtil::getIndex(e.semantic);
+			desc.Format = DX11Util::getFormat(e.dataType);
 			desc.InputSlot = 0;
-			desc.AlignedByteOffset = size;
+			desc.AlignedByteOffset = e.offset;
 			desc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			desc.InstanceDataStepRate = 0;
-			inputDesc[index] = desc;
-			size += RenderDataTypeSize(it->type);
-			index++;
-			SGE_LOG("Create Input Layout: {0}", desc.Format);
 		}
-		hr = _d3dDevice->CreateInputLayout(inputDesc, index,bytecode->GetBufferPointer(), bytecode->GetBufferSize(), &pD3DLayout);
+		hr = _d3dDevice->CreateInputLayout(inputDesc.data(), static_cast<UINT>(inputDesc.size()), bytecode->GetBufferPointer(), bytecode->GetBufferSize(), &pD3DLayout);
 		pVertexLayout = pD3DLayout;
-		delete[] inputDesc;
 		Util::throwIfError(hr);
-		SGE_LOG("Finish Vertex Shader");
 	}
 
 	void DirectX11_Renderer::onCompilePixelShader(wchar_t* fileName, void*& pShader) {
-		SGE_LOG("Compile Pixel Shader");
 		HRESULT hr;
 
 		ComPtr <DX11_ID3DBlob> bytecode;
@@ -133,16 +113,13 @@ namespace SimpleGameEngine {
 		hr = _d3dDevice->CreatePixelShader(bytecode->GetBufferPointer(), bytecode->GetBufferSize(), nullptr, &pD3DShader);
 		pShader = pD3DShader;
 		Util::throwIfError(hr);
-		SGE_LOG("Finished Pixel Shader");
 	}
 
 	void DirectX11_Renderer::onReleaseShader(void *pShader) {
-		SGE_LOG("Release Shader");
 		onReleaseCOM(pShader);
 	}
 
 	void DirectX11_Renderer::onReleaseVertexLayout(void *pVertexLayout) {
-		SGE_LOG("Release Vertex Layout");
 		onReleaseCOM(pVertexLayout);
 	}
 }

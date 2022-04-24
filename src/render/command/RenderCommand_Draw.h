@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RenderMesh.h"
+#include <mesh/RenderMesh.h>
 #include <Renderer.h>
 
 namespace SimpleGameEngine {

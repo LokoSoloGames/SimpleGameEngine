@@ -1,9 +1,8 @@
 #include <nativeui/NativeUI.h>
-#include <sgecore/log/Log.h>
-#include <sgecore/file/FilePath.h>
+#include <sgecore.h>
 #include <Renderer.h>
 #include <RenderContext.h>
-#include <command/RenderMesh.h>
+#include <mesh/RenderMesh.h>
 #include <command/RenderCommand_Draw.h>
 
 namespace SimpleGameEngine {

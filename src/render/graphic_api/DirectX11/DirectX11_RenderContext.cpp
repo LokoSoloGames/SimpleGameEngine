@@ -65,7 +65,6 @@ namespace SimpleGameEngine {
 		viewport.Height = _window->viewRect.h;
 
 		ctx->RSSetViewports(1, &viewport);
-		SGE_LOG("Finished Set View Port");
 
 		// select which primitive type we are using
 		switch (cmd.renderMesh->primitive()) {
@@ -79,30 +78,26 @@ namespace SimpleGameEngine {
 				SGE_LOG("Unhandled RenderPrimitiveType");
 				break;
 		}
-		SGE_LOG("Finished Set Topology");
 		// set the input layout we are using
 		ctx->IASetInputLayout(static_cast<DX11_ID3DInputLayout*>(cmd.shaderPass->vertexLayout));
-		SGE_LOG("Finished Set Input Layout");
 		// select which vertex buffer to display
 		UINT offset = 0;
-		UINT stride = cmd.renderMesh->layout()->stride;
+		UINT stride = static_cast<UINT>(cmd.renderMesh->layout()->stride);
 		DirectX11_RenderGpuBuffer* vertexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.renderMesh->vertexBuf());
 		DX11_ID3DBuffer* pVBuffer[] = { vertexBuffer->getBuffer() };
 		ctx->IASetVertexBuffers(0, 1, pVBuffer, &stride, &offset);
 		//ctx->IASetIndexBuffer(static_cast<DirectX11_RenderGpuBuffer*>(cmd.renderMesh->indexBuf().getBuffer()), DXGI_FORMAT_R32_UINT, 0);
-		SGE_LOG("Finished Set Buffer");
 		ctx->VSSetShader(static_cast<DX11_ID3DVertexShader*>(cmd.shaderPass->vertexShader), 0, 0);
 		ctx->PSSetShader(static_cast<DX11_ID3DPixelShader*>(cmd.shaderPass->pixelShader), 0, 0);
 
-		ctx->Draw(cmd.renderMesh->vertexCount(), 0); // Not using Index Buffer now
-		SGE_LOG("Finished Draw");
+		ctx->Draw(static_cast<UINT>(cmd.renderMesh->vertexCount()), 0); // Not using Index Buffer now
 	}
 
 	void DirectX11_RenderContext::onClearBuffers() {
 		auto* ctx = _renderer->d3dDeviceContext();
 		if (_renderTargetView) {
 			// clear the render target
-			float color[4] = {0, 0.2, 0.4f, 1};
+			float color[4] = {0, 0.2f, 0.4f, 1};
 			ctx->ClearRenderTargetView(_renderTargetView, color);
 		}
 	}

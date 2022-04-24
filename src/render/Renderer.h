@@ -1,6 +1,6 @@
 #pragma once
 
-#include <command/VertexLayout.h>
+#include <vertex/Vertex.h>
 
 namespace SimpleGameEngine {
 	class RenderContext;
