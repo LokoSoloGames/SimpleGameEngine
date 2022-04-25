@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sgecore.h>
+
 namespace SimpleGameEngine {
 	class EditMesh {
 		public:

@@ -9,6 +9,7 @@
 #include "sgecore/math/Tuple3.h"
 #include "sgecore/math/Tuple4.h"
 #include "sgecore/math/Vec2.h"
+#include "sgecore/math/Vec3.h"
 #include "sgecore/math/Rect2.h"
 
 #include "sgecore/pointer/SPtr.h"
@@ -24,3 +25,4 @@
 #include "sgecore/string/UtfUtil.h"
 
 #include "sgecore/file/FilePath.h"
+#include "sgecore/file/FileReader.h"

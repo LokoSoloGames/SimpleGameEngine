@@ -49,7 +49,8 @@ namespace SimpleGameEngine {
 		u8 binormalCount = 0;
 		using Helper = RenderMesh_InternalHelper;
 
-		_primitive = RenderPrimitiveType::Triangles;
+		//_primitive = RenderPrimitiveType::Triangles;
+		_primitive = RenderPrimitiveType::Lines;
 		_vertexCount = mesh.pos.size();
 		if (_vertexCount <= 0)
 			return;

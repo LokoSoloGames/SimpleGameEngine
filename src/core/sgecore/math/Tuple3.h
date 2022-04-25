@@ -12,6 +12,7 @@ struct Tuple3 {
 		T data[kElementCount];
 	};
 
+	Tuple3() = default;
 	Tuple3(const T& x_, const T& y_, const T& z_)
 		: x(x_) , y(y_), z(z_) {}
 };

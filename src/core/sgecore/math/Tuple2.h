@@ -12,6 +12,7 @@ struct Tuple2 {
 		T data[kElementCount];
 	};
 
+	Tuple2() = default;
 	Tuple2(const T& x_, const T& y_)
 		: x(x_), y(y_) {}
 };

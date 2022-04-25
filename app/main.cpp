@@ -16,10 +16,8 @@ namespace SimpleGameEngine {
 			RenderContext::CreateDesc renderContextDesc;
 			renderContextDesc.window = this;
 
-			_renderContext.reset(RenderContext::create(renderContextDesc));
-
 			EditMesh mesh;
-			Tuple3f pos1 = {0.0f, 0.5f, 0.0f};
+			/*Tuple3f pos1 = {0.0f, 0.5f, 0.0f};
 			Color4b color1 = {255, 0, 0, 255};
 			mesh.pos.emplace_back(pos1);
 			mesh.color.emplace_back(color1);
@@ -30,9 +28,12 @@ namespace SimpleGameEngine {
 			Tuple3f pos3 = {-0.5f, -0.5f, 0.0f};
 			Color4b color3 = {0, 0, 255, 255};
 			mesh.pos.emplace_back(pos3);
-			mesh.color.emplace_back(color3);
+			mesh.color.emplace_back(color3);*/
+			mesh.loadObjFile("bunny.obj");
 			_renderMesh.create(mesh);
 			_shaderPass.reset(new ShaderPass(_renderMesh, L"shaders.shader"));
+
+			_renderContext.reset(RenderContext::create(renderContextDesc));
 		}
 
 		virtual void onCloseButton() override {
