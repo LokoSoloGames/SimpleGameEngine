@@ -5,8 +5,9 @@
 namespace SimpleGameEngine {
 	inline
 	void sgeLoadFile(String& outStr, const StrView filename) {
-		auto* fs = fopen(filename.data(), "rb");
-		if (!fs)
+		FILE* fs = nullptr;
+		auto err = fopen_s(&fs, filename.data(), "rb");
+		if (err)
 			throw SGE_ERROR("cannot open file: {0}", filename);
 
 		fseek(fs, 0, SEEK_END);

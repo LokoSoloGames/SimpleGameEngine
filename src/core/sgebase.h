@@ -157,6 +157,7 @@ namespace SimpleGameEngine {
 
 	class Object : public RefCountBase {
 	public:
+		virtual ~Object() = default;
 	};
 
 	template<class T> inline void sge_delete(T* p) { delete p; }

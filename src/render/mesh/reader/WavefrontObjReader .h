@@ -10,7 +10,7 @@ namespace SimpleGameEngine {
 		Vector<Vec3f> m_vertices;
 		Vector<Vec2f> m_texture_vertices;
 		Vector<Vec3f> m_normal_vertices;
-		Vector<u32>	  m_indices;
+		Vector<u16>	  m_indices;
 
 	private:
 		Vector<Vec3f> tmp_vertices;

@@ -29,7 +29,7 @@ namespace SimpleGameEngine {
 		if (token == "v") {
 			Vec3f v;
 			float w = 1;
-			int ret = sscanf(r.data(), "%f %f %f %f", &v.x, &v.y, &v.z, &w);
+			int ret = sscanf_s(r.data(), "%f %f %f %f", &v.x, &v.y, &v.z, &w);
 			if (ret < 3)
 				throw SGE_ERROR("error read v");
 
@@ -40,7 +40,7 @@ namespace SimpleGameEngine {
 
 		if (token == "vt") {
 			Vec2f vt;
-			int ret = sscanf(r.data(), "%f %f", &vt.x, &vt.y);
+			int ret = sscanf_s(r.data(), "%f %f", &vt.x, &vt.y);
 			if (ret < 2)
 				throw SGE_ERROR("error read vt");
 
@@ -50,7 +50,7 @@ namespace SimpleGameEngine {
 
 		if (token == "vn") {
 			Vec3f vn;
-			int ret = sscanf(r.data(), "%f %f %f", &vn.x, &vn.y, &vn.z);
+			int ret = sscanf_s(r.data(), "%f %f %f", &vn.x, &vn.y, &vn.z);
 			if (ret < 3)
 				throw SGE_ERROR("error read vn");
 
@@ -84,19 +84,19 @@ namespace SimpleGameEngine {
 		StrView tmp;
 		token = sgeReadToken(tmp, token, '/');
 
-		if (sscanf(tmp.data(), "%d", &v) < 1)
+		if (sscanf_s(tmp.data(), "%d", &v) < 1)
 			throw SGE_ERROR("error read f");
 
 		if (!token.empty()) {
 			token = sgeReadToken(tmp, token, '/');
 			if (tmp.size()) {
-				if (sscanf(tmp.data(), "%d", &vt) < 1)
+				if (sscanf_s(tmp.data(), "%d", &vt) < 1)
 					throw SGE_ERROR("error read f");
 			}
 
 			token = sgeReadToken(tmp, token, '/');
 			if (tmp.size()) {
-				if (sscanf(tmp.data(), "%d", &vn) < 1)
+				if (sscanf_s(tmp.data(), "%d", &vn) < 1)
 					throw SGE_ERROR("error read f");
 			}
 		}
@@ -143,7 +143,7 @@ namespace SimpleGameEngine {
 		}
 
 		//---------
-		m_indices.emplace_back(m_vertices.size() - 1);
+		m_indices.emplace_back(static_cast<u16>(m_vertices.size() - 1));
 		return r;
 	}
 }
