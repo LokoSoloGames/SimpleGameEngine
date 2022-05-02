@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS 1
+#endif
+
 #include "sgecore/detect_platform/sge_detect_platform.h"
 #include "sgemacro.h"
 
@@ -8,6 +12,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdint>
+#include <atomic>
 
 #include <EASTL/vector.h>
 #include <EASTL/fixed_vector.h>
@@ -16,8 +21,11 @@
 #include <EASTL/string_view.h>
 #include <EASTL/span.h>
 
+#include <EASTL/optional.h>
+
 #include <EASTL/map.h>
 #include <EASTL/hash_map.h>
+#include <EASTL/vector_map.h>
 #include <EASTL/string_map.h>
 
 #include <EASTL/unique_ptr.h>
@@ -77,10 +85,19 @@ namespace SimpleGameEngine {
 	template<class T> using UPtr = eastl::unique_ptr<T>;
 
 	template<class T> using Span = eastl::span<T>;
+	template<class DST, class SRC> inline
+	Span<DST> spanCast(Span<SRC> src) {
+		size_t sizeInBytes = src.size() * sizeof(SRC);
+		return Span<DST>(reinterpret_cast<DST*>(src.data()), sizeInBytes / sizeof(DST));
+	}
+
 	template<class T, size_t N, bool bEnableOverflow = true> using Vector_ = eastl::fixed_vector<T, N, bEnableOverflow>;
 
 	template<class T> using Vector = eastl::vector<T>;
 	template<class KEY, class VALUE> using Map = eastl::map<KEY, VALUE>;
+	template<class KEY, class VALUE> using VectorMap = eastl::vector_map<KEY, VALUE>;
+
+	template<class T> using Opt = eastl::optional<T>;
 
 	template<class T> using StrViewT = eastl::basic_string_view<T>;
 	using StrViewA = StrViewT<char>;
@@ -160,5 +177,5 @@ namespace SimpleGameEngine {
 		virtual ~Object() = default;
 	};
 
-	template<class T> inline void sge_delete(T* p) { delete p; }
+	template<class T> inline void sge_delete(T* p) noexcept { delete p; }
 } // namespace

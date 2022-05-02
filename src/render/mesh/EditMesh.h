@@ -1,11 +1,14 @@
 #pragma once
 
-#include <sgecore.h>
+#include "../vertex/Vertex.h"
 
 namespace SimpleGameEngine {
 	class EditMesh {
 		public:
 			static const u8 kUvCountMax = 4;
+
+			RenderPrimitiveType	primitive = RenderPrimitiveType::Triangles;
+			Vector<u32>	indices;
 
 			Vector<Tuple3f>	pos;
 			Vector<Tuple2f>	uv[kUvCountMax];
@@ -15,6 +18,6 @@ namespace SimpleGameEngine {
 			Vector<Tuple3f>	tangent;
 			Vector<Tuple3f>	binormal;
 
-			void loadObjFile(StrView filename);
+			void clear();
 	};
 }

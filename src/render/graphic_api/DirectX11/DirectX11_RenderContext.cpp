@@ -65,32 +65,35 @@ namespace SimpleGameEngine {
 		viewport.Height = _window->viewRect.h;
 
 		ctx->RSSetViewports(1, &viewport);
+		ctx->IASetPrimitiveTopology(Util::getPrimitiveTopology(cmd.renderMesh->primitive()));
 
-		// select which primitive type we are using
-		switch (cmd.renderMesh->primitive()) {
-			case RenderPrimitiveType::Triangles: {
-				ctx->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			} break;
-			case RenderPrimitiveType::Lines: {
-				ctx->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-			} break;
-			default:
-				SGE_LOG("Unhandled RenderPrimitiveType");
-				break;
+		DirectX11_RenderGpuBuffer* indexBuffer = nullptr;
+		if (cmd.renderMesh->indexCount() > 0) {
+			indexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.renderMesh->indexBuffer());
+			if (!indexBuffer) { SGE_ASSERT(false); return; }
 		}
+
 		// set the input layout we are using
 		ctx->IASetInputLayout(static_cast<DX11_ID3DInputLayout*>(cmd.shaderPass->vertexLayout));
 		// select which vertex buffer to display
 		UINT offset = 0;
-		UINT stride = static_cast<UINT>(cmd.renderMesh->layout()->stride);
-		DirectX11_RenderGpuBuffer* vertexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.renderMesh->vertexBuf());
+		UINT stride = static_cast<UINT>(cmd.renderMesh->vertexLayout()->stride);
+		DirectX11_RenderGpuBuffer* vertexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.renderMesh->vertexBuffer());
 		DX11_ID3DBuffer* pVBuffer[] = { vertexBuffer->getBuffer() };
 		ctx->IASetVertexBuffers(0, 1, pVBuffer, &stride, &offset);
-		//ctx->IASetIndexBuffer(static_cast<DirectX11_RenderGpuBuffer*>(cmd.renderMesh->indexBuf().getBuffer()), DXGI_FORMAT_R32_UINT, 0);
+		
 		ctx->VSSetShader(static_cast<DX11_ID3DVertexShader*>(cmd.shaderPass->vertexShader), 0, 0);
 		ctx->PSSetShader(static_cast<DX11_ID3DPixelShader*>(cmd.shaderPass->pixelShader), 0, 0);
 
-		ctx->Draw(static_cast<UINT>(cmd.renderMesh->vertexCount()), 0); // Not using Index Buffer now
+		UINT indexCount = static_cast<UINT>(cmd.renderMesh->indexCount());
+		if (indexCount > 0) {
+			auto indexType = Util::getFormat(cmd.renderMesh->indexType());
+			ctx->IASetIndexBuffer(indexBuffer->getBuffer(), indexType, 0);
+			ctx->DrawIndexed(indexCount, 0, 0);
+		}
+		else {
+			ctx->Draw(static_cast<UINT>(cmd.renderMesh->vertexCount()), 0);
+		}
 	}
 
 	void DirectX11_RenderContext::onClearBuffers() {

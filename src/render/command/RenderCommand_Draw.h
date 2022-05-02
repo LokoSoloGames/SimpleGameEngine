@@ -10,7 +10,7 @@ namespace SimpleGameEngine {
 		void* vertexLayout = nullptr;
 
 		ShaderPass(const RenderMesh& renderMesh, wchar_t* shaderFile) {
-			Renderer::current()->compileVertexShader(shaderFile, renderMesh.layout(), vertexShader, vertexLayout);
+			Renderer::current()->compileVertexShader(shaderFile, renderMesh.subMeshes()[0].vertexLayout(), vertexShader, vertexLayout);
 			Renderer::current()->compilePixelShader(shaderFile, pixelShader);
 		}
 
@@ -26,7 +26,7 @@ namespace SimpleGameEngine {
 
 	class RenderCommand_Draw {
 	public:
-		RenderMesh* renderMesh;
+		RenderSubMesh* renderMesh;
 		ShaderPass* shaderPass;
 	};
 }

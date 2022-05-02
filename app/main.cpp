@@ -4,6 +4,7 @@
 #include <RenderContext.h>
 #include <mesh/RenderMesh.h>
 #include <command/RenderCommand_Draw.h>
+#include <mesh/reader/WavefrontObjLoader.h>
 
 namespace SimpleGameEngine {
 
@@ -16,7 +17,7 @@ namespace SimpleGameEngine {
 			RenderContext::CreateDesc renderContextDesc;
 			renderContextDesc.window = this;
 
-			EditMesh mesh;
+			EditMesh editMesh;
 			/*Tuple3f pos1 = {0.0f, 0.5f, 0.0f};
 			Color4b color1 = {255, 0, 0, 255};
 			mesh.pos.emplace_back(pos1);
@@ -29,8 +30,16 @@ namespace SimpleGameEngine {
 			Color4b color3 = {0, 0, 255, 255};
 			mesh.pos.emplace_back(pos3);
 			mesh.color.emplace_back(color3);*/
-			mesh.loadObjFile("bunny.obj");
-			_renderMesh.create(mesh);
+			WavefrontObjLoader::loadFile(editMesh, "bunny.obj");
+			for (size_t i = editMesh.color.size(); i < editMesh.pos.size(); i++) {
+				editMesh.color.emplace_back(255, 255, 255, 255);
+			}
+
+			// the current shader has no uv or normal
+			editMesh.uv[0].clear();
+			editMesh.normal.clear();
+
+			_renderMesh.create(editMesh);
 			_shaderPass.reset(new ShaderPass(_renderMesh, L"shaders.shader"));
 
 			_renderContext.reset(RenderContext::create(renderContextDesc));
@@ -44,7 +53,7 @@ namespace SimpleGameEngine {
 			Base::onDraw();
 			if (_renderContext) {
 				RenderCommand_Draw cmd;
-				cmd.renderMesh = &_renderMesh;
+				cmd.renderMesh = &_renderMesh.subMeshes()[0];
 				cmd.shaderPass = _shaderPass.get();
 				_renderContext->render(cmd);
 			}

@@ -25,4 +25,5 @@
 #include "sgecore/string/UtfUtil.h"
 
 #include "sgecore/file/FilePath.h"
-#include "sgecore/file/FileReader.h"
+#include "sgecore/file/FileStream.h"
+#include "sgecore/file/MemMapFile.h"

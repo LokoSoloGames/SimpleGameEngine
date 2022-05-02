@@ -1,28 +1,64 @@
 #pragma once
 
-#include <RenderCommon.h>
-#include <buffer/RenderGpuBuffer.h>
-#include <vertex/Vertex.h>
 #include "EditMesh.h"
+#include <vertex/Vertex.h>
+#include <buffer/RenderGpuBuffer.h>
 
 namespace SimpleGameEngine {
-	class RenderMesh {
+	class RenderMesh;
+
+	class RenderSubMesh {
 	public:
-		void create(const EditMesh& mesh);
+		void create(const EditMesh& src);
+		void clear();
 
-		RenderGpuBuffer* vertexBuf() { return _vertexBuf; }
-		RenderGpuBuffer* indexBuf() { return _indexBuf; }
-		size_t vertexCount() const { return _vertexCount; }
-		const VertexLayout* layout() const { return _layout; }
-		RenderPrimitiveType primitive() const { return _primitive; }
+		RenderGpuBuffer*	vertexBuffer() const { return constCast(_vertexBuffer); }
+		RenderGpuBuffer*	indexBuffer()  const { return constCast(_indexBuffer);  }
 
-	private:
-		const VertexLayout*	_layout = nullptr;
+		size_t vertexCount() const				{ return _vertexCount; }
+		size_t indexCount() const				{ return _indexCount; }
+		RenderDataType indexType() const		{ return _indexType; }
 
-		RenderPrimitiveType _primitive = RenderPrimitiveType::None;
+		RenderPrimitiveType primitive() const;
+		const VertexLayout* vertexLayout() const;
+
+		friend class RenderMesh;
+	protected:
+		RenderMesh*	_mesh = nullptr;
+		RenderDataType _indexType = RenderDataType::None;
+
+		SPtr<RenderGpuBuffer>	_vertexBuffer;
+		SPtr<RenderGpuBuffer>	_indexBuffer;
 
 		size_t _vertexCount = 0;
-		SPtr<RenderGpuBuffer> _vertexBuf;
-		SPtr<RenderGpuBuffer> _indexBuf;
+		size_t _indexCount = 0;
 	};
+
+	class RenderMesh {
+	public:
+		using SubMesh = RenderSubMesh;
+		void create(const EditMesh& src);
+		void clear();
+
+		RenderPrimitiveType primitive() const		{ return _primitive; }
+		const VertexLayout* vertexLayout() const	{ return _vertexLayout; }
+
+		Span<      SubMesh>	subMeshes()				{ return _subMeshes; }
+		Span<const SubMesh>	subMeshes() const		{ return _subMeshes; }
+
+		void setSubMeshCount(size_t newSize);
+
+	private:
+		RenderPrimitiveType _primitive = RenderPrimitiveType::Triangles;
+		const VertexLayout*	_vertexLayout = nullptr;
+		Vector_<SubMesh, 1>	_subMeshes;
+	};
+
+	SGE_INLINE RenderPrimitiveType RenderSubMesh::primitive() const {
+		return _mesh->primitive();
+	}
+
+	SGE_INLINE const VertexLayout* RenderSubMesh::vertexLayout() const {
+		return _mesh->vertexLayout();
+	}
 }

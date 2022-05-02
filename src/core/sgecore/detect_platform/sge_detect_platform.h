@@ -97,8 +97,6 @@ SGE_DetectPlatform:
 	#error "OS should be specified"
 #endif
 
-
-
 //====================================
 
 #ifndef UNICODE

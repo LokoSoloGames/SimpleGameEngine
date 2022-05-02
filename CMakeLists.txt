@@ -23,7 +23,6 @@ function(sge_set_target_warning_level target_name)
     endif()
 endfunction()
 
-add_definitions("-DUNICODE")
 add_subdirectory(app)
 add_subdirectory(src/core)
 #add_subdirectory(src/editor)
