@@ -25,9 +25,6 @@ namespace SimpleGameEngine {
 
 		RenderGpuBuffer(CreateDesc& desc);
 
-		using Type = RenderGpuBufferType;
-		using CreateDesc = RenderGpuBufferCreateDesc;
-
 		void uploadToGpu(Span<const u8> data, size_t offset = 0) {
 			if (data.size() + offset > _desc.bufferSize) {
 				throw SGE_ERROR("out of range");

@@ -10,6 +10,7 @@ project(${PROJECT_NAME})
 find_package(fmt CONFIG REQUIRED)
 find_package(GLEW CONFIG REQUIRED)
 find_package(EASTL CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 function(sge_set_target_warning_level target_name)
     if(MSVC)
@@ -25,7 +26,7 @@ endfunction()
 
 add_subdirectory(app)
 add_subdirectory(src/core)
-#add_subdirectory(src/editor)
+add_subdirectory(src/editor)
 add_subdirectory(src/render)
 
 set_property (DIRECTORY PROPERTY VS_STARTUP_PROJECT SimpleGameEngineApp)

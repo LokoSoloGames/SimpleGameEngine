@@ -159,11 +159,11 @@ namespace SimpleGameEngine {
 	class NonCopyable {
 	public:
 		NonCopyable() = default;
-
 	private:
 		NonCopyable(NonCopyable&&) = delete;
-
 		NonCopyable(const NonCopyable&) = delete;
+
+		void operator=(NonCopyable&&) = delete;
 		void operator=(const NonCopyable&) = delete;
 	};
 
