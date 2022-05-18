@@ -1,25 +1,9 @@
 #include "ShaderParser.h"
-#include <ctype.h>
 
 namespace SimpleGameEngine {
-	struct ShaderParser::ShaderManifest {
-		StrView shaderName;
-		struct Pass {
-			StrView vsName;
-			StrView psName;
-			// TODO <-Pass Properties
-		};
-		Vector<Pass> pass;
-		// TODO <-Properties
-		StrView shader;
-	};
-
 	ShaderParser::ShaderManifest ShaderParser::parseShader(Span<const u8> src) {
 		_remaining = StrView(reinterpret_cast<const char*>(src.data()), src.size());
 		_lineNumber = 1;
-
-		ShaderManifest out;
-		output = out;
 
 		// Parse Shader Keyword
 		_nextToken();

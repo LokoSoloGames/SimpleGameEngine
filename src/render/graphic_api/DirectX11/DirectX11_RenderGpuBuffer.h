@@ -7,6 +7,7 @@ namespace SimpleGameEngine {
 
 	class DirectX11_RenderGpuBuffer : public RenderGpuBuffer {
 		using Base = RenderGpuBuffer;
+		using Type = RenderGpuBufferType;
 		using Util = DX11Util;
 	public:
 		DirectX11_RenderGpuBuffer(CreateDesc& desc);

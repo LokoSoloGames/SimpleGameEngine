@@ -1,10 +1,21 @@
+#pragma once
+
 #include <sgecore.h>
 
 namespace SimpleGameEngine {
 	class ShaderParser : public NonCopyable {
 	public:
-		struct ShaderManifest;
-
+		struct ShaderManifest {
+			StrView shaderName;
+			struct Pass {
+				StrView vsName;
+				StrView psName;
+				// TODO <-Pass Properties
+			};
+			Vector<Pass> pass;
+			// TODO <-Properties
+			StrView shader;
+		};
 		ShaderManifest parseShader(Span<const u8> src);
 	private:
 		enum class TokenType : u8 {
@@ -35,6 +46,6 @@ namespace SimpleGameEngine {
 		inline void _checkTokenValue(StrView value);
 		void _error(StrView msg) { throw SGE_ERROR("{}: {}", _lineNumber, msg); }
 
-		ShaderManifest& output;
+		ShaderManifest output;
 	};
 }
