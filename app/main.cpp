@@ -23,7 +23,6 @@ namespace SimpleGameEngine {
 			ShaderParser parser;
 			ShaderParser::ShaderManifest manifest = parser.parseShader(mm); // comment this line can compile
 
-
 			EditMesh editMesh;
 			/*Tuple3f pos1 = {0.0f, 0.5f, 0.0f};
 			Color4b color1 = {255, 0, 0, 255};

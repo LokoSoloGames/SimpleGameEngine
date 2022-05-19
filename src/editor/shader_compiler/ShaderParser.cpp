@@ -85,7 +85,7 @@ namespace SimpleGameEngine {
 			_currentLine = ret;
 			return;
 		} else if (isalpha(_currentLine[0])) {
-			auto ret = StringUtil::splitByChar(_currentLine, " \t\r");
+			auto ret = StringUtil::stopByAlphaNumeric(_currentLine, "_");
 			_token.type = TokenType::Identifier;
 			_token.value = ret.first;
 			_currentLine = ret.second;
@@ -93,16 +93,19 @@ namespace SimpleGameEngine {
 		} else if (_currentLine.substr(0, 2) == "//") {
 			// ignore whole line
 			_currentLine = StrView();
+			return;
 		} else {
 			auto* s = _currentLine.begin();
 			auto* e = _currentLine.end();
 			auto* p = s;
+			StrView seperator = " \t\r";
 			for (; p < e; p++) {
-				if (isalnum(*p)) break;
+				if (isalnum(*p) || StringUtil::hasChar(seperator, *p)) break;
 			}
 			_token.type = TokenType::Operator;
 			_token.value = StrView(s, p - s);
 			_currentLine = StrView(p, e - p);
+			return;
 		}
 	}
 
@@ -149,7 +152,7 @@ namespace SimpleGameEngine {
 	}
 
 	inline void ShaderParser::_checkTokenValue(StrView value) {
-		if (_token.value != value) {
+		if (_token.value.compare(value) != 0) {
 			_error(Fmt("Invalid Syntax: Require {}", value));
 		}
 	}

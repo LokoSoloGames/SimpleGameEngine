@@ -20,6 +20,7 @@ namespace SimpleGameEngine {
 
 		static std::pair<StrView, StrView> splitByChar	(StrView view, StrView seperators);
 		static std::pair<StrView, StrView> splitByChar	(StrView view, char seperator);
+		static std::pair<StrView, StrView> stopByAlphaNumeric(StrView view, StrView ignore);
 
 		static StrView	trimChar(StrView view, StrView seperators);
 
@@ -49,6 +50,20 @@ namespace SimpleGameEngine {
 			}
 		}
 		return {view, StrView()};
+	}
+
+	inline
+	std::pair<StrView, StrView> StringUtil::stopByAlphaNumeric(StrView view, StrView ignore) {
+		auto* s = view.begin();
+		auto* e = view.end();
+		for (auto* p = s; p < e; p++) {
+			if (!isalnum(*p) && !hasChar(ignore, *p)) {
+				auto r0 = StrView(s, p - s);
+				auto r1 = StrView(p, e - p);
+				return { r0, r1 };
+			}
+		}
+		return { view, StrView() };
 	}
 
 	inline
