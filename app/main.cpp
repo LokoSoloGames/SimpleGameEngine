@@ -5,7 +5,7 @@
 #include <mesh/RenderMesh.h>
 #include <command/RenderCommand_Draw.h>
 #include <mesh/reader/WavefrontObjLoader.h>
-#include <shader_compiler/ShaderParser.h>
+#include <shader_compiler/ShaderCompiler.h>
 
 namespace SimpleGameEngine {
 
@@ -18,11 +18,9 @@ namespace SimpleGameEngine {
 			RenderContext::CreateDesc renderContextDesc;
 			renderContextDesc.window = this;
 
-			MemMapFile mm;
-			mm.open("test.shader");
-			ShaderParser parser;
-			ShaderParser::ShaderManifest manifest = parser.parseShader(mm); // comment this line can compile
-
+			ShaderCompiler shaderCompiler;
+			shaderCompiler.compile("test.shader");
+			
 			EditMesh editMesh;
 			/*Tuple3f pos1 = {0.0f, 0.5f, 0.0f};
 			Color4b color1 = {255, 0, 0, 255};

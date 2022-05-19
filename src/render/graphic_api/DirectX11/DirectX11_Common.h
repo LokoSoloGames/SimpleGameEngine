@@ -44,6 +44,8 @@ namespace SimpleGameEngine {
 	using DX11_ID3DDepthStencilState = ID3D11DepthStencilState;
 	using DX11_ID3DBlendState = ID3D11BlendState;
 
+	using DX11_ID3DShaderReflection = ID3D11ShaderReflection;
+
 struct DX11Util {
 	DX11Util() = delete;
 
