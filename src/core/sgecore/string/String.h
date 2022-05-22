@@ -14,15 +14,19 @@ namespace SimpleGameEngine {
 			appendBinToHex(result, data);
 		}
 
-		static void appendBinToHex(String& result, Span<const u8> data);
+		static void appendBinToHex(String& result, ByteSpan data);
 
 		static bool hasChar(StrView view, char ch) { return StrView::npos != view.find(ch); }
 
 		static std::pair<StrView, StrView> splitByChar	(StrView view, StrView seperators);
 		static std::pair<StrView, StrView> splitByChar	(StrView view, char seperator);
-		static std::pair<StrView, StrView> stopByAlphaNumeric(StrView view, StrView ignore);
 
 		static StrView	trimChar(StrView view, StrView seperators);
+
+		static const char* findChar(StrView view, StrView charList, bool ignoreCase);
+		static const char* findCharFromEnd(StrView view, StrView charList, bool ignoreCase);
+
+		static bool ignoreCaseCompare(char a, char b) { return tolower(a) == tolower(b); }
 
 		static bool tryParse(StrView view, i8 & outValue);
 		static bool tryParse(StrView view, i16& outValue);
@@ -53,20 +57,6 @@ namespace SimpleGameEngine {
 	}
 
 	inline
-	std::pair<StrView, StrView> StringUtil::stopByAlphaNumeric(StrView view, StrView ignore) {
-		auto* s = view.begin();
-		auto* e = view.end();
-		for (auto* p = s; p < e; p++) {
-			if (!isalnum(*p) && !hasChar(ignore, *p)) {
-				auto r0 = StrView(s, p - s);
-				auto r1 = StrView(p, e - p);
-				return { r0, r1 };
-			}
-		}
-		return { view, StrView() };
-	}
-
-	inline
 	std::pair<SimpleGameEngine::StrView, SimpleGameEngine::StrView> StringUtil::splitByChar(StrView view, char seperator) {
 		return splitByChar(view, StrView(&seperator, 1));
 	}
@@ -90,33 +80,15 @@ std::ostream& operator<<(std::ostream& s, const SimpleGameEngine::StrView& v) {
 }
 
 template<>
-struct fmt::formatter<SimpleGameEngine::StrView> {
+struct fmt::formatter<SimpleGameEngine::StrViewA> {
 	auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-	auto format(const SimpleGameEngine::StrView& v, fmt::format_context& ctx) {
+	auto format(const SimpleGameEngine::StrViewA& v, fmt::format_context& ctx) {
 		auto it = *ctx.out();
 		for (const auto& c : v) {
 			it = c;
 			it++;
 		}
 		return ctx.out();
-	}
-};
-
-template<>
-struct fmt::formatter<SimpleGameEngine::String> {
-	auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-	auto format(const SimpleGameEngine::String& v, fmt::format_context& ctx) {
-		SimpleGameEngine::StrView view(v.data(), v.size());
-		return fmt::format_to(ctx.out(), "{}", view);
-	}
-};
-
-template<size_t N>
-struct fmt::formatter<SimpleGameEngine::String_<N>> {
-	auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-	auto format(const SimpleGameEngine::String_<N>& v, fmt::format_context& ctx) {
-		SimpleGameEngine::StrView view(v.data(), v.size());
-		return fmt::format_to(ctx.out(), "{}", view);
 	}
 };
 
@@ -129,20 +101,10 @@ struct fmt::formatter<SimpleGameEngine::StrViewW> {
 	}
 };
 
-template<>
-struct fmt::formatter<SimpleGameEngine::StringW> {
-	auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-	auto format(const SimpleGameEngine::StringW& v, fmt::format_context& ctx) {
-		SimpleGameEngine::StrViewW view(v.data(), v.size());
-		return fmt::format_to(ctx.out(), "{}", view);
-	}
-};
-
-template<size_t N>
-struct fmt::formatter<SimpleGameEngine::StringW_<N>> {
-	auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-	auto format(const SimpleGameEngine::StringW_<N>& v, fmt::format_context& ctx) {
-		SimpleGameEngine::StrViewW view(v.data(), v.size());
-		return fmt::format_to(ctx.out(), "{}", view);
-	}
+template<class T, size_t N, bool bEnableOverflow>
+struct fmt::formatter<SimpleGameEngine::StringT<T, N, bEnableOverflow> > {
+auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
+auto format(const SimpleGameEngine::StringT<T, N, bEnableOverflow>& v, fmt::format_context& ctx) {
+	return fmt::format_to(ctx.out(), "{}", v.view());
+}
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sgebase.h"
+#include "app/ConsoleApp.h"
 
 #include "sgecore/allocator/LinearAllocator.h"
 
@@ -27,3 +28,4 @@
 #include "sgecore/file/FilePath.h"
 #include "sgecore/file/FileStream.h"
 #include "sgecore/file/MemMapFile.h"
+#include "sgecore/file/Directory.h"

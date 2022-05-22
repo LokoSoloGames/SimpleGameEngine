@@ -3,7 +3,6 @@
 #include "../string/UtfUtil.h"
 
 namespace SimpleGameEngine {
-
 	using FileSize = u64;
 
 	enum class FileMode {
@@ -24,4 +23,30 @@ namespace SimpleGameEngine {
 		Write,
 		ReadWrite,
 	};
+
+	struct File {
+		static bool exists(StrView filename);
+		static void rename(StrView src, StrView dst);
+
+		static void	writeBytes(StrView filename, ByteSpan buf);
+		static void writeText (StrView filename, StrView text);
+
+		static char writeFile(StrView filename, ByteSpan data, bool createDir, bool logResult = true);
+		static char writeFile(StrView filename, StrView  data, bool createDir, bool logResult = true);
+
+		static void readFile (StrView filename, Vector<u8> data);
+
+		static char writeFileIfChanged(	StrView filename,
+										   ByteSpan data,
+										   bool createDir,
+										   bool logResult = true,
+										   bool logNoChange = false);
+
+		static char writeFileIfChanged(	StrView filename,
+										   StrView data,
+										   bool createDir,
+										   bool logResult = true,
+										   bool logNoChange = false);
+	};
+
 }
