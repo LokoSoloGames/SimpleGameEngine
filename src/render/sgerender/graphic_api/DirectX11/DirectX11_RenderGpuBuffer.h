@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DirectX11_Common.h"
-#include <buffer/RenderGpuBuffer.h>
+#include <sgerender/buffer/RenderGpuBuffer.h>
 
 namespace SimpleGameEngine {
 

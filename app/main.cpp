@@ -15,9 +15,6 @@ namespace SimpleGameEngine {
 
 			RenderContext::CreateDesc renderContextDesc;
 			renderContextDesc.window = this;
-
-			//ShaderCompiler shaderCompiler;
-			//shaderCompiler.compile("test.shader");
 			
 			EditMesh editMesh;
 			/*Tuple3f pos1 = {0.0f, 0.5f, 0.0f};

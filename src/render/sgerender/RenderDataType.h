@@ -126,6 +126,7 @@ namespace SimpleGameEngine {
 
 	};
 
+	SGE_ENUM_ALL_OPERATOR(RenderDataType)
 }
 
 SGE_FORMATTER_ENUM(SimpleGameEngine::RenderDataType)

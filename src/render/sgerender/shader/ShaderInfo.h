@@ -58,6 +58,7 @@ namespace SimpleGameEngine {
 			String psFunc;
 		};
 
+		String shaderName;
 		Vector_<Prop, 8>	props;
 		Vector_<Pass, 1>	passes;
 

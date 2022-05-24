@@ -21,6 +21,7 @@ namespace SimpleGameEngine {
 
 	void ShaderParser::_readShader() {
 		nextToken();
+		if (_token.isString()) { readString(_outInfo->shaderName); }
 		expectOperator("{");
 
 		for(;;) {
