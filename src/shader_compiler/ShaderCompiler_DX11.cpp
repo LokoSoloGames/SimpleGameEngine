@@ -84,12 +84,13 @@ namespace SimpleGameEngine {
 		hr = reflection->GetDesc(&shaderDesc);
 		Util::throwIfError(hr);
 		
+		layout.inputs.resize(shaderDesc.InputParameters);
 		if (shaderDesc.InputParameters > 0) {
 			D3D11_SIGNATURE_PARAMETER_DESC paramDesc;
 			for (u8 i = 0; i < shaderDesc.InputParameters; i++) {
 				hr = reflection->GetInputParameterDesc(i, &paramDesc);
 				Util::throwIfError(hr);
-				ShaderLayout::InputLayout inputLayout;
+				auto& inputLayout = layout.inputs[i];
 				inputLayout.attrId = Fmt("{}{}", paramDesc.SemanticName, paramDesc.SemanticIndex);
 				inputLayout.dataType = DX11ShaderUtil::getDataType(paramDesc);
 			}
