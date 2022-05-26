@@ -10,10 +10,6 @@ namespace SimpleGameEngine {
 	public:
 		void compile(const StrView& outFileName, const ShaderStage& shaderStage, const StrView& srcFileName, const StrView& entryFunc, ShaderLayout& layout);
 	private:
-		// To be abstracted for different graphic api
-		void compileVS(const StrView& shader, const StrView& alias, const StrView& vsName);
-		void compilePS(const StrView& shader, const StrView& alias, const StrView& psName);
-
 		void createLayout(ComPtr<DX11_ID3DShaderReflection>& reflection, ShaderLayout& layout);
 
 		StrView _dirPath;
