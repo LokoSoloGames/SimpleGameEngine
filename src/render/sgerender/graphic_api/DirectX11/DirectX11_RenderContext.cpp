@@ -74,7 +74,7 @@ namespace SimpleGameEngine {
 		}
 
 		// set the input layout we are using
-		ctx->IASetInputLayout(static_cast<DX11_ID3DInputLayout*>(cmd.shaderPass->vertexLayout));
+		ctx->IASetInputLayout(static_cast<DX11_ID3DInputLayout*>(cmd.material->vertexLayout));
 		// select which vertex buffer to display
 		UINT offset = 0;
 		UINT stride = static_cast<UINT>(cmd.renderMesh->vertexLayout()->stride);
@@ -82,8 +82,8 @@ namespace SimpleGameEngine {
 		DX11_ID3DBuffer* pVBuffer[] = { vertexBuffer->getBuffer() };
 		ctx->IASetVertexBuffers(0, 1, pVBuffer, &stride, &offset);
 		
-		ctx->VSSetShader(static_cast<DX11_ID3DVertexShader*>(cmd.shaderPass->vertexShader), 0, 0);
-		ctx->PSSetShader(static_cast<DX11_ID3DPixelShader*>(cmd.shaderPass->pixelShader), 0, 0);
+		ctx->VSSetShader(static_cast<DX11_ID3DVertexShader*>(cmd.material->vertexShader), 0, 0);
+		ctx->PSSetShader(static_cast<DX11_ID3DPixelShader*>(cmd.material->pixelShader), 0, 0);
 
 		UINT indexCount = static_cast<UINT>(cmd.renderMesh->indexCount());
 		if (indexCount > 0) {

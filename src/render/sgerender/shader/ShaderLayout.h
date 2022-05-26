@@ -23,8 +23,8 @@ namespace SimpleGameEngine {
 
 		struct UniformBufferLayout {
 			String name;
-			u8 bindPoint;
-			u8 bindCount;
+			u32 bindPoint;
+			u32 bindCount;
 			u32 dataSize;
 			Vector<Variable> variables;
 

@@ -34,7 +34,7 @@ struct PixelIn {
 
 float4x4	SGE_MVP;
 
-float x;
+float x = 5;
 float b;
 float c;
 
@@ -42,6 +42,8 @@ PixelIn vs_main(VertexIn i) {
     PixelIn o;
     o.position = i.position;
     o.color    = i.color;
+o.color.r += x;
+o.color.b += b;
     return o;
 }
 

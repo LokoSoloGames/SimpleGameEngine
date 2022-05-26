@@ -98,6 +98,7 @@ namespace SimpleGameEngine {
 		{
 			D3D11_SHADER_BUFFER_DESC bufferDesc;
 			D3D11_SHADER_VARIABLE_DESC varDesc;
+			D3D11_SHADER_INPUT_BIND_DESC bindDesc;
 			for (u32 i = 0; i < shaderDesc.ConstantBuffers; i++) {
 				auto* constBuffer = reflection->GetConstantBufferByIndex(0);
 				hr = constBuffer->GetDesc(&bufferDesc);
@@ -106,6 +107,11 @@ namespace SimpleGameEngine {
 					auto& bufferLayout = layout.uniformBuffers.emplace_back();
 					bufferLayout.name = bufferDesc.Name;
 					bufferLayout.dataSize = bufferDesc.Size;
+					hr = reflection->GetResourceBindingDescByName(bufferDesc.Name, &bindDesc);
+					Util::throwIfError(hr);
+					bufferLayout.bindPoint = bindDesc.BindPoint;
+					bufferLayout.bindCount = bindDesc.BindCount;
+
 					for (u32 j = 0; j < bufferDesc.Variables; j++) {
 						auto* variable = constBuffer->GetVariableByIndex(j);
 						hr = variable->GetDesc(&varDesc);
