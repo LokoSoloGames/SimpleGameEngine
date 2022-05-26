@@ -83,16 +83,39 @@ namespace SimpleGameEngine {
 		D3D11_SHADER_DESC shaderDesc;
 		hr = reflection->GetDesc(&shaderDesc);
 		Util::throwIfError(hr);
-		
-		layout.inputs.resize(shaderDesc.InputParameters);
-		if (shaderDesc.InputParameters > 0) {
-			D3D11_SIGNATURE_PARAMETER_DESC paramDesc;
-			for (u8 i = 0; i < shaderDesc.InputParameters; i++) {
-				hr = reflection->GetInputParameterDesc(i, &paramDesc);
+
+		{
+			D3D11_SIGNATURE_PARAMETER_DESC desc;
+			for (u32 i = 0; i < shaderDesc.InputParameters; i++) {
+				hr = reflection->GetInputParameterDesc(i, &desc);
 				Util::throwIfError(hr);
-				auto& inputLayout = layout.inputs[i];
-				inputLayout.attrId = Fmt("{}{}", paramDesc.SemanticName, paramDesc.SemanticIndex);
-				inputLayout.dataType = DX11ShaderUtil::getDataType(paramDesc);
+				auto& inputLayout = layout.inputs.emplace_back();
+				inputLayout.attrId = Fmt("{}{}", desc.SemanticName, desc.SemanticIndex);
+				inputLayout.dataType = DX11ShaderUtil::getDataType(desc);
+			}
+		}
+
+		{
+			D3D11_SHADER_BUFFER_DESC bufferDesc;
+			D3D11_SHADER_VARIABLE_DESC varDesc;
+			for (u32 i = 0; i < shaderDesc.ConstantBuffers; i++) {
+				auto* constBuffer = reflection->GetConstantBufferByIndex(0);
+				hr = constBuffer->GetDesc(&bufferDesc);
+				Util::throwIfError(hr);
+				if (bufferDesc.Type == D3D_CBUFFER_TYPE::D3D11_CT_CBUFFER) {
+					auto& bufferLayout = layout.uniformBuffers.emplace_back();
+					bufferLayout.name = bufferDesc.Name;
+					bufferLayout.dataSize = bufferDesc.Size;
+					for (u32 j = 0; j < bufferDesc.Variables; j++) {
+						auto* variable = constBuffer->GetVariableByIndex(j);
+						hr = variable->GetDesc(&varDesc);
+						Util::throwIfError(hr);
+						auto& varLayout = bufferLayout.variables.emplace_back();
+						varLayout.name = varDesc.Name;
+						varLayout.offset = varDesc.StartOffset;
+						//varLayout.dataType = varDesc. HOW??????
+					}
+				}
 			}
 		}
 		
