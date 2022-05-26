@@ -1,8 +1,8 @@
 #pragma once
 
 #include <sgerender/shader/ShaderInfo.h>
+#include <sgerender/shader/ShaderLayout.h>
 #include <sgerender/graphic_api/DirectX11/DirectX11_Common.h>
-#include "ShaderLayout.h"
 
 namespace SimpleGameEngine {
 	class ShaderCompiler_DX11 : public NonCopyable {
