@@ -15,7 +15,7 @@ namespace SimpleGameEngine {
 			case D3D_REGISTER_COMPONENT_TYPE::D3D_REGISTER_COMPONENT_UNKNOWN:
 				throw SGE_ERROR("Unknown D3D Component Type");
 			default:
-				throw SGE_ERROR("Invalid D3D10 Component Type: {}", desc.ComponentType);;
+				throw SGE_ERROR("Invalid D3D10 Component Type: {}", desc.ComponentType);
 			}
 		}
 
@@ -25,6 +25,36 @@ namespace SimpleGameEngine {
 				((mask & (1 << 1)) >> 1) +
 				((mask & (1 << 2)) >> 2) +
 				((mask & (1 << 3)) >> 3);
+		}
+
+		// Maybe cannot use RenderDataType because ShaderDataType includes more variety
+		static RenderDataType getDataType(D3D11_SHADER_TYPE_DESC& desc) {
+			auto c = getComponentCount(desc);
+			switch (desc.Type) {
+			case D3D_SHADER_VARIABLE_TYPE::D3D_SVT_INT:
+				return RenderDataType::Int32 + c - 1;
+			case D3D_SHADER_VARIABLE_TYPE::D3D_SVT_FLOAT:
+				return RenderDataType::Float32 + c - 1;
+			case D3D_SHADER_VARIABLE_TYPE::D3D_SVT_UINT:
+				return RenderDataType::UInt32 + c - 1;
+			case D3D_SHADER_VARIABLE_TYPE::D3D_SVT_UINT8:
+				return RenderDataType::Int8 + c - 1;
+			case D3D_SHADER_VARIABLE_TYPE::D3D_SVT_DOUBLE:
+				return RenderDataType::Float64 + c - 1;
+			default:
+				throw SGE_ERROR("Unhandled D3D SHADER VARIABLE TYPE: {}", desc.Type);
+			}
+		}
+
+		static u32 getComponentCount(D3D11_SHADER_TYPE_DESC& desc) {
+			switch (desc.Class) {
+			case _D3D_SHADER_VARIABLE_CLASS::D3D_SVC_SCALAR:
+				return 1;
+			case _D3D_SHADER_VARIABLE_CLASS::D3D10_SVC_VECTOR:
+				return desc.Columns;
+			default:
+				throw SGE_ERROR("Unhandled D3D SHADER VARIABLE CLASS: {}", desc.Class);
+			}
 		}
 	};
 
@@ -99,6 +129,7 @@ namespace SimpleGameEngine {
 			D3D11_SHADER_BUFFER_DESC bufferDesc;
 			D3D11_SHADER_VARIABLE_DESC varDesc;
 			D3D11_SHADER_INPUT_BIND_DESC bindDesc;
+			D3D11_SHADER_TYPE_DESC typeDesc;
 			for (u32 i = 0; i < shaderDesc.ConstantBuffers; i++) {
 				auto* constBuffer = reflection->GetConstantBufferByIndex(0);
 				hr = constBuffer->GetDesc(&bufferDesc);
@@ -119,12 +150,11 @@ namespace SimpleGameEngine {
 						auto& varLayout = bufferLayout.variables.emplace_back();
 						varLayout.name = varDesc.Name;
 						varLayout.offset = varDesc.StartOffset;
-						//varLayout.dataType = varDesc. HOW??????
+						hr = variable->GetType()->GetDesc(&typeDesc);
+						varLayout.dataType = DX11ShaderUtil::getDataType(typeDesc);
 					}
 				}
 			}
 		}
-		
-		// TODO: Hmm..........
 	}
 }
