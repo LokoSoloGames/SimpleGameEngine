@@ -103,6 +103,7 @@ namespace SimpleGameEngine {
 	template<class T> using Vector = eastl::vector<T>;
 	template<class KEY, class VALUE> using Map = eastl::map<KEY, VALUE>;
 	template<class KEY, class VALUE> using VectorMap = eastl::vector_map<KEY, VALUE>;
+	template<class VALUE> using StringMap = eastl::string_map<VALUE>;
 
 	template<class T> using Opt = eastl::optional<T>;
 

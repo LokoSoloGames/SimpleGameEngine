@@ -32,8 +32,26 @@ namespace SimpleGameEngine {
 	}
 
 	Renderer::~Renderer() {
+		SGE_ASSERT(_shaders.size() == 0);
 		SGE_ASSERT(_current == this);
 		_current = nullptr;
+	}
+
+	SPtr<Shader> Renderer::createShader(StrView filename) {
+		TempString tmpName = filename;
+
+		auto it = _shaders.find(tmpName.c_str());
+		if (it != _shaders.end()) {
+			return it->second;
+		}
+
+		auto s = onCreateShader(tmpName);
+		_shaders[tmpName.c_str()] = s.ptr();
+		return s;
+	}
+
+	void Renderer::onShaderDestroy(Shader* shader) {
+		_shaders.erase(shader->filename().c_str());
 	}
 
 }

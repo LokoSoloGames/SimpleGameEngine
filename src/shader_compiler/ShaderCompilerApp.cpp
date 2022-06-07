@@ -45,13 +45,13 @@ namespace SimpleGameEngine {
 					if (pass.vsFunc.size()) {
 						ShaderLayout layout;
 						ShaderCompiler_DX11 c;
-						c.compile(passOutPath, ShaderStage::Vertex, codeFilename, pass.vsFunc, layout);
+						c.compile(passOutPath, ShaderStageMask::Vertex, codeFilename, pass.vsFunc, layout);
 					}
 
 					if (pass.psFunc.size()) {
 						ShaderLayout layout;
 						ShaderCompiler_DX11 c;
-						c.compile(passOutPath, ShaderStage::Pixel, codeFilename, pass.psFunc, layout);
+						c.compile(passOutPath, ShaderStageMask::Pixel, codeFilename, pass.psFunc, layout);
 					}
 
 					passIndex++;

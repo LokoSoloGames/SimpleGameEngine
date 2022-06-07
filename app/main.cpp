@@ -39,7 +39,8 @@ namespace SimpleGameEngine {
 			editMesh.normal.clear();
 
 			_renderMesh.create(editMesh);
-			_material.reset(new Material(_renderMesh, L"shaders.shader"));
+			_material = Renderer::current()->createMaterial();
+			//_material.reset(new Material(_renderMesh, L"shaders.shader"));
 
 			_renderContext.reset(RenderContext::create(renderContextDesc));
 		}
@@ -52,14 +53,14 @@ namespace SimpleGameEngine {
 			Base::onDraw();
 			if (_renderContext) {
 				RenderCommand_Draw cmd;
-				cmd.renderMesh = &_renderMesh.subMeshes()[0];
-				cmd.material = _material.get();
+				//cmd.renderMesh = &_renderMesh.subMeshes()[0];
+				//cmd.material = _material.get();
 				_renderContext->render(cmd);
 			}
 			drawNeeded();
 		}
 		RenderMesh _renderMesh;
-		UPtr<Material> _material;
+		SPtr<Material> _material;
 		UPtr<RenderContext>	_renderContext;
 	};
 

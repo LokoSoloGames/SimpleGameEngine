@@ -7,10 +7,4 @@ namespace SimpleGameEngine {
 		Lines,
 		Triangles,
 	};
-
-	enum class ShaderStage {
-		None,
-		Vertex,
-		Pixel,
-	};
 }

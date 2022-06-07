@@ -9,7 +9,7 @@ namespace SimpleGameEngine {
 		NativeUIWindow* window = nullptr;
 	};
 
-	class RenderContext : public NonCopyable {
+	class RenderContext : public Object {
 	public:
 		using CreateDesc = RenderContextCreateDesc;
 		static RenderContext* create(RenderContextCreateDesc& desc);

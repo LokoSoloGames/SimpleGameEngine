@@ -1,10 +1,13 @@
 #pragma once
 
-#include "vertex/Vertex.h"
+#include <sgerender/vertex/Vertex.h>
+#include <sgerender/shader/Shader.h>
+#include <sgerender/material/Material.h>
 
 namespace SimpleGameEngine {
 	class RenderContext;
 	struct RenderContextCreateDesc;
+	class Material;
 
 	class RenderGpuBuffer;
 	struct RenderGpuBufferCreateDesc;
@@ -30,23 +33,23 @@ namespace SimpleGameEngine {
 		Renderer();
 		virtual ~Renderer();
 
-		RenderContext*	createContext(RenderContextCreateDesc& desc) { return onCreateContext(desc); }
-		RenderGpuBuffer* createGpuBuffer(RenderGpuBufferCreateDesc& desc) { return onCreateGpuBuffer(desc); }
-		void compileVertexShader(wchar_t* fileName, const VertexLayout* layout, void*& pShader, void*& pVertexLayout) { onCompileVertexShader(fileName, layout, pShader, pVertexLayout); }
-		void compilePixelShader(wchar_t* fileName, void*& pShader) { onCompilePixelShader(fileName, pShader); }
-		void releaseShader(void* pShader) { onReleaseShader(pShader); }
-		void releaseVertexLayout(void* pVertexLayout) { onReleaseVertexLayout(pVertexLayout); }
+		SPtr<RenderContext>		createContext(RenderContextCreateDesc& desc) { return onCreateContext(desc); }
+		SPtr<RenderGpuBuffer>	createGpuBuffer(RenderGpuBufferCreateDesc& desc) { return onCreateGpuBuffer(desc); }
+		SPtr<Shader>			createShader(StrView filename);
+		SPtr<Material>			createMaterial() { return onCreateMaterial(); }
+
+		void onShaderDestroy(Shader* shader);
 
 		bool vsync() const		{ return _vsync; }
 
 	protected:
 		static Renderer*	_current;
 		bool _vsync : 1;
-		virtual RenderContext* onCreateContext(RenderContextCreateDesc& desc) = 0;
-		virtual RenderGpuBuffer* onCreateGpuBuffer(RenderGpuBufferCreateDesc& desc) = 0;
-		virtual void onCompileVertexShader(wchar_t* fileName, const VertexLayout* layout, void*& pShader, void*& pVertexLayout) = 0;
-		virtual void onCompilePixelShader(wchar_t* fileName, void*& pShader) = 0;
-		virtual void onReleaseShader(void* pShader) = 0;
-		virtual void onReleaseVertexLayout(void* pVertexLayout) = 0;
+		virtual SPtr<RenderContext>		onCreateContext(RenderContextCreateDesc& desc) = 0;
+		virtual SPtr<RenderGpuBuffer>	onCreateGpuBuffer(RenderGpuBufferCreateDesc& desc) = 0;
+		virtual SPtr<Shader>			onCreateShader(StrView filename) = 0;
+		virtual SPtr<Material>			onCreateMaterial() = 0;
+
+		StringMap<Shader*>	_shaders;
 	};
 }

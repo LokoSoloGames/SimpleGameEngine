@@ -28,14 +28,11 @@ namespace SimpleGameEngine {
 		ComPtr<DX11_ID3DDeviceContext>	_d3dDeviceContext;
 		ComPtr<DX11_ID3DDebug>			_d3dDebug;
 
-		virtual RenderContext*	onCreateContext(RenderContextCreateDesc& desc) override;
-		virtual RenderGpuBuffer* onCreateGpuBuffer(RenderGpuBufferCreateDesc& desc) override;
-		virtual void onCompileVertexShader(wchar_t* fileName, const VertexLayout* layout, void*& pShader, void*& pVertexLayout) override;
-		virtual void onCompilePixelShader(wchar_t* fileName, void*& pShader) override;
-		virtual void onReleaseShader(void* pShader) override;
-		virtual void onReleaseVertexLayout(void* pVertexLayout) override;
-	private:
-		void onReleaseCOM(void* pCOM);
+		virtual SPtr<RenderContext>		onCreateContext(RenderContextCreateDesc& desc) override;
+		virtual SPtr<RenderGpuBuffer>	onCreateGpuBuffer(RenderGpuBufferCreateDesc& desc) override;
+
+		virtual SPtr<Material>			onCreateMaterial() override;
+		virtual SPtr<Shader>			onCreateShader(StrView filename) override;
 	};
 }
 #endif

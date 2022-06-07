@@ -10,7 +10,7 @@ namespace SimpleGameEngine {
 		static OpenGL_Win32_Renderer* current() { return static_cast<OpenGL_Win32_Renderer*>(_current); }
 
 	protected:
-		virtual RenderContext*	onCreateContext(RenderContextCreateDesc& desc);
+		virtual SPtr<RenderContext>	onCreateContext(RenderContextCreateDesc& desc) override;
 	};
 }
 #endif

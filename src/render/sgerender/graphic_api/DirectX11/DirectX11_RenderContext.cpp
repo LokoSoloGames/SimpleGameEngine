@@ -65,34 +65,34 @@ namespace SimpleGameEngine {
 		viewport.Height = _window->viewRect.h;
 
 		ctx->RSSetViewports(1, &viewport);
-		ctx->IASetPrimitiveTopology(Util::getPrimitiveTopology(cmd.renderMesh->primitive()));
+		ctx->IASetPrimitiveTopology(Util::getPrimitiveTopology(cmd.primitive));
 
 		DirectX11_RenderGpuBuffer* indexBuffer = nullptr;
-		if (cmd.renderMesh->indexCount() > 0) {
-			indexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.renderMesh->indexBuffer());
+		if (cmd.indexCount > 0) {
+			indexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.indexBuffer.ptr());
 			if (!indexBuffer) { SGE_ASSERT(false); return; }
 		}
 
 		// set the input layout we are using
-		ctx->IASetInputLayout(static_cast<DX11_ID3DInputLayout*>(cmd.material->vertexLayout));
+		//ctx->IASetInputLayout(static_cast<DX11_ID3DInputLayout*>(cmd.material->vertexLayout));
 		// select which vertex buffer to display
 		UINT offset = 0;
-		UINT stride = static_cast<UINT>(cmd.renderMesh->vertexLayout()->stride);
-		DirectX11_RenderGpuBuffer* vertexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.renderMesh->vertexBuffer());
+		UINT stride = static_cast<UINT>(cmd.vertexLayout->stride);
+		DirectX11_RenderGpuBuffer* vertexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.vertexBuffer.ptr());
 		DX11_ID3DBuffer* pVBuffer[] = { vertexBuffer->getBuffer() };
 		ctx->IASetVertexBuffers(0, 1, pVBuffer, &stride, &offset);
 		
-		ctx->VSSetShader(static_cast<DX11_ID3DVertexShader*>(cmd.material->vertexShader), 0, 0);
-		ctx->PSSetShader(static_cast<DX11_ID3DPixelShader*>(cmd.material->pixelShader), 0, 0);
+		//ctx->VSSetShader(static_cast<DX11_ID3DVertexShader*>(cmd.material->vertexShader), 0, 0);
+		//ctx->PSSetShader(static_cast<DX11_ID3DPixelShader*>(cmd.material->pixelShader), 0, 0);
 
-		UINT indexCount = static_cast<UINT>(cmd.renderMesh->indexCount());
+		UINT indexCount = static_cast<UINT>(cmd.indexCount);
 		if (indexCount > 0) {
-			auto indexType = Util::getFormat(cmd.renderMesh->indexType());
+			auto indexType = Util::getFormat(cmd.indexType);
 			ctx->IASetIndexBuffer(indexBuffer->getBuffer(), indexType, 0);
 			ctx->DrawIndexed(indexCount, 0, 0);
 		}
 		else {
-			ctx->Draw(static_cast<UINT>(cmd.renderMesh->vertexCount()), 0);
+			ctx->Draw(static_cast<UINT>(cmd.vertexCount), 0);
 		}
 	}
 

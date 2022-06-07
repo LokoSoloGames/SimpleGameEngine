@@ -4,6 +4,12 @@
 
 namespace SimpleGameEngine {
 
+	enum class ShaderStageMask {
+		None,
+		Vertex = 1 << 0,
+		Pixel = 1 << 1,
+	};
+
 	enum class ShaderPropType {
 		None,
 		Int,

@@ -58,7 +58,7 @@ namespace SimpleGameEngine {
 		}
 	};
 
-	void ShaderCompiler_DX11::compile(const StrView& outFileName, const ShaderStage& shaderStage, const StrView& srcFileName, const StrView& entryFunc, ShaderLayout& layout) {
+	void ShaderCompiler_DX11::compile(const StrView& outFileName, const ShaderStageMask& shaderStage, const StrView& srcFileName, const StrView& entryFunc, ShaderLayout& layout) {
 		TempStringA entryPoint = entryFunc;
 
 		MemMapFile memmap;

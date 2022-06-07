@@ -8,7 +8,7 @@ namespace SimpleGameEngine {
 	class ShaderCompiler_DX11 : public NonCopyable {
 		using Util = DX11Util;
 	public:
-		void compile(const StrView& outFileName, const ShaderStage& shaderStage, const StrView& srcFileName, const StrView& entryFunc, ShaderLayout& layout);
+		void compile(const StrView& outFileName, const ShaderStageMask& shaderStage, const StrView& srcFileName, const StrView& entryFunc, ShaderLayout& layout);
 	private:
 		void createLayout(ComPtr<DX11_ID3DShaderReflection>& reflection, ShaderLayout& layout);
 
