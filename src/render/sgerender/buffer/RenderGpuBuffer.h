@@ -1,7 +1,6 @@
 #pragma once
 
 #include <sgebase.h>
-#include <sgecore/error/Error.h>
 
 namespace SimpleGameEngine {
 	enum class RenderGpuBufferType {

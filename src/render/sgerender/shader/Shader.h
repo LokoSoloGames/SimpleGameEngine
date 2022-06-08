@@ -1,6 +1,5 @@
 #pragma once
 
-#include <sgerender.h>
 #include "ShaderLayout.h"
 #include "ShaderInfo.h"
 

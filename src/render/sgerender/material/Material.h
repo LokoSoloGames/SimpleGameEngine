@@ -1,15 +1,15 @@
 #pragma once
 
-#include <sgerender.h>
 #include <sgerender/shader/Shader.h>
+#include <sgerender/buffer/RenderGpuBuffer.h>
 
 namespace SimpleGameEngine {
+	class RenderContext;
 	class Material;
 	class MaterialPass;
 
 	struct MaterialPass_Stage : public NonCopyable {
 		using Pass = MaterialPass;
-
 		virtual ~MaterialPass_Stage() = default;
 
 		MaterialPass_Stage(MaterialPass* pass, ShaderStage* shaderStage);
@@ -40,7 +40,7 @@ namespace SimpleGameEngine {
 
 		private:
 			const Info* _info = nullptr;
-			bool			_gpuDirty = false;
+			bool	_gpuDirty = false;
 
 			void _setParam(const VarInfo* varInfo, const float& value);
 			void _setParam(const VarInfo* varInfo, const Tuple4f& value);
@@ -63,7 +63,7 @@ namespace SimpleGameEngine {
 			if (!_shaderStage) return;
 			size_t i = 0;
 			for (auto& cb : _constBuffers) {
-				cb.setParam(info()->constBuffers[i], name, v);
+				cb.setParam(info()->uniformBuffers[i], name, v);
 				i++;
 			}
 		}

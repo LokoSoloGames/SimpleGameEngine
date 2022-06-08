@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../RenderCommon.h"
-#include "../RenderDataType.h"
+#include <sgerender/RenderCommon.h>
+#include <sgerender/RenderDataType.h>
 
 namespace SimpleGameEngine {
 

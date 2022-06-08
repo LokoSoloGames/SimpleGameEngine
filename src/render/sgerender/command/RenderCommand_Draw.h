@@ -1,8 +1,10 @@
 #pragma once
 
 #include <sgerender.h>
-#include <sgerender/mesh/RenderMesh.h>
 #include <sgerender/material/Material.h>
+
+class RenderMesh;
+class RenderSubMesh;
 
 namespace SimpleGameEngine {
 	class RenderCommand_Draw : NonCopyable {

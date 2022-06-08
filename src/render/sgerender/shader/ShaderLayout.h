@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sgerender.h>
+#include <sgerender/vertex/Vertex.h>
 #include <nlohmann/json.hpp>
 
 namespace SimpleGameEngine {
@@ -29,6 +29,13 @@ namespace SimpleGameEngine {
 			Vector<Variable> variables;
 
 			Json toJson();
+
+			const Variable* findVariable(StrView propName) const {
+				for (auto& v : variables) {
+					if (v.name == propName) return &v;
+				}
+				return nullptr;
+			}
 		};
 
 		String profile;

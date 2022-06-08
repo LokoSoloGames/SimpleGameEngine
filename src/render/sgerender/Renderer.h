@@ -1,13 +1,12 @@
 #pragma once
 
-#include <sgerender/vertex/Vertex.h>
-#include <sgerender/shader/Shader.h>
-#include <sgerender/material/Material.h>
+#include "RenderCommon.h"
+#include "RenderContext.h"
+#include "material/Material.h"
 
 namespace SimpleGameEngine {
 	class RenderContext;
 	struct RenderContextCreateDesc;
-	class Material;
 
 	class RenderGpuBuffer;
 	struct RenderGpuBufferCreateDesc;
