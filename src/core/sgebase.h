@@ -37,6 +37,9 @@
 #include <EASTL/shared_ptr.h>
 #include <EASTL/weak_ptr.h>
 
+#include <nlohmann/json.hpp>
+using Json = nlohmann::json;
+
 //==== EASTL ====
 
 #if !EASTL_DLL // If building a regular library and not building EASTL as a DLL...

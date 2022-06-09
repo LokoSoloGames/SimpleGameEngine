@@ -1,15 +1,14 @@
 #pragma once
 
-#include "ShaderLayout.h"
 #include "ShaderInfo.h"
 
 namespace SimpleGameEngine {
 	class Shader;
 
 	struct ShaderStage : public NonCopyable {
-		const ShaderLayout* info() const { return &_info; }
+		const ShaderStageInfo* info() const { return &_info; }
 	protected:
-		ShaderLayout _info;
+		ShaderStageInfo _info;
 	};
 
 	struct ShaderVertexStage : public ShaderStage {

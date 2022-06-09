@@ -13,14 +13,14 @@ namespace SimpleGameEngine {
 		virtual ~MaterialPass_Stage() = default;
 
 		MaterialPass_Stage(MaterialPass* pass, ShaderStage* shaderStage);
-		const ShaderLayout* info() const { return _shaderStage->info(); }
+		const ShaderStageInfo* info() const { return _shaderStage->info(); }
 
 		friend class MaterialPass;
 	protected:
 		struct ConstBuffer {
 			using DataType = RenderDataType;
-			using Info = ShaderLayout::UniformBufferLayout;
-			using VarInfo = ShaderLayout::Variable;
+			using Info = ShaderStageInfo::ConstBuffer;
+			using VarInfo = ShaderStageInfo::Variable;
 
 			Vector<u8>				cpuBuffer;
 			SPtr<RenderGpuBuffer>	gpuBuffer;

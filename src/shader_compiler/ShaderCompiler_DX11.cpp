@@ -58,7 +58,7 @@ namespace SimpleGameEngine {
 		}
 	};
 
-	void ShaderCompiler_DX11::compile(const StrView& outFileName, const ShaderStageMask& shaderStage, const StrView& srcFileName, const StrView& entryFunc, ShaderLayout& layout) {
+	void ShaderCompiler_DX11::compile(const StrView& outFileName, const ShaderStageMask& shaderStage, const StrView& srcFileName, const StrView& entryFunc, ShaderStageInfo& layout) {
 		TempStringA entryPoint = entryFunc;
 
 		MemMapFile memmap;
@@ -107,7 +107,7 @@ namespace SimpleGameEngine {
 		File::writeFile(layoutFileName, layout.toJson(), false);
 	}
 
-	void ShaderCompiler_DX11::createLayout(ComPtr<DX11_ID3DShaderReflection>& reflection, ShaderLayout& layout) {
+	void ShaderCompiler_DX11::createLayout(ComPtr<DX11_ID3DShaderReflection>& reflection, ShaderStageInfo& layout) {
 
 		HRESULT hr;
 		D3D11_SHADER_DESC shaderDesc;
@@ -135,7 +135,7 @@ namespace SimpleGameEngine {
 				hr = constBuffer->GetDesc(&bufferDesc);
 				Util::throwIfError(hr);
 				if (bufferDesc.Type == D3D_CBUFFER_TYPE::D3D11_CT_CBUFFER) {
-					auto& bufferLayout = layout.uniformBuffers.emplace_back();
+					auto& bufferLayout = layout.constBuffers.emplace_back();
 					bufferLayout.name = bufferDesc.Name;
 					bufferLayout.dataSize = bufferDesc.Size;
 					hr = reflection->GetResourceBindingDescByName(bufferDesc.Name, &bindDesc);

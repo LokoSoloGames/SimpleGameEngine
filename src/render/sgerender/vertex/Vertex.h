@@ -67,9 +67,9 @@ namespace SimpleGameEngine {
 		}
 	};
 
-	enum class Vertex_Semantic : u16;
+	enum class VertexSemantic : u16;
 
-	enum class Vertex_SemanticType : u8 {
+	enum class VertexSemanticType : u8 {
 		None,
 		Pos,
 		Color,
@@ -79,11 +79,11 @@ namespace SimpleGameEngine {
 		Binormal,
 	};
 
-	SGE_ENUM_ALL_OPERATOR(Vertex_Semantic)
+	SGE_ENUM_ALL_OPERATOR(VertexSemantic)
 
-	struct Vertex_SemanticUtil {
-		using Semantic = Vertex_Semantic;
-		using Type = Vertex_SemanticType;
+	struct VertexSemanticUtil {
+		using Semantic = VertexSemantic;
+		using Type = VertexSemanticType;
 		using Index = u8;
 
 		static constexpr u16 make(Type type, Index index) {
@@ -93,32 +93,32 @@ namespace SimpleGameEngine {
 		static constexpr Index	getIndex(Semantic v) { return static_cast<u8  >(enumInt(v)); }
 	};
 
-	enum class Vertex_Semantic : u16{
+	enum class VertexSemantic : u16{
 		None = 0,
-		Pos			= Vertex_SemanticUtil::make(Vertex_SemanticType::Pos, 0),
+		Pos			= VertexSemanticUtil::make(VertexSemanticType::Pos, 0),
 
-		Color0		= Vertex_SemanticUtil::make(Vertex_SemanticType::Color, 0),
-		Color1		= Vertex_SemanticUtil::make(Vertex_SemanticType::Color, 1),
-		Color2		= Vertex_SemanticUtil::make(Vertex_SemanticType::Color, 2),
-		Color3		= Vertex_SemanticUtil::make(Vertex_SemanticType::Color, 3),
+		Color0		= VertexSemanticUtil::make(VertexSemanticType::Color, 0),
+		Color1		= VertexSemanticUtil::make(VertexSemanticType::Color, 1),
+		Color2		= VertexSemanticUtil::make(VertexSemanticType::Color, 2),
+		Color3		= VertexSemanticUtil::make(VertexSemanticType::Color, 3),
 
-		TexCoord0	= Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 0),
-		TexCoord1	= Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 1),
-		TexCoord2	= Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 2),
-		TexCoord3	= Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 3),
-		TexCoord4	= Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 4),
-		TexCoord5	= Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 5),
-		TexCoord6	= Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 6),
-		TexCoord7	= Vertex_SemanticUtil::make(Vertex_SemanticType::TexCoord, 7),
+		TexCoord0	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 0),
+		TexCoord1	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 1),
+		TexCoord2	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 2),
+		TexCoord3	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 3),
+		TexCoord4	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 4),
+		TexCoord5	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 5),
+		TexCoord6	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 6),
+		TexCoord7	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 7),
 
-		Normal		= Vertex_SemanticUtil::make(Vertex_SemanticType::Normal,   0),
-		Tangent		= Vertex_SemanticUtil::make(Vertex_SemanticType::Tangent,  0),
-		Binormal	= Vertex_SemanticUtil::make(Vertex_SemanticType::Binormal, 0),
+		Normal		= VertexSemanticUtil::make(VertexSemanticType::Normal,   0),
+		Tangent		= VertexSemanticUtil::make(VertexSemanticType::Tangent,  0),
+		Binormal	= VertexSemanticUtil::make(VertexSemanticType::Binormal, 0),
 
 	};
 
 	struct VertexLayout : public NonCopyable {
-		using Semantic = Vertex_Semantic;
+		using Semantic = VertexSemantic;
 		using DataType = RenderDataType;
 
 		struct Element {
@@ -156,7 +156,7 @@ namespace SimpleGameEngine {
 	};
 
 	struct VertexBase {
-		using Semantic = Vertex_Semantic;
+		using Semantic = VertexSemantic;
 
 		using PosType    = void;
 		using ColorType  = void;
