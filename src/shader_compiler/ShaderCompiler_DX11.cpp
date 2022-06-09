@@ -94,7 +94,6 @@ namespace SimpleGameEngine {
 		ComPtr<DX11_ID3DShaderReflection> reflection;
 		hr = D3DReflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), IID_PPV_ARGS(reflection.ptrForInit()));
 		Util::throwIfError(hr);
-		layout.clear();
 		layout.profile = profile;
 		createLayout(reflection, layout);
 
@@ -104,7 +103,7 @@ namespace SimpleGameEngine {
 		File::writeFile(shaderFileName, Util::toSpan(byteCode), false);
 
 		auto layoutFileName = Fmt("{}/{}.bin.json", outFileName, profile);
-		File::writeFile(layoutFileName, layout.toJson(), false);
+		JsonUtil::writeFile(layoutFileName, layout, false, false);
 	}
 
 	void ShaderCompiler_DX11::createLayout(ComPtr<DX11_ID3DShaderReflection>& reflection, ShaderStageInfo& layout) {
@@ -120,6 +119,7 @@ namespace SimpleGameEngine {
 				hr = reflection->GetInputParameterDesc(i, &desc);
 				Util::throwIfError(hr);
 				auto& inputLayout = layout.inputs.emplace_back();
+				inputLayout.semantic = DX11Util::getSemanticName(desc.SemanticName);
 				inputLayout.attrId = Fmt("{}{}", desc.SemanticName, desc.SemanticIndex);
 				inputLayout.dataType = DX11ShaderUtil::getDataType(desc);
 			}

@@ -14,80 +14,95 @@ namespace SimpleGameEngine {
 // normalCount		: 2 bit
 // tangentCount		: 2 bit
 // binormalCount	: 2 bit
-	enum class VertexType : u64 { None };
+enum class VertexType : u64 { None };
 
-	struct VertexTypeUtil {
-		static constexpr VertexType addPos(VertexType t, RenderDataType posType) {
-			return static_cast<VertexType>(static_cast<u64>(t)
-										   | static_cast<u64>(posType));
+struct VertexTypeUtil {
+	static constexpr VertexType addPos(VertexType t, RenderDataType posType) {
+		return static_cast<VertexType>(static_cast<u64>(t)
+										| static_cast<u64>(posType));
+	}
+
+	static constexpr VertexType addColor(VertexType t, RenderDataType colorType, u8 colorCount) {
+		return static_cast<VertexType>(static_cast<u64>(t)
+										| (static_cast<u64>(colorType)  << 8 )
+										| (static_cast<u64>(colorCount) << 16));
+	}
+
+	static constexpr VertexType addUv(VertexType t, RenderDataType uvType, u8 uvCount) {
+		return static_cast<VertexType>(static_cast<u64>(t)
+										| (static_cast<u64>(uvType)  << 18)
+										| (static_cast<u64>(uvCount) << 26));
+	}
+
+	static constexpr VertexType addNormal(VertexType t, RenderDataType normalType, u8 normalCount) {
+		return static_cast<VertexType>(static_cast<u64>(t)
+										| (static_cast<u64>(normalType)  << 34)
+										| (static_cast<u64>(normalCount) << 42));
+	}
+
+	static constexpr VertexType addTangent(VertexType t, u8 tangentCount) {
+		return static_cast<VertexType>(static_cast<u64>(t)
+										| (static_cast<u64>(tangentCount) << 44));
+	}
+	static constexpr VertexType addBinormal(VertexType t, u8 binormalCount) {
+		return static_cast<VertexType>(static_cast<u64>(t)
+										| (static_cast<u64>(binormalCount) << 46));
+	}
+
+	static constexpr VertexType make(
+			RenderDataType posType,
+			RenderDataType colorType,  u8 colorCount,
+			RenderDataType uvType,     u8 uvCount,
+			RenderDataType normalType, u8 normalCount, u8 tangentCount, u8 binormalCount)
+	{
+		VertexType t = addPos(VertexType::None, posType);
+		if (colorCount)	 t = addColor	(t, colorType,	colorCount);
+		if (uvCount)	 t = addUv		(t, uvType,		uvCount);
+		if (normalCount) {
+			t = addNormal	(t, normalType,	normalCount);
+			t = addTangent	(t, tangentCount);
+			t = addBinormal	(t, binormalCount);
 		}
+		return t;
+	}
+};
 
-		static constexpr VertexType addColor(VertexType t, RenderDataType colorType, u8 colorCount) {
-			return static_cast<VertexType>(static_cast<u64>(t)
-										   | (static_cast<u64>(colorType)  << 8 )
-										   | (static_cast<u64>(colorCount) << 16));
-		}
+enum class VertexSemantic : u16;
+SGE_ENUM_ALL_OPERATOR(VertexSemantic)
 
-		static constexpr VertexType addUv(VertexType t, RenderDataType uvType, u8 uvCount) {
-			return static_cast<VertexType>(static_cast<u64>(t)
-										   | (static_cast<u64>(uvType)  << 18)
-										   | (static_cast<u64>(uvCount) << 26));
-		}
+using VertexSemanticIndex = u8;
+enum class VertexSemanticType : u8 {
+	None,
+	POSITION,
+	COLOR,
+	TEXCOORD,
+	NORMAL,
+	TANGENT,
+	BINORMAL,
+};
 
-		static constexpr VertexType addNormal(VertexType t, RenderDataType normalType, u8 normalCount) {
-			return static_cast<VertexType>(static_cast<u64>(t)
-										   | (static_cast<u64>(normalType)  << 34)
-										   | (static_cast<u64>(normalCount) << 42));
-		}
-
-		static constexpr VertexType addTangent(VertexType t, u8 tangentCount) {
-			return static_cast<VertexType>(static_cast<u64>(t)
-										   | (static_cast<u64>(tangentCount) << 44));
-		}
-		static constexpr VertexType addBinormal(VertexType t, u8 binormalCount) {
-			return static_cast<VertexType>(static_cast<u64>(t)
-										   | (static_cast<u64>(binormalCount) << 46));
-		}
-
-		static constexpr VertexType make(
-				RenderDataType posType,
-				RenderDataType colorType,  u8 colorCount,
-				RenderDataType uvType,     u8 uvCount,
-				RenderDataType normalType, u8 normalCount, u8 tangentCount, u8 binormalCount)
-		{
-			VertexType t = addPos(VertexType::None, posType);
-			if (colorCount)	 t = addColor	(t, colorType,	colorCount);
-			if (uvCount)	 t = addUv		(t, uvType,		uvCount);
-			if (normalCount) {
-				t = addNormal	(t, normalType,	normalCount);
-				t = addTangent	(t, tangentCount);
-				t = addBinormal	(t, binormalCount);
-			}
-			return t;
-		}
-	};
-
-	enum class VertexSemantic : u16;
-
-	enum class VertexSemanticType : u8 {
-		None,
-		Pos,
-		Color,
-		TexCoord,
-		Normal,
-		Tangent,
-		Binormal,
-	};
-
-	SGE_ENUM_ALL_OPERATOR(VertexSemantic)
+#define VertexSemanticType_ENUM_LIST(E) \
+	E(None)		\
+	E(POSITION)	\
+	E(COLOR)	\
+	E(TEXCOORD)	\
+	E(NORMAL)	\
+	E(TANGENT)	\
+	E(BINORMAL)	\
+//----
+SGE_ENUM_STR_UTIL(VertexSemanticType)
 
 	struct VertexSemanticUtil {
 		using Semantic = VertexSemantic;
 		using Type = VertexSemanticType;
-		using Index = u8;
+		using Index = VertexSemanticIndex;
 
-		static constexpr u16 make(Type type, Index index) {
-			return static_cast<u16>((enumInt(type) << 8) | index);
+		static constexpr Semantic make(Type type, Index index) {
+			return static_cast<Semantic>((enumInt(type) << 8) | index);
+		};
+
+		static constexpr u16 _make(Type type, Index index) {
+			return static_cast<u16>(make(type, index));
 		};
 		static constexpr Type	getType (Semantic v) { return static_cast<Type>(enumInt(v) >> 8); }
 		static constexpr Index	getIndex(Semantic v) { return static_cast<u8  >(enumInt(v)); }
@@ -95,27 +110,51 @@ namespace SimpleGameEngine {
 
 	enum class VertexSemantic : u16{
 		None = 0,
-		Pos			= VertexSemanticUtil::make(VertexSemanticType::Pos, 0),
+		POSITION	= VertexSemanticUtil::_make(VertexSemanticType::POSITION, 0),
 
-		Color0		= VertexSemanticUtil::make(VertexSemanticType::Color, 0),
-		Color1		= VertexSemanticUtil::make(VertexSemanticType::Color, 1),
-		Color2		= VertexSemanticUtil::make(VertexSemanticType::Color, 2),
-		Color3		= VertexSemanticUtil::make(VertexSemanticType::Color, 3),
+		COLOR0		= VertexSemanticUtil::_make(VertexSemanticType::COLOR, 0),
+		COLOR1		= VertexSemanticUtil::_make(VertexSemanticType::COLOR, 1),
+		COLOR2		= VertexSemanticUtil::_make(VertexSemanticType::COLOR, 2),
+		COLOR3		= VertexSemanticUtil::_make(VertexSemanticType::COLOR, 3),
 
-		TexCoord0	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 0),
-		TexCoord1	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 1),
-		TexCoord2	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 2),
-		TexCoord3	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 3),
-		TexCoord4	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 4),
-		TexCoord5	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 5),
-		TexCoord6	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 6),
-		TexCoord7	= VertexSemanticUtil::make(VertexSemanticType::TexCoord, 7),
+		TEXCOORD0	= VertexSemanticUtil::_make(VertexSemanticType::TEXCOORD, 0),
+		TEXCOORD1	= VertexSemanticUtil::_make(VertexSemanticType::TEXCOORD, 1),
+		TEXCOORD2	= VertexSemanticUtil::_make(VertexSemanticType::TEXCOORD, 2),
+		TEXCOORD3	= VertexSemanticUtil::_make(VertexSemanticType::TEXCOORD, 3),
+		TEXCOORD4	= VertexSemanticUtil::_make(VertexSemanticType::TEXCOORD, 4),
+		TEXCOORD5	= VertexSemanticUtil::_make(VertexSemanticType::TEXCOORD, 5),
+		TEXCOORD6	= VertexSemanticUtil::_make(VertexSemanticType::TEXCOORD, 6),
+		TEXCOORD7	= VertexSemanticUtil::_make(VertexSemanticType::TEXCOORD, 7),
 
-		Normal		= VertexSemanticUtil::make(VertexSemanticType::Normal,   0),
-		Tangent		= VertexSemanticUtil::make(VertexSemanticType::Tangent,  0),
-		Binormal	= VertexSemanticUtil::make(VertexSemanticType::Binormal, 0),
+		NORMAL		= VertexSemanticUtil::_make(VertexSemanticType::NORMAL, 0),
+		TANGENT		= VertexSemanticUtil::_make(VertexSemanticType::TANGENT, 0),
+		BINORMAL	= VertexSemanticUtil::_make(VertexSemanticType::BINORMAL, 0),
 
 	};
+
+#define VertexSemantic_ENUM_LIST(E) \
+	E(None)	\
+	E(POSITION) \
+	\
+	E(COLOR0) \
+	E(COLOR1) \
+	E(COLOR2) \
+	E(COLOR3) \
+	\
+	E(TEXCOORD0) \
+	E(TEXCOORD1) \
+	E(TEXCOORD2) \
+	E(TEXCOORD3) \
+	E(TEXCOORD4) \
+	E(TEXCOORD5) \
+	E(TEXCOORD6) \
+	E(TEXCOORD7) \
+	\
+	E(NORMAL)   \
+	E(TANGENT)  \
+	E(BINORMAL) \
+//----
+SGE_ENUM_STR_UTIL(VertexSemantic)
 
 	struct VertexLayout : public NonCopyable {
 		using Semantic = VertexSemantic;

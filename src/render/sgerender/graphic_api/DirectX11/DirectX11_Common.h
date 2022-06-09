@@ -60,7 +60,8 @@ struct DX11Util {
 
 	static D3D11_PRIMITIVE_TOPOLOGY	getPrimitiveTopology	(RenderPrimitiveType t);
 	static DXGI_FORMAT				getFormat				(RenderDataType v);
-	static const char*				getSemanticName			(Vertex_SemanticType t);
+	static const char*				getSemanticName			(VertexSemanticType t);
+	static VertexSemanticType		parseSemanticName(StrView s);
 
 	static String getStrFromHRESULT(HRESULT hr);
 
@@ -77,36 +78,36 @@ private:
 	}
 };
 
-	inline
-	ByteSpan DX11Util::toSpan(ID3DBlob* blob) {
-		if (!blob) return ByteSpan();
-		return ByteSpan(reinterpret_cast<const u8*>(blob->GetBufferPointer()),
-			static_cast<size_t>(blob->GetBufferSize()));
+inline
+ByteSpan DX11Util::toSpan(ID3DBlob* blob) {
+	if (!blob) return ByteSpan();
+	return ByteSpan(reinterpret_cast<const u8*>(blob->GetBufferPointer()),
+		static_cast<size_t>(blob->GetBufferSize()));
+}
+
+inline
+String DX11Util::getStrFromHRESULT(HRESULT hr) {
+	const int bufSize = 4096;
+	wchar_t buf[bufSize + 1];
+
+	DWORD langId = 0; // MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT)
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, hr, langId, buf, bufSize, nullptr);
+	buf[bufSize] = 0; // ensure terminate with 0
+
+	auto str = UtfUtil::toString(buf);
+	return str;
+}
+
+inline
+const char* DX11Util::getDxStageProfile(ShaderStageMask s) {
+	switch (s) {
+	case ShaderStageMask::Vertex:	return "vs_5_0";
+	case ShaderStageMask::Pixel:	return "ps_5_0";
+	default: return "";
 	}
+}
 
-	inline
-	String DX11Util::getStrFromHRESULT(HRESULT hr) {
-		const int bufSize = 4096;
-		wchar_t buf[bufSize + 1];
-
-		DWORD langId = 0; // MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT)
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, hr, langId, buf, bufSize, nullptr);
-		buf[bufSize] = 0; // ensure terminate with 0
-
-		auto str = UtfUtil::toString(buf);
-		return str;
-	}
-
-	inline
-	const char* DX11Util::getDxStageProfile(ShaderStageMask s) {
-		switch (s) {
-		case ShaderStageMask::Vertex:	return "vs_5_0";
-		case ShaderStageMask::Pixel:	return "ps_5_0";
-		default: return "";
-		}
-	}
-
-	inline
+inline
 void DX11Util::reportError(HRESULT hr) {
 		if (!SUCCEEDED(hr)) {
 			auto str = getStrFromHRESULT(hr);
@@ -132,17 +133,25 @@ D3D11_PRIMITIVE_TOPOLOGY DX11Util::getPrimitiveTopology(RenderPrimitiveType t) {
 }
 
 inline
-const char* DX11Util::getSemanticName(Vertex_SemanticType t) {
-	using SRC = Vertex_SemanticType;
-	switch (t) {
-		case SRC::Pos:			return "POSITION";
-		case SRC::Color:		return "COLOR";
-		case SRC::TexCoord:		return "TEXCOORD";
-		case SRC::Normal:		return "NORMAL";
-		case SRC::Tangent:		return "TANGENT";
-		case SRC::Binormal:		return "BINORMAL";
-		default: throw SGE_ERROR("Unhandled VertexLayout SemanticType");
+const char* DX11Util::getSemanticName(VertexSemanticType v) {
+	const char* s = enumStr(v);
+	if (!s) {
+		throw SGE_ERROR("unknown VertexLayout_SemanticType {}", v);
 	}
+	return s;
+}
+
+VertexSemanticType DX11Util::parseSemanticName(StrView s) {
+	VertexSemanticType v;
+
+	if (s == "SV_POSITION") {
+		return VertexSemanticType::POSITION;
+	}
+
+	if (!enumTryParse(v, s)) {
+		throw SGE_ERROR("unknown VertexLayout_SemanticType {}", s);
+	}
+	return v;
 }
 
 inline
