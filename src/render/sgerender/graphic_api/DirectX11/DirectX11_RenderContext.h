@@ -17,6 +17,8 @@ namespace SimpleGameEngine {
 	public:
 		DirectX11_RenderContext(DirectX11RenderContextCreateDesc& desc);
 
+		DirectX11_Renderer* renderer() { return _renderer; }
+
 	protected:
 		DirectX11_Renderer*	_renderer = nullptr;
 

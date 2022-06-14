@@ -296,7 +296,7 @@ SGE_ENUM_STR_UTIL(VertexSemanticType)
 		static const VertexType kType = VertexTypeUtil::addPos(VertexType::None, kPosType);
 
 		static void onRegister(VertexLayout* layout) {
-			layout->addElement(Semantic::Pos, &VertexT_Pos::pos);
+			layout->addElement(Semantic::POSITION, &VertexT_Pos::pos);
 		}
 	};
 
@@ -312,7 +312,7 @@ SGE_ENUM_STR_UTIL(VertexSemanticType)
 
 		static void onRegister(VertexLayout* layout) {
 			BASE::onRegister(layout);
-			layout->addElement(Semantic::Color0, &VertexT_Color::color);
+			layout->addElement(Semantic::COLOR0, &VertexT_Color::color);
 		}
 	};
 
@@ -328,7 +328,7 @@ SGE_ENUM_STR_UTIL(VertexSemanticType)
 
 		static void onRegister(VertexLayout* layout) {
 			BASE::onRegister(layout);
-			layout->addElement(Semantic::TexCoord0, &VertexT_Uv::uv);
+			layout->addElement(Semantic::TEXCOORD0, &VertexT_Uv::uv);
 		}
 	};
 
@@ -344,7 +344,7 @@ SGE_ENUM_STR_UTIL(VertexSemanticType)
 
 		static void onRegister(VertexLayout* layout) {
 			BASE::onRegister(layout);
-			layout->addElement(Semantic::Normal, &VertexT_Normal::normal);
+			layout->addElement(Semantic::NORMAL, &VertexT_Normal::normal);
 		}
 	};
 
@@ -362,7 +362,7 @@ SGE_ENUM_STR_UTIL(VertexSemanticType)
 			static_assert(std::is_same<TangentType, NormalType>::value, "");
 
 			BASE::onRegister(layout);
-			layout->addElement(Semantic::Tangent, &VertexT_Tangent::tangent);
+			layout->addElement(Semantic::TANGENT, &VertexT_Tangent::tangent);
 		}
 	};
 
@@ -380,7 +380,7 @@ SGE_ENUM_STR_UTIL(VertexSemanticType)
 			static_assert(std::is_same<BinormalType, NormalType>::value, "");
 
 			BASE::onRegister(layout);
-			layout->addElement(Semantic::Binormal, &VertexT_Binormal::binormal);
+			layout->addElement(Semantic::BINORMAL, &VertexT_Binormal::binormal);
 		}
 	};
 

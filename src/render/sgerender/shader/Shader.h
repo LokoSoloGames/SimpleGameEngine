@@ -45,7 +45,7 @@ namespace SimpleGameEngine {
 		const ShaderInfo* info() const { return &_info; }
 
 		Span<UPtr<ShaderPass>>	passes() { return _passes; }
-	private:
+	protected:
 		String	_filename;
 		ShaderInfo _info;
 		Vector_<UPtr<ShaderPass>, 1> _passes;

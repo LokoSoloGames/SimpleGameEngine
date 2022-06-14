@@ -2,6 +2,7 @@
 
 #include "sgebase.h"
 #include "app/ConsoleApp.h"
+#include <app/ProjectSettings.h>
 
 #include "sgecore/BitUtil.h"
 
