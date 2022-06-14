@@ -3,6 +3,8 @@
 #include "sgebase.h"
 #include "app/ConsoleApp.h"
 
+#include "sgecore/BitUtil.h"
+
 #include "sgecore/allocator/LinearAllocator.h"
 
 #include "sgecore/math/Math.h"

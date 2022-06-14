@@ -153,6 +153,10 @@ namespace SimpleGameEngine {
 	using StrView = StrViewA;
 	using String = StringA;
 
+	inline StrView StrView_c_str(const char* s) {
+		return s ? StrView(s, strlen(s)) : StrView();
+	}
+
 	inline StrView StrView_make(ByteSpan s) {
 		return StrView(reinterpret_cast<const char*>(s.data()), s.size());
 	}

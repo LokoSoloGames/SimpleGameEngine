@@ -63,7 +63,7 @@ namespace SimpleGameEngine {
 			if (!_shaderStage) return;
 			size_t i = 0;
 			for (auto& cb : _constBuffers) {
-				cb.setParam(info()->uniformBuffers[i], name, v);
+				cb.setParam(info()->constBuffers[i], name, v);
 				i++;
 			}
 		}

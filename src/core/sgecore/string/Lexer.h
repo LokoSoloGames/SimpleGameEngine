@@ -115,7 +115,7 @@ const char* enumStr(Lexer::TokenType v) {
 	}
 }
 
-}
+SGE_FORMATTER_ENUM(Lexer::TokenType)
+SGE_FORMATTER(Lexer::Token);
 
-SGE_FORMATTER_ENUM(SimpleGameEngine::Lexer::TokenType)
-SGE_FORMATTER(SimpleGameEngine::Lexer::Token);
+}

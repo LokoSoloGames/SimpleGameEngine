@@ -6,12 +6,12 @@ namespace SimpleGameEngine {
 		: _pass(pass), _shaderStage(shaderStage)
 	{
 		auto* info = shaderStage->info();
-		auto cbCount = info->uniformBuffers.size();
+		auto cbCount = info->constBuffers.size();
 		_constBuffers.resize(cbCount);
 
 		for (size_t i = 0; i < cbCount; i++) {
 			auto& cb = _constBuffers[i];
-			cb.create(info->uniformBuffers[i]);
+			cb.create(info->constBuffers[i]);
 		}
 	}
 

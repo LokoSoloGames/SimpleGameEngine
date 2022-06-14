@@ -1,68 +1,12 @@
 #include "ShaderCompiler_DX11.h"
-#include "ShaderParser.h"
 
 namespace SimpleGameEngine {
-	struct DX11ShaderUtil {
-		static RenderDataType getDataType(D3D11_SIGNATURE_PARAMETER_DESC& desc) {
-			auto c = getComponentCount(desc.Mask);
-			switch (desc.ComponentType) {
-			case D3D_REGISTER_COMPONENT_TYPE::D3D_REGISTER_COMPONENT_FLOAT32:
-				return RenderDataType::Float32 + c - 1;
-			case D3D_REGISTER_COMPONENT_TYPE::D3D_REGISTER_COMPONENT_UINT32:
-				return RenderDataType::UInt32 + c - 1;
-			case D3D_REGISTER_COMPONENT_TYPE::D3D_REGISTER_COMPONENT_SINT32:
-				return RenderDataType::Int32 + c - 1;
-			case D3D_REGISTER_COMPONENT_TYPE::D3D_REGISTER_COMPONENT_UNKNOWN:
-				throw SGE_ERROR("Unknown D3D Component Type");
-			default:
-				throw SGE_ERROR("Invalid D3D10 Component Type: {}", desc.ComponentType);
-			}
-		}
-
-		static u8 getComponentCount(BYTE& mask) {
-			return
-				((mask & (1 << 0)) >> 0) +
-				((mask & (1 << 1)) >> 1) +
-				((mask & (1 << 2)) >> 2) +
-				((mask & (1 << 3)) >> 3);
-		}
-
-		// Maybe cannot use RenderDataType because ShaderDataType includes more variety
-		static RenderDataType getDataType(D3D11_SHADER_TYPE_DESC& desc) {
-			auto c = getComponentCount(desc);
-			switch (desc.Type) {
-			case D3D_SHADER_VARIABLE_TYPE::D3D_SVT_INT:
-				return RenderDataType::Int32 + c - 1;
-			case D3D_SHADER_VARIABLE_TYPE::D3D_SVT_FLOAT:
-				return RenderDataType::Float32 + c - 1;
-			case D3D_SHADER_VARIABLE_TYPE::D3D_SVT_UINT:
-				return RenderDataType::UInt32 + c - 1;
-			case D3D_SHADER_VARIABLE_TYPE::D3D_SVT_UINT8:
-				return RenderDataType::Int8 + c - 1;
-			case D3D_SHADER_VARIABLE_TYPE::D3D_SVT_DOUBLE:
-				return RenderDataType::Float64 + c - 1;
-			default:
-				throw SGE_ERROR("Unhandled D3D SHADER VARIABLE TYPE: {}", desc.Type);
-			}
-		}
-
-		static u32 getComponentCount(D3D11_SHADER_TYPE_DESC& desc) {
-			switch (desc.Class) {
-			case _D3D_SHADER_VARIABLE_CLASS::D3D_SVC_SCALAR:
-				return 1;
-			case _D3D_SHADER_VARIABLE_CLASS::D3D10_SVC_VECTOR:
-				return desc.Columns;
-			default:
-				throw SGE_ERROR("Unhandled D3D SHADER VARIABLE CLASS: {}", desc.Class);
-			}
-		}
-	};
-
-	void ShaderCompiler_DX11::compile(const StrView& outFileName, const ShaderStageMask& shaderStage, const StrView& srcFileName, const StrView& entryFunc, ShaderStageInfo& layout) {
+	void ShaderCompiler_DX11::compile(StrView outPath, ShaderStageMask shaderStage, StrView srcFilename, StrView entryFunc) {
 		TempStringA entryPoint = entryFunc;
 
+
 		MemMapFile memmap;
-		memmap.open(srcFileName);
+		memmap.open(srcFilename);
 
 		auto hlsl = memmap.span();
 
@@ -73,7 +17,7 @@ namespace SimpleGameEngine {
 		//flags1 |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
-		ComPtr<ID3DBlob>	byteCode;
+		ComPtr<ID3DBlob>	bytecode;
 		ComPtr<ID3DBlob>	errorMsg;
 
 		auto profile = Util::getDxStageProfile(shaderStage);
@@ -84,77 +28,215 @@ namespace SimpleGameEngine {
 			entryPoint.c_str(),
 			profile,
 			flags1, flags2, 0, nullptr, 0,
-			byteCode.ptrForInit(),
+			bytecode.ptrForInit(),
 			errorMsg.ptrForInit());
 
 		if (FAILED(hr)) {
 			throw SGE_ERROR("HRESULT={}\n Error Message: {}", hr, Util::toStrView(errorMsg));
 		}
-		
-		ComPtr<DX11_ID3DShaderReflection> reflection;
-		hr = D3DReflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), IID_PPV_ARGS(reflection.ptrForInit()));
-		Util::throwIfError(hr);
-		layout.profile = profile;
-		createLayout(reflection, layout);
 
-		Directory::create(outFileName);
+		Directory::create(outPath);
 
-		auto shaderFileName = Fmt("{}/{}.bin", outFileName, profile);
-		File::writeFile(shaderFileName, Util::toSpan(byteCode), false);
+		auto bytecodeSpan = Util::toSpan(bytecode);
 
-		auto layoutFileName = Fmt("{}/{}.bin.json", outFileName, profile);
-		JsonUtil::writeFile(layoutFileName, layout, false, false);
+		auto outFilename = Fmt("{}/{}.bin", outPath, profile);
+		File::writeFileIfChanged(outFilename, bytecodeSpan, false);
+
+		_reflect(outFilename, bytecodeSpan, shaderStage, profile);
 	}
 
-	void ShaderCompiler_DX11::createLayout(ComPtr<DX11_ID3DShaderReflection>& reflection, ShaderStageInfo& layout) {
-
-		HRESULT hr;
-		D3D11_SHADER_DESC shaderDesc;
-		hr = reflection->GetDesc(&shaderDesc);
+	void ShaderCompiler_DX11::_reflect(StrView outFilename, ByteSpan bytecode, ShaderStageMask stage, StrView profile) {
+		ComPtr<ID3D11ShaderReflection>	reflect;
+		auto hr = D3DReflect(bytecode.data(), bytecode.size(), IID_PPV_ARGS(reflect.ptrForInit()));
 		Util::throwIfError(hr);
 
+		D3D11_SHADER_DESC desc;
+		hr = reflect->GetDesc(&desc);
+		Util::throwIfError(hr);
+
+		ShaderStageInfo outInfo;
+		outInfo.profile = profile;
+		outInfo.stage = stage;
+
 		{
-			D3D11_SIGNATURE_PARAMETER_DESC desc;
-			for (u32 i = 0; i < shaderDesc.InputParameters; i++) {
-				hr = reflection->GetInputParameterDesc(i, &desc);
-				Util::throwIfError(hr);
-				auto& inputLayout = layout.inputs.emplace_back();
-				inputLayout.semantic = DX11Util::getSemanticName(desc.SemanticName);
-				inputLayout.attrId = Fmt("{}{}", desc.SemanticName, desc.SemanticIndex);
-				inputLayout.dataType = DX11ShaderUtil::getDataType(desc);
-			}
+			_reflect_inputs(outInfo, reflect, desc);
+			_reflect_constBuffers(outInfo, reflect, desc);
+			_reflect_textures(outInfo, reflect, desc);
+			_reflect_samplers(outInfo, reflect, desc);
 		}
 
 		{
-			D3D11_SHADER_BUFFER_DESC bufferDesc;
-			D3D11_SHADER_VARIABLE_DESC varDesc;
-			D3D11_SHADER_INPUT_BIND_DESC bindDesc;
-			D3D11_SHADER_TYPE_DESC typeDesc;
-			for (u32 i = 0; i < shaderDesc.ConstantBuffers; i++) {
-				auto* constBuffer = reflection->GetConstantBufferByIndex(0);
-				hr = constBuffer->GetDesc(&bufferDesc);
-				Util::throwIfError(hr);
-				if (bufferDesc.Type == D3D_CBUFFER_TYPE::D3D11_CT_CBUFFER) {
-					auto& bufferLayout = layout.constBuffers.emplace_back();
-					bufferLayout.name = bufferDesc.Name;
-					bufferLayout.dataSize = bufferDesc.Size;
-					hr = reflection->GetResourceBindingDescByName(bufferDesc.Name, &bindDesc);
-					Util::throwIfError(hr);
-					bufferLayout.bindPoint = bindDesc.BindPoint;
-					bufferLayout.bindCount = bindDesc.BindCount;
+			auto jsonFilename = Fmt("{}.json", outFilename);
+			JsonUtil::writeFileIfChanged(jsonFilename, outInfo, false);
+		}
+	}
 
-					for (u32 j = 0; j < bufferDesc.Variables; j++) {
-						auto* variable = constBuffer->GetVariableByIndex(j);
-						hr = variable->GetDesc(&varDesc);
-						Util::throwIfError(hr);
-						auto& varLayout = bufferLayout.variables.emplace_back();
-						varLayout.name = varDesc.Name;
-						varLayout.offset = varDesc.StartOffset;
-						hr = variable->GetType()->GetDesc(&typeDesc);
-						varLayout.dataType = DX11ShaderUtil::getDataType(typeDesc);
+	void ShaderCompiler_DX11::_reflect_inputs(ShaderStageInfo& outInfo, ID3D11ShaderReflection* reflect, D3D11_SHADER_DESC& desc) {
+		HRESULT hr;
+
+		outInfo.inputs.reserve(desc.InputParameters);
+
+		for (UINT i = 0; i < desc.InputParameters; i++) {
+			auto& dst = outInfo.inputs.emplace_back();
+
+			D3D11_SIGNATURE_PARAMETER_DESC paramDesc;
+			hr = reflect->GetInputParameterDesc(i, &paramDesc);
+			Util::throwIfError(hr);
+
+			VertexSemanticType semanticType;
+			semanticType = Util::parseSemanticName(StrView_c_str(paramDesc.SemanticName));
+
+			dst.semantic = VertexSemanticUtil::make(semanticType, static_cast<VertexSemanticIndex>(paramDesc.SemanticIndex));
+
+			TempString  semantic = enumStr(dst.semantic);
+			if (!semantic.size()) {
+				throw SGE_ERROR("unsupported sematic name {}", paramDesc.SemanticName);
+			}
+
+			TempString dataType;
+
+			switch (paramDesc.ComponentType) {
+			case D3D_REGISTER_COMPONENT_UINT32:		dataType.append("UInt8");	break;
+			case D3D_REGISTER_COMPONENT_SINT32:		dataType.append("Int32");	break;
+			case D3D_REGISTER_COMPONENT_FLOAT32:	dataType.append("Float32");	break;
+			default: throw SGE_ERROR("unsupported component type {}", paramDesc.ComponentType);
+			}
+
+			auto componentCount = BitUtil::count1(paramDesc.Mask);
+			if (componentCount < 1 || componentCount > 4) {
+				throw SGE_ERROR("invalid componentCount {}", componentCount);
+			}
+
+			if (componentCount > 1) {
+				FmtTo(dataType, "x{}", componentCount);
+			}
+
+			if (!enumTryParse(dst.dataType, dataType)) {
+				throw SGE_ERROR("cannot parse dataType enum {}", dataType);
+			}
+		}
+	}
+
+	void ShaderCompiler_DX11::_reflect_constBuffers(ShaderStageInfo& outInfo, ID3D11ShaderReflection* reflect, D3D11_SHADER_DESC& desc) {
+		HRESULT hr;
+
+		outInfo.constBuffers.reserve(desc.BoundResources);
+
+		for (UINT i = 0; i < desc.BoundResources; i++) {
+			D3D11_SHADER_INPUT_BIND_DESC resDesc;
+			hr = reflect->GetResourceBindingDesc(i, &resDesc);
+			Util::throwIfError(hr);
+
+			if (resDesc.Type != D3D_SIT_CBUFFER) continue;
+
+			auto& outCB = outInfo.constBuffers.emplace_back();
+
+			D3D11_SHADER_BUFFER_DESC bufDesc;
+			auto cb = reflect->GetConstantBufferByName(resDesc.Name);
+			hr = cb->GetDesc(&bufDesc);
+			Util::throwIfError(hr);
+
+			outCB.name = bufDesc.Name;
+			outCB.bindPoint = static_cast<i16>(resDesc.BindPoint);
+			outCB.bindCount = static_cast<i16>(resDesc.BindCount);
+			outCB.dataSize = bufDesc.Size;
+
+			{
+				outCB.variables.reserve(bufDesc.Variables);
+				for (UINT j = 0; j < bufDesc.Variables; j++) {
+					auto cbv = cb->GetVariableByIndex(j);
+					D3D11_SHADER_VARIABLE_DESC varDesc;
+					hr = cbv->GetDesc(&varDesc);
+					Util::throwIfError(hr);
+
+					D3D11_SHADER_TYPE_DESC varType;
+					hr = cbv->GetType()->GetDesc(&varType);
+					Util::throwIfError(hr);
+
+					if (0 == (varDesc.uFlags & D3D_SVF_USED)) continue;
+
+					auto& outVar = outCB.variables.emplace_back();
+					outVar.name = varDesc.Name;
+					outVar.offset = varDesc.StartOffset;
+					//------------------------------
+					TempString dataType;
+					switch (varType.Type) {
+					case D3D_SVT_BOOL:	dataType.append("Bool");	break;
+					case D3D_SVT_INT:	dataType.append("Int32");	break;
+					case D3D_SVT_UINT:	dataType.append("UInt32");	break;
+					case D3D_SVT_UINT8:	dataType.append("UInt8");	break;
+					case D3D_SVT_FLOAT: dataType.append("Float32");	break;
+					case D3D_SVT_DOUBLE:dataType.append("Float64");	break;
+					default: throw SGE_ERROR("unsupported type {}", varType.Type);
+					}
+
+					switch (varType.Class) {
+					case D3D_SVC_SCALAR: break;
+					case D3D_SVC_VECTOR:			FmtTo(dataType, "x{}", varType.Columns); break;
+					case D3D_SVC_MATRIX_COLUMNS:	FmtTo(dataType, "_{}x{}", varType.Rows, varType.Columns); break;
+					case D3D_SVC_MATRIX_ROWS:		FmtTo(dataType, "_{}x{}", varType.Rows, varType.Columns); break;
+					default: throw SGE_ERROR("unsupported Class {}", varType.Class);
+					}
+
+					if (!enumTryParse(outVar.dataType, dataType)) {
+						throw SGE_ERROR("cannot parse dataType {}", dataType);
+					}
+
+					if (outVar.dataType == DataType::None) {
+						throw SGE_ERROR("dataType is None");
 					}
 				}
 			}
 		}
+
+	}
+
+	void ShaderCompiler_DX11::_reflect_textures(ShaderStageInfo& outInfo, ID3D11ShaderReflection* reflect, D3D11_SHADER_DESC& desc) {
+		HRESULT hr;
+
+		outInfo.textures.reserve(desc.BoundResources);
+		for (UINT i = 0; i < desc.BoundResources; i++) {
+			D3D11_SHADER_INPUT_BIND_DESC resDesc;
+			hr = reflect->GetResourceBindingDesc(i, &resDesc);
+			Util::throwIfError(hr);
+
+			if (resDesc.Type != D3D_SIT_TEXTURE) continue;
+
+			auto& outTex = outInfo.textures.emplace_back();
+			outTex.name = resDesc.Name;
+			outTex.bindPoint = static_cast<i16>(resDesc.BindPoint);
+			outTex.bindCount = static_cast<i16>(resDesc.BindCount);
+
+			switch (resDesc.Dimension) {
+			case D3D_SRV_DIMENSION_TEXTURE1D:		outTex.dataType = DataType::Texture1D;   break;
+			case D3D_SRV_DIMENSION_TEXTURE2D:		outTex.dataType = DataType::Texture2D;   break;
+			case D3D_SRV_DIMENSION_TEXTURE3D:		outTex.dataType = DataType::Texture3D;   break;
+			case D3D_SRV_DIMENSION_TEXTURECUBE:		outTex.dataType = DataType::TextureCube; break;
+				//----
+			case D3D_SRV_DIMENSION_TEXTURE1DARRAY:	outTex.dataType = DataType::Texture1DArray;   break;
+			case D3D_SRV_DIMENSION_TEXTURE2DARRAY:	outTex.dataType = DataType::Texture2DArray;   break;
+			case D3D_SRV_DIMENSION_TEXTURECUBEARRAY:outTex.dataType = DataType::TextureCubeArray; break;
+				//----
+			default: throw SGE_ERROR("unsupported texture dimension {}", resDesc.Dimension);
+			}
+		}
+	}
+
+	void ShaderCompiler_DX11::_reflect_samplers(ShaderStageInfo& outInfo, ID3D11ShaderReflection* reflect, D3D11_SHADER_DESC& desc) {
+		HRESULT hr;
+		outInfo.samplers.reserve(desc.BoundResources);
+		for (UINT i = 0; i < desc.BoundResources; i++) {
+			D3D11_SHADER_INPUT_BIND_DESC resDesc;
+			hr = reflect->GetResourceBindingDesc(i, &resDesc);
+			Util::throwIfError(hr);
+
+			if (resDesc.Type != D3D_SIT_SAMPLER) continue;
+
+			auto& outSampler = outInfo.samplers.emplace_back();
+			outSampler.name = resDesc.Name;
+			outSampler.bindPoint = static_cast<i16>(resDesc.BindPoint);
+			outSampler.bindCount = static_cast<i16>(resDesc.BindCount);
+		}
+
 	}
 }
