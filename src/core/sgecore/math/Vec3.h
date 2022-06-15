@@ -1,31 +1,20 @@
 #pragma once
 
-namespace SimpleGameEngine {
+#include "Vec2.h"
+#include "Vec3_Basic.h"
+#include "Vec3_SSE.h"
 
-	template<class T>
-	class Vec3 {
-	public:
-		using ElementType = T;
-		static const size_t kElementCount = 3;
+namespace sge {
 
-		union {
-			struct { T x, y, z; };
-			T data[kElementCount];
-		};
+#ifndef SGE_MATH_USE_SSE
+	#error "Please include sgecore-config.h"
+#elif SGE_MATH_USE_SSE
+	template<class T> using Vec3 = Vec3_SSE<T>;
+#else
+	template<class T> using Vec3 = Vec3_Basic<T>;
+#endif
 
-		Vec3() = default;
-		Vec3(const T& x_, const T& y_, const T& z_) : x(x_), y(y_), z(z_) {}
+using Vec3f = Vec3<float>;
+using Vec3d = Vec3<double>;
 
-		Vec3 operator+(const Vec3& r) const { return Vec3(x + r.x, y + r.y, z + r.z); }
-		Vec3 operator-(const Vec3& r) const { return Vec3(x - r.x, y - r.y, z - r.z); }
-		Vec3 operator*(const Vec3& r) const { return Vec3(x * r.x, y * r.y, z * r.z); }
-		Vec3 operator/(const Vec3& r) const { return Vec3(x / r.x, y / r.y, z / r.z); }
-
-		Vec3 operator+(const T& s) const { return Vec3(x + s, y + s, z + s); }
-		Vec3 operator-(const T& s) const { return Vec3(x - s, y - s, z - s); }
-		Vec3 operator*(const T& s) const { return Vec3(x * s, y * s, z * s); }
-		Vec3 operator/(const T& s) const { return Vec3(x / s, y / s, z / s); }
-	};
-
-	using Vec3f = Vec3<float>;
 }

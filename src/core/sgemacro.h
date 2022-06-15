@@ -1,7 +1,16 @@
 #pragma once
 
+#if SGE_CPLUSPLUS_17
+	#define SGE_FALLTHROUGH		[[fallthrough]]
+	#define SGE_NODISCARD		[[nodiscard]]
+#else
+	#define SGE_FALLTHROUGH
+	#define SGE_NODISCARD
+#endif
+
 #define SGE_COMMA ,
 #define SGE_EMPTY
+#define SGE_ARGS(...) __VA_ARGS__
 #define SGE_STRINGIFY(...)	#__VA_ARGS__
 
 #define SGE_IDENTITY(x) x

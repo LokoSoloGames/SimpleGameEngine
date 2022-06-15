@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.16)
-
 set(PROJECT_NAME SimpleGameEngineShaderCompiler)
 message("==== ${PROJECT_NAME} ====")
 project(${PROJECT_NAME})
@@ -14,7 +12,8 @@ foreach(FILE ${src_files})
 endforeach()
 
 add_executable(${PROJECT_NAME} ${src_files})
-set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER SGE/ShaderCompiler)
+set_target_properties(${PROJECT_NAME} PROPERTIES UNITY_BUILD ON UNITY_BUILD_MODE BATCH UNITY_BUILD_BATCH_SIZE 32)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER SGE/ShaderCompiler)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC SimpleGameEngineRender)
