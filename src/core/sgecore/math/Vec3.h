@@ -4,7 +4,7 @@
 #include "Vec3_Basic.h"
 #include "Vec3_SSE.h"
 
-namespace sge {
+namespace SimpleGameEngine {
 
 #ifndef SGE_MATH_USE_SSE
 	#error "Please include sgecore-config.h"

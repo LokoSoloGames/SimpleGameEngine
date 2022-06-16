@@ -2,6 +2,7 @@
 
 #include <sgerender/material/Material.h>
 #include "DirectX11_Shader.h"
+#include "DirectX11_RenderContext.h"
 
 namespace SimpleGameEngine {
 	class DirectX11_Material : public Material {

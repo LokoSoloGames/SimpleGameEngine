@@ -1,5 +1,5 @@
 #include "RenderMesh.h"
-#include <sgerender.h>
+#include <sgerender/Renderer.h>
 #include <sgerender/vertex/VertexLayoutManager.h>
 
 namespace SimpleGameEngine {

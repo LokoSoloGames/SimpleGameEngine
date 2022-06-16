@@ -34,8 +34,8 @@ struct Mat4_Basic : public DATA {
 	using ElementType = T;
 	using Scalar = ElementType;
 	using Vec4   = typename DATA::Vec4;
-	using Vec3   = sge::Vec3<T>;
-	using Rect2  = sge::Rect2<T>;
+	using Vec3   = SimpleGameEngine::Vec3<T>;
+	using Rect2  = SimpleGameEngine::Rect2<T>;
 
 	using DATA::cx;
 	using DATA::cy;
@@ -292,7 +292,7 @@ Mat4_Basic<T, DATA> Mat4_Basic<T, DATA>::s_lookAt(const Vec3& eye, const Vec3& a
 #endif
 
 template<class T, class DATA>
-T sge::Mat4_Basic<T, DATA>::determinant3x3() const {
+T SimpleGameEngine::Mat4_Basic<T, DATA>::determinant3x3() const {
 	return cx.x * (cy.y * cz.z - cz.y * cy.z)
 		 - cy.x * (cx.y * cz.z - cz.y * cx.z)
 		 + cz.x * (cx.y * cy.z - cy.y * cx.z);
@@ -419,7 +419,7 @@ Mat4_Basic<T, DATA> Mat4_Basic<T, DATA>::transpose() const {
 }
 
 template<class T, class DATA> SGE_INLINE
-Mat4_Basic<T, DATA> sge::Mat4_Basic<T, DATA>::operator*(const Mat4& r) const {
+Mat4_Basic<T, DATA> SimpleGameEngine::Mat4_Basic<T, DATA>::operator*(const Mat4& r) const {
 	Mat4 o;
 	T e0, e1, e2, e3;
 
@@ -451,7 +451,7 @@ Mat4_Basic<T, DATA> sge::Mat4_Basic<T, DATA>::operator*(const Mat4& r) const {
 }
 
 template<class T, class DATA> SGE_INLINE
-Vec3<T> sge::Mat4_Basic<T, DATA>::unprojectPointFromInv(const Vec3& screenPos, const Rect2& viewport) const {
+Vec3<T> SimpleGameEngine::Mat4_Basic<T, DATA>::unprojectPointFromInv(const Vec3& screenPos, const Rect2& viewport) const {
 	auto  tmp = Vec4(screenPos, 1);
 	tmp.y = viewport.h - tmp.y; // y is down
 

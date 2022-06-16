@@ -17,6 +17,10 @@ namespace SimpleGameEngine {
 	public:
 		DirectX11_RenderContext(DirectX11RenderContextCreateDesc& desc);
 
+		void onCmd_ClearFrameBuffers(RenderCommand_ClearFrameBuffers& cmd);
+		void onCmd_SwapBuffers(RenderCommand_SwapBuffers& cmd);
+		void onCmd_DrawCall(RenderCommand_DrawCall& cmd);
+
 		DirectX11_Renderer* renderer() { return _renderer; }
 
 	protected:
@@ -24,24 +28,18 @@ namespace SimpleGameEngine {
 
 		ComPtr<DX11_IDXGISwapChain>			_swapChain;
 		ComPtr<DX11_ID3DRenderTargetView>	_renderTargetView;
-
-		ComPtr<DX11_ID3DBuffer>			_testVertexBuffer;
-		ComPtr<DX11_ID3DVertexShader>	_testVertexShader;
-		ComPtr<DX11_ID3DPixelShader>	_testPixelShader;
-		ComPtr<DX11_ID3DInputLayout>	_testInputLayout;
+		ComPtr<DX11_ID3DTexture2D>			_depthStencil;
+		ComPtr<DX11_ID3DDepthStencilView>	_depthStencilView;
 
 		void _createRenderTarget();
 
+		virtual void onSetFrameBufferSize(Vec2f newSize);
 		virtual void onBeginRender() override;
 		virtual void onEndRender() override;
 
-		virtual void onRender(RenderCommand_Draw& cmd) override;
-
-		virtual void onClearBuffers() override;
-		virtual void onSwapBuffers() override;
+		virtual void onCommit(RenderCommandBuffer& cmdBuf) override;
 	private:
 		NativeUIWindowWin32* _window;
 	};
-
 }
 #endif

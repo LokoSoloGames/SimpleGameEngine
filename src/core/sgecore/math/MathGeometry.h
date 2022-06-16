@@ -7,7 +7,7 @@ namespace Math {
 
 template<class T>
 struct Sphere3 {
-	using Vec3 = sge::Vec3<T>;
+	using Vec3 = SimpleGameEngine::Vec3<T>;
 public:
 	Sphere3() = default;
 	Sphere3(const Vec3& center_, T radius_) : center(center_), radius(radius_) {}
@@ -19,7 +19,7 @@ public:
 
 template<class T>
 struct Triangle3 {
-	using Vec3 = sge::Vec3<T>;
+	using Vec3 = SimpleGameEngine::Vec3<T>;
 public:
 	Triangle3() = default;
 	Triangle3(const Vec3& v0_, const Vec3& v1_, const Vec3& v2_) : v0(v0_), v1(v1_), v2(v2_) {}
@@ -29,7 +29,7 @@ public:
 
 template<class T>
 struct Plane3 {
-	using Vec3 = sge::Vec3<T>;
+	using Vec3 = SimpleGameEngine::Vec3<T>;
 public:
 	Plane3() = default;
 	Plane3(const Vec3& normal_, T distance_)
@@ -55,7 +55,7 @@ public:
 
 template<class T>
 struct Cylinder3 {
-	using Vec3 = sge::Vec3<T>;
+	using Vec3 = SimpleGameEngine::Vec3<T>;
 public:
 	Cylinder3() = default;
 	Cylinder3(const Vec3& start_, const Vec3& end_, const T& radius_)
@@ -71,7 +71,7 @@ public:
 
 template<class T>
 struct Capsule3 {
-	using Vec3 = sge::Vec3<T>;
+	using Vec3 = SimpleGameEngine::Vec3<T>;
 public:
 	Capsule3() = default;
 	Capsule3(const Vec3& start_, const Vec3& end_, const T& radius_)
@@ -87,7 +87,7 @@ public:
 
 template<class T>
 struct Line2 {
-	using Vec2 = sge::Vec2<T>;
+	using Vec2 = SimpleGameEngine::Vec2<T>;
 public:
 	Line2() = default;
 	Line2(const Vec2& start_, const Vec2& end_)
@@ -104,7 +104,7 @@ public:
 
 template<class T>
 struct Line3 {
-	using Vec3 = sge::Vec3<T>;
+	using Vec3 = SimpleGameEngine::Vec3<T>;
 public:
 	Line3() = default;
 	Line3(const Vec3& start_, const Vec3& end_)

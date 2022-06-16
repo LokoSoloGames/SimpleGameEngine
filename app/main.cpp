@@ -2,7 +2,7 @@
 #include <sgecore.h>
 #include <sgerender.h>
 #include <sgerender/mesh/RenderMesh.h>
-#include <sgerender/command/RenderCommand_Draw.h>
+#include <sgerender/command/RenderCommand.h>
 #include <sgerender/mesh/reader/WavefrontObjLoader.h>
 
 namespace SimpleGameEngine {
@@ -52,14 +52,23 @@ namespace SimpleGameEngine {
 		virtual void onDraw() {
 			Base::onDraw();
 			if (_renderContext) {
-				RenderCommand_Draw cmd;
-				//cmd.renderMesh = &_renderMesh.subMeshes()[0];
-				//cmd.material = _material.get();
-				_renderContext->render(cmd);
+				//_renderContext->setFrameBufferSize(clientRect().size);
+
+				_renderContext->beginRender();
+
+				_cmdBuf.reset();
+				_cmdBuf.clearFrameBuffers()->setColor({ 0, 0, 0.2f, 1 });
+				_cmdBuf.drawMesh(SGE_LOC, _renderMesh, _material);
+				_cmdBuf.swapBuffers();
+
+				_renderContext->commit(_cmdBuf);
+
+				_renderContext->endRender();
 			}
 			drawNeeded();
 		}
 		RenderMesh _renderMesh;
+		RenderCommandBuffer _cmdBuf;
 		SPtr<Material> _material;
 		UPtr<RenderContext>	_renderContext;
 	};

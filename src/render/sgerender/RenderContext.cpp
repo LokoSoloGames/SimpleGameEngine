@@ -3,16 +3,12 @@
 
 namespace SimpleGameEngine {
 
-	RenderContext* RenderContext::create(RenderContextCreateDesc& desc) {
-		return Renderer::current()->createContext(desc);
-	}
+	void RenderContext::setFrameBufferSize(Vec2f newSize) {
+		if (_frameBufferSize == newSize)
+			return;
 
-	void RenderContext::render(RenderCommand_Draw& cmd) {
-		onBeginRender();
-		onClearBuffers();
-		onRender(cmd);
-		onSwapBuffers();
-		onEndRender();
+		_frameBufferSize = newSize;
+		onSetFrameBufferSize(newSize);
 	}
 
 	RenderContext::RenderContext(RenderContextCreateDesc& desc) {

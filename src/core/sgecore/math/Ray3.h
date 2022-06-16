@@ -8,12 +8,12 @@ namespace SimpleGameEngine {
 template<class T>
 struct Ray3 {
 private:
-	using Vec2		= sge::Vec2<T>;
-	using Vec3		= sge::Vec3<T>;
-	using Vec4		= sge::Vec4<T>;
-	using Mat4		= sge::Mat4<T>;
-	using Rect2		= sge::Rect2<T>;
-	using Line3		= sge::Math::Line3<T>;
+	using Vec2		= SimpleGameEngine::Vec2<T>;
+	using Vec3		= SimpleGameEngine::Vec3<T>;
+	using Vec4		= SimpleGameEngine::Vec4<T>;
+	using Mat4		= SimpleGameEngine::Mat4<T>;
+	using Rect2		= SimpleGameEngine::Rect2<T>;
+	using Line3		= SimpleGameEngine::Math::Line3<T>;
 public:
 
 	Vec3 origin, dir;
