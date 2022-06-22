@@ -1,5 +1,6 @@
 #include "DirectX11_Material.h"
 #include "DirectX11_Renderer.h"
+#include "DirectX11_RenderGpuBuffer.h"
 
 namespace SimpleGameEngine {
 	template<class STAGE>
@@ -19,7 +20,7 @@ namespace SimpleGameEngine {
 			auto* gpuBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cb.gpuBuffer.ptr());
 			if (!gpuBuffer) throw SGE_ERROR("cosnt buffer is null");
 
-			auto* d3dBuf = gpuBuffer->d3dBuf();
+			auto* d3dBuf = gpuBuffer->getBuffer();
 			if (!d3dBuf) throw SGE_ERROR("d3dbuffer is null");
 
 			stage->_dxSetConstBuffer(dc, bindPoint, d3dBuf);

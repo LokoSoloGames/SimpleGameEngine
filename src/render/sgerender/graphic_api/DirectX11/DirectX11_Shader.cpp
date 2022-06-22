@@ -3,8 +3,7 @@
 #include "DirectX11_RenderContext.h"
 
 namespace SimpleGameEngine {
-	DirectX11_Shader::DirectX11_Shader(StrView filename) : Base(filename)
-	{
+	DirectX11_Shader::DirectX11_Shader(StrView filename) : Base(filename) {
 		auto* proj = ProjectSettings::instance();
 		TempString passPath;
 

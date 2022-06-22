@@ -22,35 +22,15 @@ namespace SimpleGameEngine {
 		Color4f,
 	};
 
-	inline
-	bool enumTryParse(ShaderPropType& outValue, StrView str) {
-#define E(V) if (str == #V) { outValue = ShaderPropType::V; return true; }
-		E(None)
-		E(Int)
-		E(Float)
-		E(Vec2f)
-		E(Vec3f)
-		E(Vec4f)
-		E(Color4f)
-#undef E
-		return false;
-	}
-
-	inline
-	StrView enumStr(ShaderPropType v) {
-		switch (v) {
-#define E(V) case ShaderPropType::V: return #V;
-			E(None)
-			E(Int)
-			E(Float)
-			E(Vec2f)
-			E(Vec3f)
-			E(Vec4f)
-			E(Color4f);
-#undef E
-			default: return "";
-		}
-	}
+#define ShaderPropType_ENUM_LIST(E) \
+	E(Int) \
+	E(Float) \
+	E(Vec2f) \
+	E(Vec3f) \
+	E(Vec4f) \
+	E(Color4f) \
+//----
+	SGE_ENUM_STR_UTIL(ShaderPropType)
 
 	struct ShaderInfo {
 		struct Prop {

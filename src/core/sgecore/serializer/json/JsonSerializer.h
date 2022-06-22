@@ -1,7 +1,5 @@
 #pragma once
 
-#include <sgecore/error/Error.h>
-
 namespace SimpleGameEngine {
 
 template<class SE, class T, class ENABLE = void>

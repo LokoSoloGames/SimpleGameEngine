@@ -1,8 +1,7 @@
 #pragma once
 
 #include <render-pch.h>
-#include <sgerender.h>
-#include <sgerender/vertex/Vertex.h>
+#include <sgerender/RenderCommon.h>
 
 #if SGE_RENDER_HAS_DX11
 #include <d3d11.h>
@@ -141,6 +140,7 @@ const char* DX11Util::getSemanticName(VertexSemanticType v) {
 	return s;
 }
 
+inline
 VertexSemanticType DX11Util::parseSemanticName(StrView s) {
 	VertexSemanticType v;
 

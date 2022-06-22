@@ -23,8 +23,6 @@ public:
 	}
 
 private:
-
-	static VertexLayoutManager* s_current;	
 	Map<VertexType, VertexLayout>	_table;
 };
 

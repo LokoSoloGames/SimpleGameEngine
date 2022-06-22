@@ -1,4 +1,5 @@
 #include "RenderCommand.h"
+#include "../mesh/RenderMesh.h"
 
 namespace SimpleGameEngine {
 	void RenderCommandBuffer::drawMesh(const SrcLoc& debugLoc, const RenderMesh& mesh, Material* material) {

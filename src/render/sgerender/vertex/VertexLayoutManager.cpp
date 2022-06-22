@@ -2,8 +2,6 @@
 
 namespace SimpleGameEngine {
 
-VertexLayoutManager* VertexLayoutManager::s_current = nullptr;
-
 VertexLayoutManager::VertexLayoutManager() {
 	registerLayout<Vertex_Pos>();
 	registerLayout<Vertex_PosColor>();
