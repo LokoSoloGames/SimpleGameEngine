@@ -5,6 +5,7 @@ namespace SimpleGameEngine {
 VertexLayoutManager::VertexLayoutManager() {
 	registerLayout<Vertex_Pos>();
 	registerLayout<Vertex_PosColor>();
+	registerLayout<Vertex_PosColorNormal>();
 
 	#define MY_REGISTER_VERTEX_UV(T) \
 		registerLayout<T<1>>(); \

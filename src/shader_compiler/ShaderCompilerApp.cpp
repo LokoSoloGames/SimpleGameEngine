@@ -17,7 +17,7 @@ namespace SimpleGameEngine {
 
 			ShaderInfo info;
 
-			StrView shaderFilename = "Shaders/test2.shader";
+			StrView shaderFilename = "Shaders/test.shader";
 
 			String outputPath = Fmt("LocalTemp/Imported/{}", shaderFilename);
 			Directory::create(outputPath);

@@ -91,6 +91,7 @@ void Lexer::_error(StrView msg) {
 			if (c == '\n') { tmp += c;		continue; }
 			if (c == '\t') { tmp += "----";	continue; }
 			tmp += '-';
+			i++;
 		}
 		tmp += "^^^\n";
 	}
@@ -105,6 +106,11 @@ bool Lexer::_nextToken() {
 	for (;;) {
 		trimSpaces();
 		if (!_ch) return false;
+
+		if (_ch == '#') {
+			_parseCommentSingleLine();
+			continue;
+		}
 
 		if (_ch == '_' || isAlpha(_ch)) {
 			return _parseIdentifier();
@@ -133,7 +139,7 @@ bool Lexer::_nextToken() {
 			}
 
 			_token.type = TokenType::Operator;
-			_token.str += _ch;
+			_token.str += '/';
 			return true;
 		}
 
@@ -194,6 +200,7 @@ bool Lexer::_parseString() {
 	for (;;) {
 		nextChar();
 		if (_ch == '\\') {
+			nextChar();
 			switch (_ch) {
 				case '\\':
 				case '/':

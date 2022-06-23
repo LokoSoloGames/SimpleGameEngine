@@ -385,8 +385,10 @@ SGE_ENUM_STR_UTIL(VertexSemanticType)
 	};
 
 
-	using Vertex_Pos		= VertexT_Pos<Tuple3f>;
-	using Vertex_PosColor	= VertexT_Color<Color4b, 1, Vertex_Pos>;
+	using Vertex_Pos			= VertexT_Pos<Tuple3f>;
+	using Vertex_PosNormal		= VertexT_Normal<Tuple3f, 1, Vertex_Pos>;
+	using Vertex_PosColor		= VertexT_Color<Color4b, 1, Vertex_Pos>;
+	using Vertex_PosColorNormal = VertexT_Normal<Tuple3f, 1, Vertex_PosColor>;
 
 	template<u8 UV_COUNT> using Vertex_PosUv				= VertexT_Uv<Tuple2f, UV_COUNT, Vertex_Pos>;
 	template<u8 UV_COUNT> using Vertex_PosColorUv			= VertexT_Uv<Tuple2f, UV_COUNT, Vertex_PosColor>;

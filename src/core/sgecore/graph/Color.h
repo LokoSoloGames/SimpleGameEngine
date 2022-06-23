@@ -65,6 +65,7 @@ struct ColorRGBA {
 
 	ColorRGB<T> rgb() const { return ColorRGB<T>(r,g,b); }
 	Tuple4<T>	toTuple() const { return Tuple4<T>(r, g, b, a); }
+	operator Tuple4<T>() const { return toTuple(); }
 
 };
 

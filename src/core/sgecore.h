@@ -14,7 +14,12 @@
 #include "sgecore/math/Tuple4.h"
 #include "sgecore/math/Vec2.h"
 #include "sgecore/math/Vec3.h"
+#include "sgecore/math/Vec4.h"
 #include "sgecore/math/Rect2.h"
+#include "sgecore/math/Mat4.h"
+#include "sgecore/math/Quat4.h"
+#include "sgecore/math/MathGeometry.h"
+#include "sgecore/math/MathCamera3.h"
 
 #include "sgecore/pointer/SPtr.h"
 #include "sgecore/pointer/ComPtr.h"

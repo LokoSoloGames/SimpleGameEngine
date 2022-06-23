@@ -49,20 +49,6 @@ namespace SimpleGameEngine {
 		onSetShader();
 	}
 
-	void MaterialPass_Stage::ConstBuffer::_setParam(const VarInfo* varInfo, const float& value) {
-		switch (varInfo->dataType) {
-		case DataType::Float32: _setValueAs(varInfo, value); break;
-		default: errorType();
-		}
-	}
-
-	void MaterialPass_Stage::ConstBuffer::_setParam(const VarInfo* varInfo, const Tuple4f& value) {
-		switch (varInfo->dataType) {
-		case DataType::Float32x4: _setValueAs(varInfo, value); break;
-		default: errorType();
-		}
-	}
-
 	void MaterialPass_Stage::ConstBuffer::errorType() {
 		throw SGE_ERROR("ConstBuffer setParam type mismatch");
 	}
