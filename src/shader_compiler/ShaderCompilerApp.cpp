@@ -28,6 +28,9 @@ namespace SimpleGameEngine {
 				ShaderParser parser;
 				parser.readFile(info, shaderFilename);
 
+				auto jsonFilename = Fmt("{}/info.json", outputPath);
+				JsonUtil::writeFile(jsonFilename, info, false);
+
 				for (size_t i = 2; i < parser.line(); i++) {
 					code += "//\n";
 				}

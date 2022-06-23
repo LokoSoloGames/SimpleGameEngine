@@ -13,22 +13,14 @@ namespace SimpleGameEngine {
 		void onCreate(CreateDesc& desc) {
 			Base::onCreate(desc);
 
-			RenderContext::CreateDesc renderContextDesc;
-			renderContextDesc.window = this;
+			auto* renderer = Renderer::current(); 
+			{
+				RenderContext::CreateDesc renderContextDesc;
+				renderContextDesc.window = this;
+				_renderContext = renderer->createContext(renderContextDesc);
+			}
 			
 			EditMesh editMesh;
-			/*Tuple3f pos1 = {0.0f, 0.5f, 0.0f};
-			Color4b color1 = {255, 0, 0, 255};
-			mesh.pos.emplace_back(pos1);
-			mesh.color.emplace_back(color1);
-			Tuple3f pos2 = {0.5f, -0.5f, 0.0f};
-			Color4b color2 = {0, 255, 0, 255};
-			mesh.pos.emplace_back(pos2);
-			mesh.color.emplace_back(color2);
-			Tuple3f pos3 = {-0.5f, -0.5f, 0.0f};
-			Color4b color3 = {0, 0, 255, 255};
-			mesh.pos.emplace_back(pos3);
-			mesh.color.emplace_back(color3);*/
 			WavefrontObjLoader::loadFile(editMesh, "bunny.obj");
 			for (size_t i = editMesh.color.size(); i < editMesh.pos.size(); i++) {
 				editMesh.color.emplace_back(255, 255, 255, 255);
@@ -39,10 +31,9 @@ namespace SimpleGameEngine {
 			editMesh.normal.clear();
 
 			_renderMesh.create(editMesh);
+			auto shader = renderer->createShader("Shaders/test2.shader");
 			_material = Renderer::current()->createMaterial();
-			//_material.reset(new Material(_renderMesh, L"shaders.shader"));
-
-			_renderContext.reset(RenderContext::create(renderContextDesc));
+			_material->setShader(shader);
 		}
 
 		virtual void onCloseButton() override {
@@ -52,7 +43,7 @@ namespace SimpleGameEngine {
 		virtual void onDraw() {
 			Base::onDraw();
 			if (_renderContext) {
-				//_renderContext->setFrameBufferSize(clientRect().size);
+				_renderContext->setFrameBufferSize(viewRect.size);
 
 				_renderContext->beginRender();
 
@@ -70,7 +61,7 @@ namespace SimpleGameEngine {
 		RenderMesh _renderMesh;
 		RenderCommandBuffer _cmdBuf;
 		SPtr<Material> _material;
-		UPtr<RenderContext>	_renderContext;
+		SPtr<RenderContext>	_renderContext;
 	};
 
 	class EditorApp : public NativeUIApp {

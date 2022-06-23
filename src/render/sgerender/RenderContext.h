@@ -12,7 +12,6 @@ namespace SimpleGameEngine {
 	class RenderContext : public Object {
 	public:
 		using CreateDesc = RenderContextCreateDesc;
-		static RenderContext* create(RenderContextCreateDesc& desc);
 
 		void beginRender() { onBeginRender(); }
 		void endRender() { onEndRender(); }
@@ -23,13 +22,7 @@ namespace SimpleGameEngine {
 
 		RenderContext(CreateDesc& desc);
 		virtual ~RenderContext() = default;
-	/*protected:
-		virtual void onBeginRender() = 0;
-		virtual void onRender(RenderCommand_Draw& cmd) = 0;
-		virtual void onEndRender() = 0;
-		virtual void onClearBuffers() = 0;
-		virtual void onSwapBuffers()  = 0;
-	};*/
+
 	protected:
 		virtual void onBeginRender() {};
 		virtual void onEndRender() {};

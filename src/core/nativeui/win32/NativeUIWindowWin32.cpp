@@ -123,6 +123,7 @@ LRESULT WINAPI NativeUIWindowWin32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam
 				thisObj->onDraw();
 			}
 			EndPaint(hwnd, &ps);
+			return 0;
 		}break;
 
 		case WM_CLOSE: {
