@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../base/NativeUIWindowBase.h"
-#include <Windows.h>
 
 #if SGE_OS_WINDOWS
 
@@ -17,7 +16,6 @@ public:
 	virtual void onDrawNeeded() override;
 
 	HWND _hwnd;
-	Rect2f viewRect;
 
 private:
 	static LRESULT WINAPI s_wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -26,7 +24,10 @@ private:
 		return reinterpret_cast<This*>(::GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
 
-	LRESULT _handleWin32Event(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	LRESULT _handleNativeEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	bool _handleNativeUIMouseEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+	UIEventModifier _getWin32Modifier();
 };
 
 }

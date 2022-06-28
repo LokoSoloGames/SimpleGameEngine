@@ -42,11 +42,33 @@ namespace SimpleGameEngine {
 			NativeUIApp::current()->quit(0);
 		}
 
+		virtual void onUIMouseEvent(UIMouseEvent& ev) override {
+			if (ev.isDragging()) {
+				using Button = UIMouseEventButton;
+				switch (ev.pressedButtons) {
+					case Button::Left: {
+						auto d = ev.deltaPos * 0.01f;
+						_camera.orbit(d.x, d.y);
+					}break;
+
+					case Button::Middle: {
+						auto d = ev.deltaPos * 0.005f;
+						_camera.move(d.x, d.y, 0);
+					}break;
+
+					case Button::Right: {
+						auto d = ev.deltaPos * -0.005f;
+						_camera.dolly(d.x + d.y);
+					}break;
+				}
+			}
+		}
+
 		virtual void onDraw() {
 			Base::onDraw();
 			if (!_renderContext || !_material) return;
 
-			_camera.setViewport(viewRect);
+			_camera.setViewport(clientRect());
 
 			{
 				auto model = Mat4f::s_identity();
@@ -72,7 +94,7 @@ namespace SimpleGameEngine {
 			_material->setParam("test_float", s * 0.5f);
 			_material->setParam("test_color", Color4f(s, s, s, 1));
 
-			_renderContext->setFrameBufferSize(viewRect.size);
+			_renderContext->setFrameBufferSize(clientRect().size);
 			_renderContext->beginRender();
 
 			_cmdBuf.reset();

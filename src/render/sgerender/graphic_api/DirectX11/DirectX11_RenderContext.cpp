@@ -83,8 +83,8 @@ namespace SimpleGameEngine {
 		D3D11_VIEWPORT viewport = {};
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
-		viewport.Width = _window->viewRect.w;
-		viewport.Height = _window->viewRect.h;
+		viewport.Width = _window->clientRect().w;
+		viewport.Height = _window->clientRect().h;
 
 		ctx->RSSetViewports(1, &viewport);
 	}

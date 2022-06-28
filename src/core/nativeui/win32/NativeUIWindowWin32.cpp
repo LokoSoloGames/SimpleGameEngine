@@ -1,4 +1,5 @@
 #include "NativeUIWindowWin32.h"
+#include "Win32Util.h"
 #include <sgecore/string/UtfUtil.h>
 
 #if SGE_OS_WINDOWS
@@ -67,12 +68,12 @@ void NativeUIWindowWin32::onCreate(CreateDesc& desc) {
 		}
 	}
 
-	viewRect = desc.rect;
+	auto rect = desc.rect;
 	if (desc.centerToScreen) {
 		auto screenSize = Vec2f((float)GetSystemMetrics(SM_CXSCREEN), (float)GetSystemMetrics(SM_CYSCREEN));
-		viewRect.pos = (screenSize - viewRect.size) / 2;
+		rect.pos = (screenSize - rect.size) / 2;
 	}
-	RECT wr = {0, 0, (long)viewRect.w, (long)viewRect.h};
+	RECT wr = {0, 0, (long)rect.w, (long)rect.h};
 	::AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, false);
 
 	_hwnd = ::CreateWindowEx(dwExStyle, clsName, clsName, dwStyle,
@@ -90,8 +91,7 @@ void NativeUIWindowWin32::onCreate(CreateDesc& desc) {
 
 void NativeUIWindowWin32::onSetWindowTitle(StrView title) {
 	if (!_hwnd) return;
-	TempStringW tmp;
-	UtfUtil::convert(tmp, title);
+	TempStringW tmp = UtfUtil::toStringW(title);
 	::SetWindowText(_hwnd, tmp.c_str());
 }
 
@@ -133,6 +133,17 @@ LRESULT WINAPI NativeUIWindowWin32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam
 			}
 		}break;
 
+		case WM_SIZE: {
+			if (auto* thisObj = s_getThis(hwnd)) {
+				RECT clientRect;
+				::GetClientRect(hwnd, &clientRect);
+				Rect2f newClientRect = Win32Util::toRect2f(clientRect);
+
+				thisObj->onClientRectChanged(newClientRect);
+				return 0;
+			}
+		}break;
+
 		case WM_ACTIVATE: {
 			if (auto* thisObj = s_getThis(hwnd)) {
 				u16 a = LOWORD(wParam);
@@ -146,15 +157,81 @@ LRESULT WINAPI NativeUIWindowWin32::s_wndProc(HWND hwnd, UINT msg, WPARAM wParam
 
 		default: {
 			if (auto* thisObj = s_getThis(hwnd)) {
-				return thisObj->_handleWin32Event(hwnd, msg, wParam, lParam);
+				return thisObj->_handleNativeEvent(hwnd, msg, wParam, lParam);
 			}
 		}break;
 	}
 	return ::DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-LRESULT NativeUIWindowWin32::_handleWin32Event(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+bool NativeUIWindowWin32::_handleNativeUIMouseEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	UIMouseEvent ev;
+
+	ev.modifier = _getWin32Modifier();
+
+	using Button = UIMouseEventButton;
+	using Type = UIMouseEventType;
+
+	POINT curPos;
+	::GetCursorPos(&curPos);
+	::ScreenToClient(hwnd, &curPos);
+
+	Win32Util::convert(ev.pos, curPos);
+
+	auto button = Button::None;
+	switch (HIWORD(wParam)) {
+	case XBUTTON1: button = Button::Button4; break;
+	case XBUTTON2: button = Button::Button5; break;
+	}
+
+	switch (msg) {
+	case WM_LBUTTONUP: { ev.type = Type::Up;	ev.button = Button::Left;	} break;
+	case WM_MBUTTONUP: { ev.type = Type::Up;	ev.button = Button::Middle;	} break;
+	case WM_RBUTTONUP: { ev.type = Type::Up;	ev.button = Button::Right;	} break;
+
+	case WM_LBUTTONDOWN: { ev.type = Type::Down;	ev.button = Button::Left;	} break;
+	case WM_MBUTTONDOWN: { ev.type = Type::Down;	ev.button = Button::Middle;	} break;
+	case WM_RBUTTONDOWN: { ev.type = Type::Down;	ev.button = Button::Right;	} break;
+
+	case WM_MOUSEMOVE: { ev.type = Type::Move;	} break;
+
+#if (_WIN32_WINNT >= 0x0400) || (_WIN32_WINDOWS > 0x0400)
+		// vertical  scroll wheel 
+	case WM_MOUSEWHEEL: { ev.type = Type::Scroll;	ev.scroll.set(0, GET_WHEEL_DELTA_WPARAM(wParam)); } break;
+#endif
+
+#if (_WIN32_WINNT >= 0x0600)
+		// horizontal scroll wheel 
+	case WM_MOUSEHWHEEL: { ev.type = Type::Scroll;	ev.scroll.set(GET_WHEEL_DELTA_WPARAM(wParam), 0); } break;
+#endif
+
+	default:
+		return false;
+	}
+
+	switch (ev.type) {
+	case Type::Down:	::SetCapture(hwnd); break;
+	case Type::Up:		::ReleaseCapture(); break;
+	}
+
+	onUINativeMouseEvent(ev);
+	return true;
+}
+
+LRESULT NativeUIWindowWin32::_handleNativeEvent(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+	if (_handleNativeUIMouseEvent(hwnd, msg, wParam, lParam)) return 0;
 	return ::DefWindowProc(hwnd, msg, wParam, lParam);
+}
+
+UIEventModifier NativeUIWindowWin32::_getWin32Modifier() {
+	auto o = UIEventModifier::None;
+	if (::GetAsyncKeyState(VK_CONTROL)) o |= UIEventModifier::Ctrl;
+	if (::GetAsyncKeyState(VK_SHIFT))	o |= UIEventModifier::Shift;
+	if (::GetAsyncKeyState(VK_MENU))	o |= UIEventModifier::Alt;
+	if (::GetAsyncKeyState(VK_LWIN) || ::GetAsyncKeyState(VK_RWIN)) {
+		o |= UIEventModifier::Cmd;
+	}
+	return o;
 }
 
 }

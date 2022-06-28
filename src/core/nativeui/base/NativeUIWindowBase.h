@@ -1,7 +1,6 @@
 #pragma once
 
-#include <sgecore/math/Rect2.h>
-#include <sgebase.h>
+#include <sgecore/input/UIMouseEvent.h>
 
 namespace SimpleGameEngine {
 
@@ -54,10 +53,21 @@ namespace SimpleGameEngine {
 		virtual void onUpdate() {}
 		virtual void onDraw() {}
 
+		const Rect2f& clientRect() const { return _clientRect; }
+
+		virtual void onUINativeMouseEvent(UIMouseEvent& ev);
+		virtual void onUIMouseEvent(UIMouseEvent& ev) {}
+
 	protected:
 		virtual void onCreate(CreateDesc& desc) {}
 		virtual void onSetWindowTitle(StrView title) {}
+		virtual void onClientRectChanged(const Rect2f& rc) { _clientRect = rc; }
 		virtual void onDrawNeeded() {}
+
+		Rect2f	_clientRect {0,0,0,0};
+
+		UIMouseEventButton _pressedMouseButtons = UIMouseEventButton::None;
+		Vec2f _mousePos{0,0};
 	};
 
 }

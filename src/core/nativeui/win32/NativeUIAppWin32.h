@@ -3,7 +3,6 @@
 #include "../base/NativeUIAppBase.h"
 
 #if SGE_OS_WINDOWS
-#include <Windows.h>
 
 namespace SimpleGameEngine {
 
