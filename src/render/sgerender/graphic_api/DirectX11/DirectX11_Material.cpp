@@ -92,10 +92,11 @@ namespace SimpleGameEngine {
 
 	void DirectX11_Material::MyPass::onBind(RenderContext* ctx_, const VertexLayout* vertexLayout) {
 		auto* ctx = static_cast<DirectX11_RenderContext*>(ctx_);
+
+		onBindBlendState(ctx);
 		_myVertexStage.bind(ctx, vertexLayout);
 		_myPixelStage.bind(ctx, vertexLayout);
 	}
-
 
 	DirectX11_Material::MyPass::MyPass(Material* material, ShaderPass* shaderPass)
 		: Pass(material, shaderPass)
@@ -104,5 +105,35 @@ namespace SimpleGameEngine {
 	{
 		_vertexStage = &_myVertexStage;
 		_pixelStage = &_myPixelStage;
+		_info = shaderPass->info();
+	}
+
+	void DirectX11_Material::MyPass::onBindBlendState(DirectX11_RenderContext* ctx) {
+		auto* dev = ctx->renderer()->d3dDevice();
+		auto* dc  = ctx->renderer()->d3dDeviceContext();
+
+		if (!blendState) {
+			D3D11_BLEND_DESC blendStateDesc = {};
+			blendStateDesc.AlphaToCoverageEnable = false;
+			blendStateDesc.IndependentBlendEnable = false;
+			auto& rtDesc = blendStateDesc.RenderTarget[0];
+
+			rtDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			if (_info->blendRGB.enabled && _info->blendAlpha.enabled) {
+				rtDesc.BlendEnable = true;
+				rtDesc.BlendOp			= DX11Util::getBlendOp(_info->blendRGB.op);
+				rtDesc.BlendOpAlpha		= DX11Util::getBlendOp(_info->blendAlpha.op);
+				rtDesc.SrcBlend			= DX11Util::getBlendType(_info->blendRGB.src);
+				rtDesc.DestBlend		= DX11Util::getBlendType(_info->blendRGB.dst);
+				rtDesc.SrcBlendAlpha	= DX11Util::getBlendType(_info->blendAlpha.src);
+				rtDesc.DestBlendAlpha	= DX11Util::getBlendType(_info->blendAlpha.dst);
+			} else {
+				rtDesc.BlendEnable = false;
+			}
+			auto hr = dev->CreateBlendState(&blendStateDesc, blendState.ptrForInit());
+			DX11Util::throwIfError(hr);
+		}
+		Color4f blendColor(1, 1, 1, 1);
+		dc->OMSetBlendState(blendState, blendColor.data, 0xffffffff);
 	}
 }

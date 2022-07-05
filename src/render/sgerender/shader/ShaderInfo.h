@@ -32,6 +32,63 @@ namespace SimpleGameEngine {
 //----
 	SGE_ENUM_STR_UTIL(ShaderPropType)
 
+	enum class ShaderCullType {
+		Back,
+		Front,
+		None,
+	};
+
+#define ShaderCullType_ENUM_LIST(E) \
+	E(Back) \
+	E(Front) \
+	E(None) \
+//----
+	SGE_ENUM_STR_UTIL(ShaderCullType)
+
+	enum class ShaderBlendType {
+		Zero,
+		One,
+		SrcColor,
+		SrcAlpha,
+		DstColor,
+		DstAlpha,
+		OneMinusSrcColor,
+		OneMinusSrcAlpha,
+		OneMinusDstColor,
+		OneMinusDstAlpha,
+	};
+
+#define ShaderBlendType_ENUM_LIST(E) \
+	E(One) \
+	E(Zero) \
+	E(SrcColor) \
+	E(SrcAlpha) \
+	E(DstColor) \
+	E(DstAlpha) \
+	E(OneMinusSrcColor) \
+	E(OneMinusSrcAlpha) \
+	E(OneMinusDstColor) \
+	E(OneMinusDstAlpha) \
+//----
+	SGE_ENUM_STR_UTIL(ShaderBlendType)
+
+	enum class ShaderBlendOp {
+		Add,
+		Sub,
+		RevSub,
+		Min,
+		Max
+	};
+
+#define ShaderBlendOp_ENUM_LIST(E) \
+	E(Add) \
+	E(Sub) \
+	E(RevSub) \
+	E(Min) \
+	E(Max) \
+//----
+	SGE_ENUM_STR_UTIL(ShaderBlendOp)
+
 	struct ShaderInfo {
 		struct Prop {
 			ShaderPropType	propType = ShaderPropType::None;
@@ -48,13 +105,35 @@ namespace SimpleGameEngine {
 		};
 
 		struct Pass {
+			struct Blend {
+				bool			enabled;
+				ShaderBlendOp	op;
+				ShaderBlendType src;
+				ShaderBlendType dst;
+
+				template<class SE>
+				void onJson(SE& se) {
+					SGE_NAMED_IO(se, op);
+					SGE_NAMED_IO(se, src);
+					SGE_NAMED_IO(se, dst);
+				}
+			};
+
 			String name;
+		
+			ShaderCullType cull;
+			Blend blendRGB;
+			Blend blendAlpha;
+
 			String vsFunc;
 			String psFunc;
 
 			template<class SE>
 			void onJson(SE& se) {
 				SGE_NAMED_IO(se, name);
+				SGE_NAMED_IO(se, cull);
+				SGE_NAMED_IO(se, blendRGB);
+				SGE_NAMED_IO(se, blendAlpha);
 				SGE_NAMED_IO(se, vsFunc);
 				SGE_NAMED_IO(se, psFunc);
 			}

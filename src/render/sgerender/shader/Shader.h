@@ -25,6 +25,7 @@ namespace SimpleGameEngine {
 
 		ShaderVertexStage* vertexStage() { return _vertexStage; }
 		ShaderPixelStage* pixelStage() { return _pixelStage; }
+		ShaderInfo::Pass* info() { return _info; }
 
 	protected:
 		Shader* _shader = nullptr;

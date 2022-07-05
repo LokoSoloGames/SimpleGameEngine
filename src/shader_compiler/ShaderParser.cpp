@@ -103,6 +103,25 @@ namespace SimpleGameEngine {
 			if (_token.isOperator("}"))	{ nextToken(); break; }
 			if (_token.isNewline())		{ nextToken(); continue; }
 
+			if (_token.isIdentifier("Cull")) { nextToken(); _readEnum(o.cull); continue; }
+			if (_token.isIdentifier("BlendRGB")) { 
+				nextToken(); 
+				_readEnum(o.blendRGB.op);
+				_readEnum(o.blendRGB.src);
+				_readEnum(o.blendRGB.dst);
+				o.blendRGB.enabled = true;
+				continue;
+			}
+
+			if (_token.isIdentifier("BlendAlpha")) {
+				nextToken(); 
+				_readEnum(o.blendAlpha.op);
+				_readEnum(o.blendAlpha.src);
+				_readEnum(o.blendAlpha.dst);
+				o.blendAlpha.enabled = true;
+				continue;
+			}
+			
 			if (_token.isIdentifier("VsFunc")) { nextToken(); readIdentifier(o.vsFunc); continue; }
 			if (_token.isIdentifier("PsFunc")) { nextToken(); readIdentifier(o.psFunc); continue; }
 			return errorUnexpectedToken();

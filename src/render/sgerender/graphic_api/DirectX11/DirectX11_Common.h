@@ -60,6 +60,8 @@ struct DX11Util {
 	static D3D11_PRIMITIVE_TOPOLOGY	getPrimitiveTopology	(RenderPrimitiveType t);
 	static DXGI_FORMAT				getFormat				(RenderDataType v);
 	static const char*				getSemanticName			(VertexSemanticType t);
+	static D3D11_BLEND_OP			getBlendOp				(ShaderBlendOp op);
+	static D3D11_BLEND				getBlendType			(ShaderBlendType t);
 	static VertexSemanticType		parseSemanticName(StrView s);
 
 	static String getStrFromHRESULT(HRESULT hr);
@@ -128,6 +130,37 @@ D3D11_PRIMITIVE_TOPOLOGY DX11Util::getPrimitiveTopology(RenderPrimitiveType t) {
 		case SRC::Lines:		return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 		case SRC::Triangles:	return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		default: throw SGE_ERROR("Unhandled RenderPrimitiveType");
+	}
+}
+
+inline
+D3D11_BLEND_OP DX11Util::getBlendOp(ShaderBlendOp op) {
+	using SRC = ShaderBlendOp;
+	switch (op) {
+	case SRC::Add:		return D3D11_BLEND_OP_ADD;
+	case SRC::Sub:		return D3D11_BLEND_OP_SUBTRACT;
+	case SRC::RevSub:	return D3D11_BLEND_OP_REV_SUBTRACT;
+	case SRC::Min:		return D3D11_BLEND_OP_MIN;
+	case SRC::Max:		return D3D11_BLEND_OP_MAX;
+	default: throw SGE_ERROR("Unhandled ShaderBlendOp");
+	}
+}
+
+inline
+D3D11_BLEND DX11Util::getBlendType(ShaderBlendType t) {
+	using SRC = ShaderBlendType;
+	switch (t) {
+	case SRC::Zero:					return D3D11_BLEND_ZERO;
+	case SRC::One:					return D3D11_BLEND_ONE;
+	case SRC::SrcColor:				return D3D11_BLEND_SRC_COLOR;
+	case SRC::SrcAlpha:				return D3D11_BLEND_SRC_ALPHA;
+	case SRC::DstColor:				return D3D11_BLEND_DEST_COLOR;
+	case SRC::DstAlpha:				return D3D11_BLEND_DEST_ALPHA;
+	case SRC::OneMinusSrcColor:		return D3D11_BLEND_INV_SRC_COLOR;
+	case SRC::OneMinusSrcAlpha:		return D3D11_BLEND_INV_SRC_ALPHA;
+	case SRC::OneMinusDstColor:		return D3D11_BLEND_INV_DEST_COLOR;
+	case SRC::OneMinusDstAlpha:		return D3D11_BLEND_INV_DEST_ALPHA;
+	default: throw SGE_ERROR("Unhandled ShaderBlendType");
 	}
 }
 

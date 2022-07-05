@@ -54,6 +54,14 @@ namespace SimpleGameEngine {
 
 			MyVertexStage _myVertexStage;
 			MyPixelStage  _myPixelStage;
+
+		private:
+			void onBindBlendState(DirectX11_RenderContext* ctx);
+
+			ShaderInfo::Pass* _info;
+			ComPtr<DX11_ID3DRasterizerState>	rasterizerState;
+			ComPtr<DX11_ID3DDepthStencilState>	depthStencilState;
+			ComPtr<DX11_ID3DBlendState>			blendState;
 		};
 
 		virtual Pass* onCreatePass(Material* material, ShaderPass* shaderPass) override {
