@@ -8,7 +8,7 @@ class VertexLayoutManager {
 public:
 	VertexLayoutManager();
 
-	static VertexLayoutManager* current();
+	static VertexLayoutManager* instance();
 
 	const VertexLayout* getLayout(VertexType type);
 

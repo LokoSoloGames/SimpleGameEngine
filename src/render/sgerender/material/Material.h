@@ -100,7 +100,7 @@ namespace SimpleGameEngine {
 		{}
 	};
 
-	class MaterialPass : public RefCountBase {
+	class MaterialPass : public NonCopyable {
 	public:
 		virtual ~MaterialPass() = default;
 
@@ -150,7 +150,15 @@ namespace SimpleGameEngine {
 		using VertexStage = MaterialPass_VertexStage;
 		using PixelStage = MaterialPass_PixelStage;
 
-		Span<SPtr<Pass>>	passes() { return _passes; }
+		Span<UPtr<Pass>>	passes() { return _passes; }
+
+		Pass* getPass(size_t index) {
+			if (index >= _passes.size()) {
+				SGE_ASSERT(false);
+				return nullptr;
+			}
+			return _passes[index].get();
+		}
 
 	protected:
 		template<class V> void _setParam(StrView name, const V& v) {
@@ -159,7 +167,7 @@ namespace SimpleGameEngine {
 			}
 		}
 
-		Vector_<SPtr<Pass>, 1>	_passes;
+		Vector_<UPtr<Pass>, 2>	_passes;
 		SPtr<Shader> _shader;
 		virtual void onSetShader() {}
 		virtual Pass* onCreatePass(Material* material, ShaderPass* shaderPass) = 0;

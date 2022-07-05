@@ -28,7 +28,7 @@ VertexLayoutManager::VertexLayoutManager() {
 	#undef MY_REGISTER_VERTEX_UV
 }
 
-VertexLayoutManager* VertexLayoutManager::current() {
+VertexLayoutManager* VertexLayoutManager::instance() {
 	static VertexLayoutManager s;
 	return &s;
 }

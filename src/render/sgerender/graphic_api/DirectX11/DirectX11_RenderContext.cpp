@@ -127,10 +127,11 @@ namespace SimpleGameEngine {
 			if (!indexBuffer) { SGE_ASSERT(false); return; }
 		}
 
-		if(!cmd.materialPass) { SGE_ASSERT(false); return; }
+		auto* pass = cmd.getMaterialPass();
+		if(!pass) { SGE_ASSERT(false); return; }
 
 		auto* ctx = _renderer->d3dDeviceContext();
-		cmd.materialPass->bind(this, cmd.vertexLayout);
+		pass->bind(this, cmd.vertexLayout);
 		auto primitive = Util::getPrimitiveTopology(cmd.primitive);
 		ctx->IASetPrimitiveTopology(primitive);
 

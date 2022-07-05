@@ -29,9 +29,6 @@ namespace SimpleGameEngine {
 				editMesh.color.emplace_back(255, 255, 255, 255);
 			}
 
-			// the current shader has no uv
-			editMesh.uv[0].clear();
-
 			_renderMesh.create(editMesh);
 			auto shader = renderer->createShader("Shaders/test.shader");
 			_material = Renderer::current()->createMaterial();
