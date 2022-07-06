@@ -90,6 +90,7 @@ namespace SimpleGameEngine {
 	SGE_ENUM_STR_UTIL(ShaderBlendOp)
 
 	enum class ShaderDepthTest {
+		Never,
 		Less,
 		Greater,
 		LEqual,
@@ -100,6 +101,7 @@ namespace SimpleGameEngine {
 	};
 
 #define ShaderDepthTest_ENUM_LIST(E) \
+	E(Never) \
 	E(Less) \
 	E(Greater) \
 	E(LEqual) \

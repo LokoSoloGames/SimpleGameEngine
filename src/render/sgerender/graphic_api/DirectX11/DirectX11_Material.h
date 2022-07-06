@@ -57,7 +57,7 @@ namespace SimpleGameEngine {
 
 		private:
 			void onBindRasterizerState(DirectX11_RenderContext* ctx);
-			//void onBindDepthStencilState(DirectX11_RenderContext* ctx);
+			void onBindDepthStencilState(DirectX11_RenderContext* ctx);
 			void onBindBlendState(DirectX11_RenderContext* ctx);
 
 			ShaderInfo::Pass* _info;

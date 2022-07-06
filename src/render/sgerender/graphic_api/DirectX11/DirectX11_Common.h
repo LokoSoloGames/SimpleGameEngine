@@ -61,6 +61,7 @@ struct DX11Util {
 	static DXGI_FORMAT				getFormat				(RenderDataType v);
 	static const char*				getSemanticName			(VertexSemanticType t);
 	static D3D11_CULL_MODE			getCullMode				(ShaderCullType t);
+	static D3D11_COMPARISON_FUNC	getDepthTest			(ShaderDepthTest t);
 	static D3D11_BLEND_OP			getBlendOp				(ShaderBlendOp op);
 	static D3D11_BLEND				getBlendType			(ShaderBlendType t);
 	static VertexSemanticType		parseSemanticName(StrView s);
@@ -142,6 +143,22 @@ D3D11_CULL_MODE DX11Util::getCullMode(ShaderCullType t) {
 	case SRC::Front:	return D3D11_CULL_FRONT;
 	case SRC::Back:		return D3D11_CULL_BACK;
 	default: throw SGE_ERROR("Unhandled ShaderCullType");
+	}
+}
+
+inline
+D3D11_COMPARISON_FUNC DX11Util::getDepthTest(ShaderDepthTest t) {
+	using SRC = ShaderDepthTest;
+	switch (t) {
+	case SRC::Never:	return D3D11_COMPARISON_NEVER;
+	case SRC::Less:		return D3D11_COMPARISON_LESS;
+	case SRC::Greater:	return D3D11_COMPARISON_GREATER;
+	case SRC::LEqual:	return D3D11_COMPARISON_LESS_EQUAL;
+	case SRC::GEqual:	return D3D11_COMPARISON_GREATER_EQUAL;
+	case SRC::Equal:	return D3D11_COMPARISON_EQUAL;
+	case SRC::NotEqual:	return D3D11_COMPARISON_NOT_EQUAL;
+	case SRC::Always:	return D3D11_COMPARISON_ALWAYS;
+	default: throw SGE_ERROR("Unhandled ShaderDepthTest");
 	}
 }
 

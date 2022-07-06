@@ -93,6 +93,8 @@ namespace SimpleGameEngine {
 	void DirectX11_Material::MyPass::onBind(RenderContext* ctx_, const VertexLayout* vertexLayout) {
 		auto* ctx = static_cast<DirectX11_RenderContext*>(ctx_);
 
+		onBindRasterizerState(ctx);
+		onBindDepthStencilState(ctx);
 		onBindBlendState(ctx);
 		_myVertexStage.bind(ctx, vertexLayout);
 		_myPixelStage.bind(ctx, vertexLayout);
@@ -110,6 +112,7 @@ namespace SimpleGameEngine {
 
 	void DirectX11_Material::MyPass::onBindRasterizerState(DirectX11_RenderContext* ctx) {
 		auto* dev = ctx->renderer()->d3dDevice();
+		auto* dc = ctx->renderer()->d3dDeviceContext();
 
 		if (!rasterizerState) {
 			D3D11_RASTERIZER_DESC rasterDesc = {};
@@ -128,6 +131,27 @@ namespace SimpleGameEngine {
 			auto hr = dev->CreateRasterizerState(&rasterDesc, rasterizerState.ptrForInit());
 			DX11Util::throwIfError(hr);
 		}
+		dc->RSSetState(rasterizerState);
+	}
+
+	void DirectX11_Material::MyPass::onBindDepthStencilState(DirectX11_RenderContext * ctx) {
+		auto* dev = ctx->renderer()->d3dDevice();
+		auto* dc = ctx->renderer()->d3dDeviceContext();
+
+		if (!depthStencilState) {
+			D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+
+			depthStencilDesc.DepthEnable = true;
+			depthStencilDesc.DepthFunc = DX11Util::getDepthTest(_info->depthTest);
+			depthStencilDesc.DepthWriteMask = _info->depthWrite ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
+
+			depthStencilDesc.StencilEnable = false;
+			depthStencilDesc.StencilReadMask = 0xFF;
+			depthStencilDesc.StencilWriteMask = 0xFF;
+			auto hr = dev->CreateDepthStencilState(&depthStencilDesc, depthStencilState.ptrForInit());
+			DX11Util::throwIfError(hr);
+		}
+		dc->OMSetDepthStencilState(depthStencilState, 1);
 	}
 
 	void DirectX11_Material::MyPass::onBindBlendState(DirectX11_RenderContext* ctx) {
