@@ -108,6 +108,28 @@ namespace SimpleGameEngine {
 		_info = shaderPass->info();
 	}
 
+	void DirectX11_Material::MyPass::onBindRasterizerState(DirectX11_RenderContext* ctx) {
+		auto* dev = ctx->renderer()->d3dDevice();
+
+		if (!rasterizerState) {
+			D3D11_RASTERIZER_DESC rasterDesc = {};
+			rasterDesc.AntialiasedLineEnable = true;
+			rasterDesc.CullMode = DX11Util::getCullMode(_info->cull);;
+			rasterDesc.DepthBias = 0;
+			rasterDesc.DepthBiasClamp = 0.0f;
+			rasterDesc.DepthClipEnable = true;
+
+			rasterDesc.FillMode = D3D11_FILL_SOLID;
+
+			rasterDesc.FrontCounterClockwise = true;
+			rasterDesc.MultisampleEnable = false;
+			rasterDesc.ScissorEnable = false;
+			rasterDesc.SlopeScaledDepthBias = 0.0f;
+			auto hr = dev->CreateRasterizerState(&rasterDesc, rasterizerState.ptrForInit());
+			DX11Util::throwIfError(hr);
+		}
+	}
+
 	void DirectX11_Material::MyPass::onBindBlendState(DirectX11_RenderContext* ctx) {
 		auto* dev = ctx->renderer()->d3dDevice();
 		auto* dc  = ctx->renderer()->d3dDeviceContext();

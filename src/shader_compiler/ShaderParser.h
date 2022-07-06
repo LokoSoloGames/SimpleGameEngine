@@ -17,6 +17,7 @@ namespace SimpleGameEngine {
 		void _readPass();
 
 		template<class E> void _readEnum(E& v);
+		void _readBoolean(bool& b);
 
 		MemMapFile _memMapFile;
 		ShaderInfo* _outInfo = nullptr;

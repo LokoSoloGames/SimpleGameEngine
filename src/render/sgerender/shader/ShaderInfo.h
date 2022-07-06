@@ -89,6 +89,27 @@ namespace SimpleGameEngine {
 //----
 	SGE_ENUM_STR_UTIL(ShaderBlendOp)
 
+	enum class ShaderDepthTest {
+		Less,
+		Greater,
+		LEqual,
+		GEqual,
+		Equal,
+		NotEqual,
+		Always,
+	};
+
+#define ShaderDepthTest_ENUM_LIST(E) \
+	E(Less) \
+	E(Greater) \
+	E(LEqual) \
+	E(GEqual) \
+	E(Equal) \
+	E(NotEqual) \
+	E(Always) \
+//----
+	SGE_ENUM_STR_UTIL(ShaderDepthTest)
+
 	struct ShaderInfo {
 		struct Prop {
 			ShaderPropType	propType = ShaderPropType::None;
@@ -113,6 +134,7 @@ namespace SimpleGameEngine {
 
 				template<class SE>
 				void onJson(SE& se) {
+					SGE_NAMED_IO(se, enabled);
 					SGE_NAMED_IO(se, op);
 					SGE_NAMED_IO(se, src);
 					SGE_NAMED_IO(se, dst);
@@ -121,7 +143,9 @@ namespace SimpleGameEngine {
 
 			String name;
 		
-			ShaderCullType cull;
+			bool depthWrite = true;
+			ShaderDepthTest depthTest = ShaderDepthTest::LEqual;
+			ShaderCullType cull = ShaderCullType::Back;
 			Blend blendRGB;
 			Blend blendAlpha;
 
@@ -131,6 +155,8 @@ namespace SimpleGameEngine {
 			template<class SE>
 			void onJson(SE& se) {
 				SGE_NAMED_IO(se, name);
+				SGE_NAMED_IO(se, depthWrite);
+				SGE_NAMED_IO(se, depthTest);
 				SGE_NAMED_IO(se, cull);
 				SGE_NAMED_IO(se, blendRGB);
 				SGE_NAMED_IO(se, blendAlpha);

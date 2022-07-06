@@ -60,6 +60,7 @@ struct DX11Util {
 	static D3D11_PRIMITIVE_TOPOLOGY	getPrimitiveTopology	(RenderPrimitiveType t);
 	static DXGI_FORMAT				getFormat				(RenderDataType v);
 	static const char*				getSemanticName			(VertexSemanticType t);
+	static D3D11_CULL_MODE			getCullMode				(ShaderCullType t);
 	static D3D11_BLEND_OP			getBlendOp				(ShaderBlendOp op);
 	static D3D11_BLEND				getBlendType			(ShaderBlendType t);
 	static VertexSemanticType		parseSemanticName(StrView s);
@@ -130,6 +131,17 @@ D3D11_PRIMITIVE_TOPOLOGY DX11Util::getPrimitiveTopology(RenderPrimitiveType t) {
 		case SRC::Lines:		return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 		case SRC::Triangles:	return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		default: throw SGE_ERROR("Unhandled RenderPrimitiveType");
+	}
+}
+
+inline
+D3D11_CULL_MODE DX11Util::getCullMode(ShaderCullType t) {
+	using SRC = ShaderCullType;
+	switch (t) {
+	case SRC::None:		return D3D11_CULL_NONE;
+	case SRC::Front:	return D3D11_CULL_FRONT;
+	case SRC::Back:		return D3D11_CULL_BACK;
+	default: throw SGE_ERROR("Unhandled ShaderCullType");
 	}
 }
 

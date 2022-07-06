@@ -26,18 +26,20 @@ struct JsonSerializer : public NonCopyable {
 		_stack.emplace_back(&_json);
 	}
 
-	void io(u8&  v) { toValue(v); }
-	void io(u16& v) { toValue(v); }
-	void io(u32& v) { toValue(v); }
-	void io(u64& v) { toValue(v); }
-
-	void io(i8&  v) { toValue(v); }
-	void io(i16& v) { toValue(v); }
-	void io(i32& v) { toValue(v); }
-	void io(i64& v) { toValue(v); }
-
-	void io(f32& v) { toValue(v); }
-	void io(f64& v) { toValue(v); }
+	void io(bool& v) { toValue(v); }
+				  
+	void io(u8&   v) { toValue(v); }
+	void io(u16&  v) { toValue(v); }
+	void io(u32&  v) { toValue(v); }
+	void io(u64&  v) { toValue(v); }
+				  
+	void io(i8&   v) { toValue(v); }
+	void io(i16&  v) { toValue(v); }
+	void io(i32&  v) { toValue(v); }
+	void io(i64&  v) { toValue(v); }
+				  
+	void io(f32&  v) { toValue(v); }
+	void io(f64&  v) { toValue(v); }
 
 	template<class V> void io(V& v) { JsonIO<This, V>::io(*this, v); }
 
@@ -48,7 +50,7 @@ struct JsonSerializer : public NonCopyable {
 
 template<class SE, class T, class ENABLE> friend struct JsonIO;
 protected:
-
+	
 	template<class V>
 	void toValue(const V& v) {
 		auto& cur = _stack.back();

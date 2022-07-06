@@ -14,8 +14,8 @@ Shader {
 		BlendRGB 	Add One OneMinusSrcAlpha
 		BlendAlpha	Add One OneMinusSrcAlpha
 
-		// DepthTest	Always
-		// DepthWrite	false
+		DepthTest	Always
+		DepthWrite	false
 		
 		VsFunc		vs_main
 		PsFunc		ps_main

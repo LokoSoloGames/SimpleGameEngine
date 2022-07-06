@@ -103,7 +103,10 @@ namespace SimpleGameEngine {
 			if (_token.isOperator("}"))	{ nextToken(); break; }
 			if (_token.isNewline())		{ nextToken(); continue; }
 
-			if (_token.isIdentifier("Cull")) { nextToken(); _readEnum(o.cull); continue; }
+			if (_token.isIdentifier("DepthWrite"))	{ nextToken(); _readBoolean(o.depthWrite);	continue; }
+			if (_token.isIdentifier("DepthTest"))	{ nextToken(); _readEnum(o.depthTest);		continue; }
+			if (_token.isIdentifier("Cull"))		{ nextToken(); _readEnum(o.cull);			continue; }
+
 			if (_token.isIdentifier("BlendRGB")) { 
 				nextToken(); 
 				_readEnum(o.blendRGB.op);
@@ -128,4 +131,23 @@ namespace SimpleGameEngine {
 		}
 	}
 
+	void ShaderParser::_readBoolean(bool& b) {
+		if (!token().isIdentifier()) {
+			errorUnexpectedToken();
+			return;
+		}
+
+		if (_token.str == "true" || _token.str == "TRUE") {
+			b = true;
+			nextToken();
+			return;
+		}
+
+		if (_token.str == "false" || _token.str == "FALSE") {
+			b = false;
+			nextToken();
+			return;
+		}
+		error("read boolean [{}]", _token.str);
+	}
 }
