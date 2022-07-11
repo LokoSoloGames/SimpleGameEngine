@@ -14,6 +14,7 @@ struct ColorR {
 		T data[kElementCount];
 	};
 
+	ColorR() = default;
 	ColorR(const T& r_)
 		: r(r_) {}
 };
@@ -28,6 +29,7 @@ struct ColorRG {
 		T data[kElementCount];
 	};
 
+	ColorRG() = default;
 	ColorRG(const T& r_, const T& g_)
 		: r(r_), g(g_) {}
 
@@ -67,6 +69,20 @@ struct ColorRGBA {
 	Tuple4<T>	toTuple() const { return Tuple4<T>(r, g, b, a); }
 	operator Tuple4<T>() const { return toTuple(); }
 
+	void set(const T& r_, const T& g_, const T& b_, const T& a_) {
+		r = r_;
+		g = g_;
+		b = b_;
+		a = a_;
+	}
+
+	template<class SE>
+	void onJson(SE& se) {
+		SGE_NAMED_IO(se, r);
+		SGE_NAMED_IO(se, g);
+		SGE_NAMED_IO(se, b);
+		SGE_NAMED_IO(se, a);
+	}
 };
 
 using ColorRGBAf = ColorRGBA<float>;

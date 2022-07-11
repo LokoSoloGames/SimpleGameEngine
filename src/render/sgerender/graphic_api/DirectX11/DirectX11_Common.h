@@ -60,10 +60,10 @@ struct DX11Util {
 	static D3D11_PRIMITIVE_TOPOLOGY	getPrimitiveTopology	(RenderPrimitiveType t);
 	static DXGI_FORMAT				getFormat				(RenderDataType v);
 	static const char*				getSemanticName			(VertexSemanticType t);
-	static D3D11_CULL_MODE			getCullMode				(ShaderCullType t);
-	static D3D11_COMPARISON_FUNC	getDepthTest			(ShaderDepthTest t);
-	static D3D11_BLEND_OP			getBlendOp				(ShaderBlendOp op);
-	static D3D11_BLEND				getBlendType			(ShaderBlendType t);
+	static D3D11_CULL_MODE			getCullMode				(RenderState_Cull t);
+	static D3D11_COMPARISON_FUNC	getDepthTestOp			(RenderState_DepthTestOp t);
+	static D3D11_BLEND_OP			getBlendOp				(RenderState_BlendOp op);
+	static D3D11_BLEND				getBlendFactor			(RenderState_BlendFactor t);
 	static VertexSemanticType		parseSemanticName(StrView s);
 
 	static String getStrFromHRESULT(HRESULT hr);
@@ -136,60 +136,65 @@ D3D11_PRIMITIVE_TOPOLOGY DX11Util::getPrimitiveTopology(RenderPrimitiveType t) {
 }
 
 inline
-D3D11_CULL_MODE DX11Util::getCullMode(ShaderCullType t) {
-	using SRC = ShaderCullType;
-	switch (t) {
-	case SRC::None:		return D3D11_CULL_NONE;
-	case SRC::Front:	return D3D11_CULL_FRONT;
+D3D11_CULL_MODE DX11Util::getCullMode(RenderState_Cull v) {
+	using SRC = RenderState_Cull;
+	switch (v) {
 	case SRC::Back:		return D3D11_CULL_BACK;
-	default: throw SGE_ERROR("Unhandled ShaderCullType");
+	case SRC::Front:	return D3D11_CULL_FRONT;
+	case SRC::None:		return D3D11_CULL_NONE;
+	default: throw SGE_ERROR("unsupported CullMode");
 	}
 }
 
 inline
-D3D11_COMPARISON_FUNC DX11Util::getDepthTest(ShaderDepthTest t) {
-	using SRC = ShaderDepthTest;
-	switch (t) {
-	case SRC::Never:	return D3D11_COMPARISON_NEVER;
-	case SRC::Less:		return D3D11_COMPARISON_LESS;
-	case SRC::Greater:	return D3D11_COMPARISON_GREATER;
-	case SRC::LEqual:	return D3D11_COMPARISON_LESS_EQUAL;
-	case SRC::GEqual:	return D3D11_COMPARISON_GREATER_EQUAL;
-	case SRC::Equal:	return D3D11_COMPARISON_EQUAL;
-	case SRC::NotEqual:	return D3D11_COMPARISON_NOT_EQUAL;
-	case SRC::Always:	return D3D11_COMPARISON_ALWAYS;
-	default: throw SGE_ERROR("Unhandled ShaderDepthTest");
+D3D11_COMPARISON_FUNC DX11Util::getDepthTestOp(RenderState_DepthTestOp v) {
+	using SRC = RenderState_DepthTestOp;
+	switch (v) {
+	case SRC::Always:		return  D3D11_COMPARISON_ALWAYS;
+	case SRC::Less:			return  D3D11_COMPARISON_LESS;
+	case SRC::Equal:		return  D3D11_COMPARISON_EQUAL;
+	case SRC::LessEqual:	return  D3D11_COMPARISON_LESS_EQUAL;
+	case SRC::Greater:		return  D3D11_COMPARISON_GREATER;
+	case SRC::GreaterEqual:	return  D3D11_COMPARISON_GREATER_EQUAL;
+	case SRC::NotEqual:		return  D3D11_COMPARISON_NOT_EQUAL;
+	case SRC::Never:		return  D3D11_COMPARISON_NEVER;
+	default: throw SGE_ERROR("unsupported DepthTestOp");
 	}
 }
 
 inline
-D3D11_BLEND_OP DX11Util::getBlendOp(ShaderBlendOp op) {
-	using SRC = ShaderBlendOp;
-	switch (op) {
+D3D11_BLEND_OP DX11Util::getBlendOp(RenderState_BlendOp v) {
+	using SRC = RenderState_BlendOp;
+	switch (v) {
 	case SRC::Add:		return D3D11_BLEND_OP_ADD;
-	case SRC::Sub:		return D3D11_BLEND_OP_SUBTRACT;
-	case SRC::RevSub:	return D3D11_BLEND_OP_REV_SUBTRACT;
 	case SRC::Min:		return D3D11_BLEND_OP_MIN;
 	case SRC::Max:		return D3D11_BLEND_OP_MAX;
-	default: throw SGE_ERROR("Unhandled ShaderBlendOp");
+	case SRC::Sub:		return D3D11_BLEND_OP_SUBTRACT;
+	case SRC::RevSub:	return D3D11_BLEND_OP_REV_SUBTRACT;
+	default: throw SGE_ERROR("unsupported BlendOp");
 	}
 }
 
 inline
-D3D11_BLEND DX11Util::getBlendType(ShaderBlendType t) {
-	using SRC = ShaderBlendType;
-	switch (t) {
+D3D11_BLEND DX11Util::getBlendFactor(RenderState_BlendFactor v) {
+	using SRC = RenderState_BlendFactor;
+	switch (v) {
 	case SRC::Zero:					return D3D11_BLEND_ZERO;
 	case SRC::One:					return D3D11_BLEND_ONE;
-	case SRC::SrcColor:				return D3D11_BLEND_SRC_COLOR;
 	case SRC::SrcAlpha:				return D3D11_BLEND_SRC_ALPHA;
-	case SRC::DstColor:				return D3D11_BLEND_DEST_COLOR;
 	case SRC::DstAlpha:				return D3D11_BLEND_DEST_ALPHA;
-	case SRC::OneMinusSrcColor:		return D3D11_BLEND_INV_SRC_COLOR;
+	case SRC::SrcColor:				return D3D11_BLEND_SRC_COLOR;
+	case SRC::DstColor:				return D3D11_BLEND_DEST_COLOR;
+	case SRC::ConstColor:			return D3D11_BLEND_BLEND_FACTOR;
+//	case SRC::ConstAlpha:			return 
 	case SRC::OneMinusSrcAlpha:		return D3D11_BLEND_INV_SRC_ALPHA;
-	case SRC::OneMinusDstColor:		return D3D11_BLEND_INV_DEST_COLOR;
+	case SRC::OneMinusSrcColor:		return D3D11_BLEND_INV_SRC_COLOR;
 	case SRC::OneMinusDstAlpha:		return D3D11_BLEND_INV_DEST_ALPHA;
-	default: throw SGE_ERROR("Unhandled ShaderBlendType");
+	case SRC::OneMinusDstColor:		return D3D11_BLEND_INV_DEST_COLOR;
+	case SRC::OneMinusConstColor:	return D3D11_BLEND_INV_BLEND_FACTOR;
+//	case SRC::OneMinusConstAlpha:	return 
+	case SRC::SrcAlphaSaturate:		return D3D11_BLEND_SRC_ALPHA_SAT;
+	default: throw SGE_ERROR("unsupported BlendFactor");
 	}
 }
 

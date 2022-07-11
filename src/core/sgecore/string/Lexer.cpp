@@ -96,7 +96,7 @@ void Lexer::_error(StrView msg) {
 		tmp += "^^^\n";
 	}
 
-	FmtTo(tmp, "  token={}\n  file={}:{}:{}\n", _filename, _line, _col);
+	FmtTo(tmp, "  token={}\n  file={}:{}:{}\n", _token, _filename, _line, _col);
 	throw SGE_ERROR("{}", tmp);
 }
 
@@ -282,6 +282,26 @@ StrView Lexer::getLastFewLines(size_t lineCount) {
 	p++;
 
 	return StrView(p, _cur - p);
+}
+
+void Lexer::readBool(bool& v) {
+	if (!_token.isIdentifier()) {
+		errorUnexpectedToken();
+		return;
+	}
+
+	if (_token.str == "true" || _token.str == "TRUE") {
+		v = true;
+		nextToken();
+		return;
+	}
+
+	if (_token.str == "false" || _token.str == "FALSE") {
+		v = false;
+		nextToken();
+		return;
+	}
+	error("read boolean [{}]", _token.str);
 }
 
 StrView Lexer::getRemainSource() const {

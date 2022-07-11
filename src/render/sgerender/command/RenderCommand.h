@@ -45,7 +45,7 @@ namespace SimpleGameEngine {
 		This& dontClearDepth() { depth.reset(); return *this; }
 
 		Opt<Color4f> color = Color4f(1,1,1,1);
-		Opt<float>   depth = 0;
+		Opt<float>   depth = 1;
 	};
 
 	class RenderCommand_SwapBuffers : public RenderCommand {
@@ -70,7 +70,6 @@ namespace SimpleGameEngine {
 		size_t					materialPassIndex = 0;
 
 		MaterialPass* getMaterialPass() { return material ? material->getPass(materialPassIndex) : nullptr; }
-
 
 		size_t vertexCount = 0;
 		size_t indexCount = 0;

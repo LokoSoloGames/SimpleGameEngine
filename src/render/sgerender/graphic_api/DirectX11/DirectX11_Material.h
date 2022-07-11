@@ -60,14 +60,13 @@ namespace SimpleGameEngine {
 			void onBindDepthStencilState(DirectX11_RenderContext* ctx);
 			void onBindBlendState(DirectX11_RenderContext* ctx);
 
-			ShaderInfo::Pass* _info;
 			ComPtr<DX11_ID3DRasterizerState>	rasterizerState;
 			ComPtr<DX11_ID3DDepthStencilState>	depthStencilState;
 			ComPtr<DX11_ID3DBlendState>			blendState;
 		};
 
-		virtual Pass* onCreatePass(Material* material, ShaderPass* shaderPass) override {
-			return new MyPass(material, shaderPass);
+		virtual UPtr<Pass> onCreatePass(ShaderPass* shaderPass) override {
+			return UPtr<Pass>(new MyPass(this, shaderPass));
 		}
 	};
 }

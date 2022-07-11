@@ -93,11 +93,12 @@ namespace SimpleGameEngine {
 	void DirectX11_Material::MyPass::onBind(RenderContext* ctx_, const VertexLayout* vertexLayout) {
 		auto* ctx = static_cast<DirectX11_RenderContext*>(ctx_);
 
+		_myVertexStage.bind(ctx, vertexLayout);
+		_myPixelStage.bind(ctx, vertexLayout);
+
 		onBindRasterizerState(ctx);
 		onBindDepthStencilState(ctx);
 		onBindBlendState(ctx);
-		_myVertexStage.bind(ctx, vertexLayout);
-		_myPixelStage.bind(ctx, vertexLayout);
 	}
 
 	DirectX11_Material::MyPass::MyPass(Material* material, ShaderPass* shaderPass)
@@ -107,22 +108,23 @@ namespace SimpleGameEngine {
 	{
 		_vertexStage = &_myVertexStage;
 		_pixelStage = &_myPixelStage;
-		_info = shaderPass->info();
 	}
 
 	void DirectX11_Material::MyPass::onBindRasterizerState(DirectX11_RenderContext* ctx) {
-		auto* dev = ctx->renderer()->d3dDevice();
 		auto* dc = ctx->renderer()->d3dDeviceContext();
 
 		if (!rasterizerState) {
+			auto& rs = info()->renderState;
+			auto* dev = ctx->renderer()->d3dDevice();
+
 			D3D11_RASTERIZER_DESC rasterDesc = {};
 			rasterDesc.AntialiasedLineEnable = true;
-			rasterDesc.CullMode = DX11Util::getCullMode(_info->cull);;
+			rasterDesc.CullMode = DX11Util::getCullMode(rs.cull);
 			rasterDesc.DepthBias = 0;
 			rasterDesc.DepthBiasClamp = 0.0f;
 			rasterDesc.DepthClipEnable = true;
 
-			rasterDesc.FillMode = D3D11_FILL_SOLID;
+			rasterDesc.FillMode = rs.wireframe ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID;
 
 			rasterDesc.FrontCounterClockwise = true;
 			rasterDesc.MultisampleEnable = false;
@@ -135,15 +137,24 @@ namespace SimpleGameEngine {
 	}
 
 	void DirectX11_Material::MyPass::onBindDepthStencilState(DirectX11_RenderContext * ctx) {
-		auto* dev = ctx->renderer()->d3dDevice();
 		auto* dc = ctx->renderer()->d3dDeviceContext();
 
 		if (!depthStencilState) {
+			auto* dev = ctx->renderer()->d3dDevice();
+			auto& rs = info()->renderState;
+
 			D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
 
-			depthStencilDesc.DepthEnable = true;
-			depthStencilDesc.DepthFunc = DX11Util::getDepthTest(_info->depthTest);
-			depthStencilDesc.DepthWriteMask = _info->depthWrite ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
+			bool depthTest = rs.depthTest.isEnable();
+			if (depthTest) {
+				depthStencilDesc.DepthEnable = true;
+				depthStencilDesc.DepthFunc = DX11Util::getDepthTestOp(rs.depthTest.op);
+			}
+			else {
+				depthStencilDesc.DepthEnable = false;
+				depthStencilDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+			}
+			depthStencilDesc.DepthWriteMask = rs.depthTest.writeMask ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
 
 			depthStencilDesc.StencilEnable = false;
 			depthStencilDesc.StencilReadMask = 0xFF;
@@ -155,24 +166,40 @@ namespace SimpleGameEngine {
 	}
 
 	void DirectX11_Material::MyPass::onBindBlendState(DirectX11_RenderContext* ctx) {
-		auto* dev = ctx->renderer()->d3dDevice();
 		auto* dc  = ctx->renderer()->d3dDeviceContext();
 
 		if (!blendState) {
+			auto* dev = ctx->renderer()->d3dDevice();
+			auto& rs = info()->renderState;
+
 			D3D11_BLEND_DESC blendStateDesc = {};
 			blendStateDesc.AlphaToCoverageEnable = false;
 			blendStateDesc.IndependentBlendEnable = false;
 			auto& rtDesc = blendStateDesc.RenderTarget[0];
 
 			rtDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-			if (_info->blendRGB.enabled && _info->blendAlpha.enabled) {
+			bool blendEnable = rs.blend.isEnable();
+			if (blendEnable) {
 				rtDesc.BlendEnable = true;
-				rtDesc.BlendOp			= DX11Util::getBlendOp(_info->blendRGB.op);
-				rtDesc.BlendOpAlpha		= DX11Util::getBlendOp(_info->blendAlpha.op);
-				rtDesc.SrcBlend			= DX11Util::getBlendType(_info->blendRGB.src);
-				rtDesc.DestBlend		= DX11Util::getBlendType(_info->blendRGB.dst);
-				rtDesc.SrcBlendAlpha	= DX11Util::getBlendType(_info->blendAlpha.src);
-				rtDesc.DestBlendAlpha	= DX11Util::getBlendType(_info->blendAlpha.dst);
+				if (rs.blend.rgb.op == RenderState_BlendOp::Disable) {
+					rtDesc.BlendOp		= D3D11_BLEND_OP_ADD;
+					rtDesc.SrcBlend		= D3D11_BLEND_ONE;
+					rtDesc.DestBlend	= D3D11_BLEND_ZERO;
+				} else {
+					rtDesc.BlendOp		= DX11Util::getBlendOp(rs.blend.rgb.op);
+					rtDesc.SrcBlend		= DX11Util::getBlendFactor(rs.blend.rgb.srcFactor);
+					rtDesc.DestBlend	= DX11Util::getBlendFactor(rs.blend.rgb.dstFactor);
+				}
+
+				if (rs.blend.alpha.op == RenderState_BlendOp::Disable) {
+					rtDesc.BlendOpAlpha		= D3D11_BLEND_OP_ADD;
+					rtDesc.SrcBlendAlpha	= D3D11_BLEND_ONE;
+					rtDesc.DestBlendAlpha	= D3D11_BLEND_ZERO;
+				} else {
+					rtDesc.BlendOpAlpha		= DX11Util::getBlendOp(rs.blend.alpha.op);
+					rtDesc.SrcBlendAlpha	= DX11Util::getBlendFactor(rs.blend.alpha.srcFactor);
+					rtDesc.DestBlendAlpha	= DX11Util::getBlendFactor(rs.blend.alpha.dstFactor);
+				}
 			} else {
 				rtDesc.BlendEnable = false;
 			}

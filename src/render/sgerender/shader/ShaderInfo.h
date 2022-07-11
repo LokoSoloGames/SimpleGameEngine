@@ -3,6 +3,7 @@
 #include <sgerender/RenderDataType.h>
 #include <sgerender/vertex/Vertex.h>
 #include <sgecore/serializer/json/JsonUtil.h>
+#include "RenderState.h"
 
 namespace SimpleGameEngine {
 
@@ -12,105 +13,17 @@ namespace SimpleGameEngine {
 		Pixel = 1 << 1,
 	};
 
-	enum class ShaderPropType {
-		None,
-		Int,
-		Float,
-		Vec2f,
-		Vec3f,
-		Vec4f,
-		Color4f,
-	};
-
 #define ShaderPropType_ENUM_LIST(E) \
-	E(Int) \
-	E(Float) \
-	E(Vec2f) \
-	E(Vec3f) \
-	E(Vec4f) \
-	E(Color4f) \
+	E(None,) \
+	E(Int,) \
+	E(Float,) \
+	E(Vec2f,) \
+	E(Vec3f,) \
+	E(Vec4f,) \
+	E(Color4f,) \
+	E(Texture2D,) \
 //----
-	SGE_ENUM_STR_UTIL(ShaderPropType)
-
-	enum class ShaderCullType {
-		Back,
-		Front,
-		None,
-	};
-
-#define ShaderCullType_ENUM_LIST(E) \
-	E(Back) \
-	E(Front) \
-	E(None) \
-//----
-	SGE_ENUM_STR_UTIL(ShaderCullType)
-
-	enum class ShaderBlendType {
-		Zero,
-		One,
-		SrcColor,
-		SrcAlpha,
-		DstColor,
-		DstAlpha,
-		OneMinusSrcColor,
-		OneMinusSrcAlpha,
-		OneMinusDstColor,
-		OneMinusDstAlpha,
-	};
-
-#define ShaderBlendType_ENUM_LIST(E) \
-	E(One) \
-	E(Zero) \
-	E(SrcColor) \
-	E(SrcAlpha) \
-	E(DstColor) \
-	E(DstAlpha) \
-	E(OneMinusSrcColor) \
-	E(OneMinusSrcAlpha) \
-	E(OneMinusDstColor) \
-	E(OneMinusDstAlpha) \
-//----
-	SGE_ENUM_STR_UTIL(ShaderBlendType)
-
-	enum class ShaderBlendOp {
-		Add,
-		Sub,
-		RevSub,
-		Min,
-		Max
-	};
-
-#define ShaderBlendOp_ENUM_LIST(E) \
-	E(Add) \
-	E(Sub) \
-	E(RevSub) \
-	E(Min) \
-	E(Max) \
-//----
-	SGE_ENUM_STR_UTIL(ShaderBlendOp)
-
-	enum class ShaderDepthTest {
-		Never,
-		Less,
-		Greater,
-		LEqual,
-		GEqual,
-		Equal,
-		NotEqual,
-		Always,
-	};
-
-#define ShaderDepthTest_ENUM_LIST(E) \
-	E(Never) \
-	E(Less) \
-	E(Greater) \
-	E(LEqual) \
-	E(GEqual) \
-	E(Equal) \
-	E(NotEqual) \
-	E(Always) \
-//----
-	SGE_ENUM_STR_UTIL(ShaderDepthTest)
+	SGE_ENUM_CLASS(ShaderPropType, u8)
 
 	struct ShaderInfo {
 		struct Prop {
@@ -128,42 +41,17 @@ namespace SimpleGameEngine {
 		};
 
 		struct Pass {
-			struct Blend {
-				bool			enabled;
-				ShaderBlendOp	op;
-				ShaderBlendType src;
-				ShaderBlendType dst;
-
-				template<class SE>
-				void onJson(SE& se) {
-					SGE_NAMED_IO(se, enabled);
-					SGE_NAMED_IO(se, op);
-					SGE_NAMED_IO(se, src);
-					SGE_NAMED_IO(se, dst);
-				}
-			};
-
 			String name;
-		
-			bool depthWrite = true;
-			ShaderDepthTest depthTest = ShaderDepthTest::LEqual;
-			ShaderCullType cull = ShaderCullType::Back;
-			Blend blendRGB;
-			Blend blendAlpha;
-
 			String vsFunc;
 			String psFunc;
+			RenderState	renderState;
 
 			template<class SE>
 			void onJson(SE& se) {
 				SGE_NAMED_IO(se, name);
-				SGE_NAMED_IO(se, depthWrite);
-				SGE_NAMED_IO(se, depthTest);
-				SGE_NAMED_IO(se, cull);
-				SGE_NAMED_IO(se, blendRGB);
-				SGE_NAMED_IO(se, blendAlpha);
 				SGE_NAMED_IO(se, vsFunc);
 				SGE_NAMED_IO(se, psFunc);
+				SGE_NAMED_IO(se, renderState);
 			}
 		};
 

@@ -25,7 +25,7 @@ namespace SimpleGameEngine {
 
 		ShaderVertexStage* vertexStage() { return _vertexStage; }
 		ShaderPixelStage* pixelStage() { return _pixelStage; }
-		ShaderInfo::Pass* info() { return _info; }
+		const ShaderInfo::Pass* info() const { return _info; }
 
 	protected:
 		Shader* _shader = nullptr;
@@ -49,6 +49,6 @@ namespace SimpleGameEngine {
 	protected:
 		String	_filename;
 		ShaderInfo _info;
-		Vector_<UPtr<ShaderPass>, 1> _passes;
+		Vector_<UPtr<ShaderPass>, 2> _passes;
 	};
 }

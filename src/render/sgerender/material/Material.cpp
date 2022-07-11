@@ -42,8 +42,8 @@ namespace SimpleGameEngine {
 		_passes.clear();
 		_passes.reserve(shader->passes().size());
 		for (auto& shaderPass : shader->passes()) {
-			auto* pass = onCreatePass(this, shaderPass.get());
-			_passes.emplace_back(pass);
+			UPtr<Pass> pass = onCreatePass(shaderPass.get());
+			_passes.emplace_back(std::move(pass));
 		}
 
 		onSetShader();

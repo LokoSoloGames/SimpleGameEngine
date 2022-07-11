@@ -15,5 +15,5 @@ set_target_properties(${PROJECT_NAME} PROPERTIES UNITY_BUILD ON UNITY_BUILD_MODE
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER SGE/Core)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt EASTL nlohmann_json::nlohmann_json libpng)
+target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt EASTL nlohmann_json::nlohmann_json png)
 sge_set_target_warning_level(${PROJECT_NAME})

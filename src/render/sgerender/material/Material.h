@@ -110,6 +110,7 @@ namespace SimpleGameEngine {
 		using PixelStage = MaterialPass_PixelStage;
 
 		void bind(RenderContext* ctx, const VertexLayout* vertexLayout) { onBind(ctx, vertexLayout); }
+		const ShaderInfo::Pass* info() { return _shaderPass ? _shaderPass->info() : nullptr; }
 
 		friend class Material;
 	protected:
@@ -170,6 +171,6 @@ namespace SimpleGameEngine {
 		Vector_<UPtr<Pass>, 2>	_passes;
 		SPtr<Shader> _shader;
 		virtual void onSetShader() {}
-		virtual Pass* onCreatePass(Material* material, ShaderPass* shaderPass) = 0;
+		virtual UPtr<Pass> onCreatePass(ShaderPass* shaderPass) = 0;
 	};
 }

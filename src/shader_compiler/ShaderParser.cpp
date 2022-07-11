@@ -68,7 +68,7 @@ namespace SimpleGameEngine {
 
 		{
 			// prop type
-			_readEnum(o.propType);
+			readEnum(o.propType);
 
 			// prop name
 			readIdentifier(o.name);
@@ -103,27 +103,14 @@ namespace SimpleGameEngine {
 			if (_token.isOperator("}"))	{ nextToken(); break; }
 			if (_token.isNewline())		{ nextToken(); continue; }
 
-			if (_token.isIdentifier("DepthWrite"))	{ nextToken(); _readBoolean(o.depthWrite);	continue; }
-			if (_token.isIdentifier("DepthTest"))	{ nextToken(); _readEnum(o.depthTest);		continue; }
-			if (_token.isIdentifier("Cull"))		{ nextToken(); _readEnum(o.cull);			continue; }
+			if (_token.isIdentifier("Cull")) { nextToken(); readEnum(o.renderState.cull); continue; }
 
-			if (_token.isIdentifier("BlendRGB")) { 
-				nextToken(); 
-				_readEnum(o.blendRGB.op);
-				_readEnum(o.blendRGB.src);
-				_readEnum(o.blendRGB.dst);
-				o.blendRGB.enabled = true;
-				continue;
-			}
+			if (_token.isIdentifier("DepthTest")) { nextToken(); readEnum(o.renderState.depthTest.op); continue; }
+			if (_token.isIdentifier("DepthWrite")) { nextToken(); readBool(o.renderState.depthTest.writeMask); continue; }
 
-			if (_token.isIdentifier("BlendAlpha")) {
-				nextToken(); 
-				_readEnum(o.blendAlpha.op);
-				_readEnum(o.blendAlpha.src);
-				_readEnum(o.blendAlpha.dst);
-				o.blendAlpha.enabled = true;
-				continue;
-			}
+			if (_token.isIdentifier("BlendRGB")) { nextToken(); _readBlendFunc(o.renderState.blend.rgb); continue; }
+			if (_token.isIdentifier("BlendAlpha")) { nextToken(); _readBlendFunc(o.renderState.blend.rgb); continue; }
+
 			
 			if (_token.isIdentifier("VsFunc")) { nextToken(); readIdentifier(o.vsFunc); continue; }
 			if (_token.isIdentifier("PsFunc")) { nextToken(); readIdentifier(o.psFunc); continue; }
@@ -131,23 +118,9 @@ namespace SimpleGameEngine {
 		}
 	}
 
-	void ShaderParser::_readBoolean(bool& b) {
-		if (!token().isIdentifier()) {
-			errorUnexpectedToken();
-			return;
-		}
-
-		if (_token.str == "true" || _token.str == "TRUE") {
-			b = true;
-			nextToken();
-			return;
-		}
-
-		if (_token.str == "false" || _token.str == "FALSE") {
-			b = false;
-			nextToken();
-			return;
-		}
-		error("read boolean [{}]", _token.str);
+	void ShaderParser::_readBlendFunc(RenderState::BlendFunc& v) {
+		readEnum(v.op);
+		readEnum(v.srcFactor);
+		readEnum(v.dstFactor);
 	}
 }
