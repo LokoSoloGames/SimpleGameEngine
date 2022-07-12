@@ -2,7 +2,7 @@
 
 #include "sgebase.h"
 #include "app/ConsoleApp.h"
-#include <app/ProjectSettings.h>
+#include "app/ProjectSettings.h"
 
 #include "sgecore/BitUtil.h"
 
@@ -25,6 +25,7 @@
 #include "sgecore/pointer/ComPtr.h"
 
 #include "sgecore/graph/Color.h"
+#include "sgecore/graph/ColorUtil.h"
 
 #include "sgecore/log/Log.h"
 #include "sgecore/error/Error.h"
