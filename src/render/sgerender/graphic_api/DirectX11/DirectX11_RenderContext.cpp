@@ -6,7 +6,7 @@
 namespace SimpleGameEngine {
 	DirectX11_RenderContext::DirectX11_RenderContext(DirectX11RenderContextCreateDesc& desc) : Base(desc) {
 		_window = desc.window;
-		_renderer = DirectX11_Renderer::current();
+		_renderer = DirectX11_Renderer::instance();
 
 		auto* dev = _renderer->d3dDevice();
 		auto* dxgiFactory = _renderer->dxgiFactory();
@@ -30,7 +30,7 @@ namespace SimpleGameEngine {
 	}
 
 	void DirectX11_RenderContext::_createRenderTarget() {
-		auto* renderer = DirectX11_Renderer::current();
+		auto* renderer = DirectX11_Renderer::instance();
 		auto* dev = renderer->d3dDevice();
 		HRESULT hr;
 

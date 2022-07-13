@@ -13,7 +13,7 @@ namespace SimpleGameEngine {
 		void onCreate(CreateDesc& desc) {
 			Base::onCreate(desc);
 
-			auto* renderer = Renderer::current(); 
+			auto* renderer = Renderer::instance();
 			{
 				RenderContext::CreateDesc renderContextDesc;
 				renderContextDesc.window = this;
@@ -31,7 +31,7 @@ namespace SimpleGameEngine {
 
 			_renderMesh.create(editMesh);
 			auto shader = renderer->createShader("Shaders/test.shader");
-			_material = Renderer::current()->createMaterial();
+			_material = Renderer::instance()->createMaterial();
 			_material->setShader(shader);
 		}
 

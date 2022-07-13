@@ -122,7 +122,7 @@ namespace SimpleGameEngine {
 		}
 
 //------
-		auto* renderer = Renderer::current();
+		auto* renderer = Renderer::instance();
 		{
 			RenderGpuBuffer::CreateDesc desc;
 			desc.type = RenderGpuBufferType::Vertex;

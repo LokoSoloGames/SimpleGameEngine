@@ -2,6 +2,7 @@
 
 #include <sgerender/shader/Shader.h>
 #include <sgerender/buffer/RenderGpuBuffer.h>
+#include <sgerender/textures/Texture.h>
 
 namespace SimpleGameEngine {
 	class RenderContext;
@@ -18,9 +19,9 @@ namespace SimpleGameEngine {
 		friend class MaterialPass;
 	protected:
 		struct ConstBuffer {
-			using DataType = RenderDataType;
-			using Info = ShaderStageInfo::ConstBuffer;
-			using VarInfo = ShaderStageInfo::Variable;
+			using DataType	= RenderDataType;
+			using Info		= ShaderStageInfo::ConstBuffer;
+			using VarInfo	= ShaderStageInfo::Variable;
 
 			Vector<u8>				cpuBuffer;
 			SPtr<RenderGpuBuffer>	gpuBuffer;
@@ -42,17 +43,16 @@ namespace SimpleGameEngine {
 			const Info* _info = nullptr;
 			bool	_gpuDirty = false;
 
-			void _setParam(const VarInfo* varInfo, const float& value)		{ _setParamCheckType(varInfo, value, DataType::Float32); }
-			void _setParam(const VarInfo* varInfo, const Tuple2f& value)	{ _setParamCheckType(varInfo, value, DataType::Float32x2); }
-			void _setParam(const VarInfo* varInfo, const Tuple3f& value)	{ _setParamCheckType(varInfo, value, DataType::Float32x3); }
-			void _setParam(const VarInfo* varInfo, const Tuple4f& value)	{ _setParamCheckType(varInfo, value, DataType::Float32x4); }
-			void _setParam(const VarInfo* varInfo, const Mat4f& value)		{ _setParamCheckType(varInfo, value, DataType::Float32_4x4); }
+			void _setParam(const VarInfo* varInfo, const float&		value)	{ _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Tuple2f&	value)	{ _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Tuple3f&	value)	{ _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Tuple4f&	value)	{ _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Mat4f&		value)	{ _setParamCheckType(varInfo, value); }
 
 			template<class V>
-			void _setParamCheckType(const VarInfo* varInfo, const V& value, DataType dataType) {
-				if (varInfo->dataType != dataType) {
-					errorType();
-					return;
+			void _setParamCheckType(const VarInfo* varInfo, const V& value) {
+				if (varInfo->dataType != RenderDataTypeUtil::get<V>()) {
+					throw SGE_ERROR("ConstBuffer setParam type mismatch");
 				}
 				_setValueAs(varInfo, value);
 			}
@@ -66,8 +66,6 @@ namespace SimpleGameEngine {
 				*reinterpret_cast<V*>(dst) = value;
 				_gpuDirty = true;
 			}
-
-			void errorType();
 		};
 
 		template<class V>
@@ -80,24 +78,58 @@ namespace SimpleGameEngine {
 			}
 		}
 
+		struct TexParam {
+			using DataType	= ShaderStageInfo::DataType;
+			using Info		= ShaderStageInfo::Texture;
+
+			void create(const Info& info) { _info = &info; }
+
+			Texture* getUpdatedTexture();
+
+			StrView		name()		const { return _info->name; }
+			int			bindPoint() const { return _info->bindPoint; }
+			DataType	dataType()	const { return _info->dataType; }
+
+			template<class TEX>
+			void setTexParam(TEX* tex) {
+				if (_info->dataType != RenderDataTypeUtil::get<TEX>()) {
+					_tex.reset(nullptr);
+					throw SGE_ERROR("Invalid texture type");
+				}
+				_tex = tex;
+			}
+
+		protected:
+			SPtr<Texture>	_tex;
+			const Info* _info = nullptr;
+		};
+
+		template<class V>
+		void _setTexParam(StrView name, V* texture) {
+			if (!texture) { SGE_ASSERT(false); return; }
+			for (auto& p : _texParams) {
+				if (0 == p.name().compare(name)) {
+					p.setTexParam(texture);
+					break;
+				}
+			}
+		}
+
 		Pass* _pass = nullptr;
 		ShaderStage* _shaderStage = nullptr;
 		Vector_<ConstBuffer, 4>	_constBuffers;
+		Vector_<TexParam, 4>	_texParams;
 	};
 
 	struct MaterialPass_VertexStage : public MaterialPass_Stage {
 		using Base = MaterialPass_Stage;
 
-		MaterialPass_VertexStage(MaterialPass* pass, ShaderVertexStage* shaderStage)
-			: Base(pass, shaderStage)
-		{}
+		MaterialPass_VertexStage(MaterialPass* pass, ShaderVertexStage* shaderStage) : Base(pass, shaderStage) {}
 	};
 
 	struct MaterialPass_PixelStage : public MaterialPass_Stage {
 		using Base = MaterialPass_Stage;
-		MaterialPass_PixelStage(MaterialPass* pass, ShaderPixelStage* shaderStage)
-			: Base(pass, shaderStage)
-		{}
+		MaterialPass_PixelStage(MaterialPass* pass, ShaderPixelStage* shaderStage) : Base(pass, shaderStage) {}
 	};
 
 	class MaterialPass : public NonCopyable {
@@ -130,6 +162,11 @@ namespace SimpleGameEngine {
 			if (_pixelStage)   _pixelStage->_setParam(name, v);
 		}
 
+		template<class V> void _setTexParam(StrView name, const V& v) {
+			if (_vertexStage) _vertexStage->_setTexParam(name, v);
+			if (_pixelStage)  _pixelStage->_setTexParam(name, v);
+		}
+
 		VertexStage* _vertexStage = nullptr;
 		PixelStage* _pixelStage = nullptr;
 	};
@@ -140,6 +177,7 @@ namespace SimpleGameEngine {
 
 		void setShader(Shader* shader);
 
+		void setParam(StrView name, Texture2D* v)		{ _setTexParam(name, v); }
 		void setParam(StrView name, const float& v)		{ _setParam(name, v); }
 		void setParam(StrView name, const Tuple2f& v)	{ _setParam(name, v); }
 		void setParam(StrView name, const Tuple3f& v)	{ _setParam(name, v); }
@@ -165,6 +203,12 @@ namespace SimpleGameEngine {
 		template<class V> void _setParam(StrView name, const V& v) {
 			for (auto& pass : _passes) {
 				if (pass) pass->_setParam(name, v);
+			}
+		}
+
+		template<class V> void _setTexParam(StrView name, const V& v) {
+			for (auto& pass : _passes) {
+				if (pass) pass->_setTexParam(name, v);
 			}
 		}
 

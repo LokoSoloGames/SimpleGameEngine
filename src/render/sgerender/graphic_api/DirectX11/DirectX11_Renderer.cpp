@@ -3,6 +3,7 @@
 #include "DirectX11_RenderGpuBuffer.h"
 #include "DirectX11_Material.h"
 #include "DirectX11_Shader.h"
+#include "DirectX11_Texture.h"
 
 #if SGE_RENDER_HAS_DX11
 namespace SimpleGameEngine {
@@ -66,6 +67,11 @@ namespace SimpleGameEngine {
 	SPtr<RenderGpuBuffer> DirectX11_Renderer::onCreateGpuBuffer(RenderGpuBufferCreateDesc& desc) {
 		return new DirectX11_RenderGpuBuffer(desc);
 	}
+
+	SPtr<Texture2D> DirectX11_Renderer::onCreateTexture2D(Texture2D_CreateDesc& desc) {
+		return new DirectX11_Texture2D(desc);
+	}
+
 
 	SPtr<Material> DirectX11_Renderer::onCreateMaterial() {
 		return new DirectX11_Material();

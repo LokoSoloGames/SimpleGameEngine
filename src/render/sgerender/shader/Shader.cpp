@@ -9,7 +9,7 @@ namespace SimpleGameEngine {
 	}
 
 	Shader::~Shader() {
-		auto* renderer = Renderer::current();
+		auto* renderer = Renderer::instance();
 		renderer->onShaderDestroy(this);
 	}
 

@@ -30,7 +30,7 @@ namespace SimpleGameEngine {
 			default: throw SGE_ERROR("unsupported gpu buffer type");
 		}
 
-		auto* renderer = DirectX11_Renderer::current();
+		auto* renderer = DirectX11_Renderer::instance();
 		auto* dev = renderer->d3dDevice();
 
 		auto hr = dev->CreateBuffer(&bd, nullptr, _d3dBuf.ptrForInit());
@@ -38,7 +38,7 @@ namespace SimpleGameEngine {
 	}
 
 	void DirectX11_RenderGpuBuffer::onUploadToGpu(ByteSpan data, size_t offset) {
-		auto* renderer = DirectX11_Renderer::current();
+		auto* renderer = DirectX11_Renderer::instance();
 		auto* ctx = renderer->d3dDeviceContext();
 
 		D3D11_MAPPED_SUBRESOURCE mapped = {};

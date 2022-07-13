@@ -56,7 +56,7 @@ namespace SimpleGameEngine {
 		_vertexStage = &_myVertexStage;
 		_pixelStage = &_myPixelStage;
 
-		auto* renderer = DirectX11_Renderer::current();
+		auto* renderer = DirectX11_Renderer::instance();
 		auto* dev = renderer->d3dDevice();
 
 		if (info.vsFunc.size()) { _myVertexStage.load(this, passPath, dev); }

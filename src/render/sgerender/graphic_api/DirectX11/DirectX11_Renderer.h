@@ -8,7 +8,7 @@ namespace SimpleGameEngine {
 		using Base = Renderer;
 		using Util = DX11Util;
 	public:
-		static DirectX11_Renderer* current() { return static_cast<DirectX11_Renderer*>(_current); }
+		static DirectX11_Renderer* instance() { return static_cast<DirectX11_Renderer*>(_instance); }
 
 		DirectX11_Renderer(CreateDesc& desc);
 
@@ -30,6 +30,7 @@ namespace SimpleGameEngine {
 
 		virtual SPtr<RenderContext>		onCreateContext(RenderContextCreateDesc& desc) override;
 		virtual SPtr<RenderGpuBuffer>	onCreateGpuBuffer(RenderGpuBufferCreateDesc& desc) override;
+		virtual SPtr<Texture2D>			onCreateTexture2D(Texture2D_CreateDesc& desc) override;
 
 		virtual SPtr<Material>			onCreateMaterial() override;
 		virtual SPtr<Shader>			onCreateShader(StrView filename) override;

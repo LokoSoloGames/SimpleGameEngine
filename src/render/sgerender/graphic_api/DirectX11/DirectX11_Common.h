@@ -28,6 +28,9 @@ namespace SimpleGameEngine {
 	using DX11_ID3DTexture2D = ID3D11Texture2D;
 	using DX11_ID3DTexture3D = ID3D11Texture3D;
 
+	using DX11_ID3DSamplerState = ID3D11SamplerState;
+	using DX11_ID3DShaderResourceView = ID3D11ShaderResourceView;
+
 	using DX11_ID3DRenderTargetView = ID3D11RenderTargetView;
 	using DX11_ID3DDepthStencilView = ID3D11DepthStencilView;
 
@@ -59,11 +62,16 @@ struct DX11Util {
 
 	static D3D11_PRIMITIVE_TOPOLOGY	getPrimitiveTopology	(RenderPrimitiveType t);
 	static DXGI_FORMAT				getFormat				(RenderDataType v);
-	static const char*				getSemanticName			(VertexSemanticType t);
+	static DXGI_FORMAT				getColorType			(ColorType v);
 	static D3D11_CULL_MODE			getCullMode				(RenderState_Cull t);
 	static D3D11_COMPARISON_FUNC	getDepthTestOp			(RenderState_DepthTestOp t);
 	static D3D11_BLEND_OP			getBlendOp				(RenderState_BlendOp op);
 	static D3D11_BLEND				getBlendFactor			(RenderState_BlendFactor t);
+	
+	static D3D11_FILTER					getTextureFilter	(TextureFilter v);
+	static D3D11_TEXTURE_ADDRESS_MODE	getTextureWrap		(TextureWrap v);
+	
+	static const char*				getSemanticName			(VertexSemanticType t);
 	static VertexSemanticType		parseSemanticName(StrView s);
 
 	static String getStrFromHRESULT(HRESULT hr);
@@ -221,6 +229,33 @@ VertexSemanticType DX11Util::parseSemanticName(StrView s) {
 	return v;
 }
 
+inline 
+D3D11_FILTER DX11Util::getTextureFilter(TextureFilter v) {
+	using SRC = TextureFilter;
+	switch (v) {
+	case SRC::Point:		return D3D11_FILTER_MIN_MAG_MIP_POINT;
+	case SRC::Linear:		return D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+	case SRC::Bilinear:		return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+	case SRC::Trilinear:	return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	case SRC::Anisotropic:	return D3D11_FILTER_ANISOTROPIC;
+	//---
+	default: throw SGE_ERROR("unsupported TextureFilter");
+	}
+}
+
+inline
+D3D11_TEXTURE_ADDRESS_MODE DX11Util::getTextureWrap(TextureWrap v) {
+	using SRC = TextureWrap;
+	switch (v) {
+	case SRC::Repeat:		return D3D11_TEXTURE_ADDRESS_WRAP;
+	case SRC::Clamp:		return D3D11_TEXTURE_ADDRESS_CLAMP;
+	case SRC::Mirror:		return D3D11_TEXTURE_ADDRESS_MIRROR;
+	case SRC::MirrorOnce:	return D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
+	//---
+	default: throw SGE_ERROR("unsupported TextureWrap");
+	}
+}
+
 inline
 DXGI_FORMAT DX11Util::getFormat(RenderDataType v) {
 	using SRC = RenderDataType;
@@ -297,6 +332,34 @@ DXGI_FORMAT DX11Util::getFormat(RenderDataType v) {
 		case SRC::Float32x4:	return DXGI_FORMAT_R32G32B32A32_FLOAT; break;
 //---
 		default: throw SGE_ERROR("Unsupported RenderDataType");
+	}
+}
+
+inline
+DXGI_FORMAT DX11Util::getColorType(ColorType v) {
+	using SRC = ColorType;
+	switch (v) {
+	case SRC::Rb:		return DXGI_FORMAT_R8_UNORM;
+	case SRC::Rf:		return DXGI_FORMAT_R32_FLOAT;
+
+	case SRC::RGb:		return DXGI_FORMAT_R8G8_UNORM;
+	case SRC::RGf:		return DXGI_FORMAT_R32G32_FLOAT;
+
+	//case SRC::RGBb:	return DXGI_FORMAT_R8G8B8_UNORM;		// DX Not Support
+	//case SRC::RGBf:	return DXGI_FORMAT_R32G32B32_FLOAT;		// DX Not Support
+
+	case SRC::RGBAb:	return DXGI_FORMAT_R8G8B8A8_UNORM;
+	case SRC::RGBAf:	return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	//
+	case SRC::BC1:		return DXGI_FORMAT_BC1_UNORM;
+	case SRC::BC2:		return DXGI_FORMAT_BC2_UNORM;
+	case SRC::BC3:		return DXGI_FORMAT_BC3_UNORM;
+	case SRC::BC4:		return DXGI_FORMAT_BC4_UNORM;
+	case SRC::BC5:		return DXGI_FORMAT_BC5_UNORM;
+	case SRC::BC6h:		return DXGI_FORMAT_BC6H_UF16;
+	case SRC::BC7:		return DXGI_FORMAT_BC7_UNORM;
+
+	default: throw SGE_ERROR("unsupported ColorType");
 	}
 }
 

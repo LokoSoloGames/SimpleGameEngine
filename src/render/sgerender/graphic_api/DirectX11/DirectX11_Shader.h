@@ -1,7 +1,7 @@
 #pragma once
 
 #include <sgerender/shader/Shader.h>
-#include <sgerender/graphic_api/DirectX11/DirectX11_Common.h>
+#include "DirectX11_Common.h"
 #include "DirectX11_RenderContext.h"
 
 namespace SimpleGameEngine {
