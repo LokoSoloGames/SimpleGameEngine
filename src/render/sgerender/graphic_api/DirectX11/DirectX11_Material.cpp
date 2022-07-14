@@ -33,7 +33,7 @@ namespace SimpleGameEngine {
 
 			switch (texParam.dataType()) {
 			case RenderDataType::Texture2D: {
-				auto* tex2d = static_cast<Texture2D_DX11*>(tex);
+				auto* tex2d = static_cast<DirectX11_Texture2D*>(tex);
 				auto* rv = tex2d->resourceView();
 				auto* ss = tex2d->samplerState();
 

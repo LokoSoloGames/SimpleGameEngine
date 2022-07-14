@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sgerender.h>
 #include "DirectX11_Common.h"
 
 #if SGE_RENDER_HAS_DX11

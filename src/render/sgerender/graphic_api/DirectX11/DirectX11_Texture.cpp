@@ -1,9 +1,8 @@
 #include "DirectX11_Texture.h"
-#include "DirectX11_Renderer.h"
 
 namespace SimpleGameEngine {
 	
-DirectX11_Texture::DirectX11_Texture(CreateDesc& desc) : Base(desc) {
+DirectX11_Texture2D::DirectX11_Texture2D(CreateDesc& desc) : Base(desc) {
 	auto* renderer = DirectX11_Renderer::instance();
 	auto* dev = renderer->d3dDevice();
 

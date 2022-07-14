@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sgerender.h>
+#include <render-pch.h>
 
 namespace SimpleGameEngine {
 	
@@ -19,9 +19,9 @@ public:
 	using Info = ImageInfo;
 
 	Image() = default;
-	Image(Image&& r);
+	//Image(Image&& r);
 
-	void operator=(Image&& r);
+	//void operator=(Image&& r);
 
 	void clear();
 

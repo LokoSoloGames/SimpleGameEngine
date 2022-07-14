@@ -22,9 +22,39 @@ namespace SimpleGameEngine {
 
 			_camera.setPos(0, 5, 5);
 			_camera.setAim(0, 0, 0);
+
+			{
+				Texture2D_CreateDesc texDesc;
+				auto& image = texDesc.imageToUpload;
+
+				image.loadFile("Textures/uvChecker.png");
+
+				texDesc.size = image.size();
+				texDesc.colorType = image.colorType();
+
+				/*int w = 256;
+				int h = 256;
+
+				texDesc.size.set(w, h);
+				texDesc.colorType = ColorType::RGBAb;
+
+				image.create(Color4b::kColorType, w, h);
+
+				for (int y = 0; y < w; y++) {
+					auto span = image.row<Color4b>(y);
+					for (int x = 0; x < h; x++) {
+						span[x] = Color4b(static_cast<u8>(x),
+							static_cast<u8>(y),
+							0,
+							255);
+					}
+				}*/
+
+				_testTexture = renderer->createTexture2D(texDesc);
+			}
 			
 			EditMesh editMesh;
-			WavefrontObjLoader::loadFile(editMesh, "bunny.obj");
+			WavefrontObjLoader::loadFile(editMesh, "Mesh/test.obj");
 			for (size_t i = editMesh.color.size(); i < editMesh.pos.size(); i++) {
 				editMesh.color.emplace_back(255, 255, 255, 255);
 			}
@@ -33,6 +63,8 @@ namespace SimpleGameEngine {
 			auto shader = renderer->createShader("Shaders/test.shader");
 			_material = Renderer::instance()->createMaterial();
 			_material->setShader(shader);
+			_material->setParam("mainTex", _testTexture);
+
 		}
 
 		virtual void onCloseButton() override {
@@ -107,6 +139,7 @@ namespace SimpleGameEngine {
 		RenderMesh _renderMesh;
 		RenderCommandBuffer _cmdBuf;
 		SPtr<Material> _material;
+		SPtr<Texture2D>	_testTexture;
 		SPtr<RenderContext>	_renderContext;
 		Math::Camera3f	_camera;
 	};

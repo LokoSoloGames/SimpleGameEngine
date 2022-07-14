@@ -7,10 +7,39 @@ namespace SimpleGameEngine {
 		auto* begin = path.begin();
 
 		if (end == nullptr) return String();
-		auto* p = end - 1;
-		for (; p >= begin; p--) {
+		for (auto* p = end - 1; p >= begin; p--) {
 			if (*p == '/' || *p == '\\') {
 				return StrView(begin, p - begin);
+			}
+		}
+
+		return StrView();
+	}
+
+	StrView FilePath::basename(StrView path) {
+		auto* end = path.end();
+		auto* begin = path.begin();
+
+		if (end == nullptr) return StrView();
+		for (auto* p = end - 1; p >= begin; p--) {
+			if (*p == '/' || *p == '\\') {
+				p++;
+				return StrView(p, end - p);
+			}
+		}
+
+		return StrView();
+	}
+
+	StrView FilePath::extension(StrView path) {
+		auto* end = path.end();
+		auto* begin = path.begin();
+
+		if (end == nullptr) return StrView();
+		for (auto* p = end - 1; p >= begin; p--) {
+			if (*p == '.') {
+				p++;
+				return StrView(p, end - p);
 			}
 		}
 

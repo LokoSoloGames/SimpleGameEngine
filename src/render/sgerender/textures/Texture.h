@@ -1,6 +1,5 @@
 #pragma once
 
-#include <sgerender.h>
 #include "Image.h"
 
 namespace SimpleGameEngine {

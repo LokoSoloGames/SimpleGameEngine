@@ -1,7 +1,9 @@
 #pragma once
 
 #include <render-pch.h>
-#include <sgerender/RenderCommon.h>
+#include <sgerender/vertex/Vertex.h>
+#include <sgerender/shader/Shader.h>
+#include <sgerender/textures/Texture.h>
 
 #if SGE_RENDER_HAS_DX11
 #include <d3d11.h>
@@ -14,6 +16,9 @@
 #pragma comment(lib, "d3dcompiler.lib")
 
 namespace SimpleGameEngine {
+
+	class DirectX11_Renderer;
+	class DirectX11_RenderContext;
 
 	using DX11_IDXGIFactory = IDXGIFactory1;
 	using DX11_IDXGIDevice = IDXGIDevice;
@@ -147,9 +152,9 @@ inline
 D3D11_CULL_MODE DX11Util::getCullMode(RenderState_Cull v) {
 	using SRC = RenderState_Cull;
 	switch (v) {
+	case SRC::None:		return D3D11_CULL_NONE;
 	case SRC::Back:		return D3D11_CULL_BACK;
 	case SRC::Front:	return D3D11_CULL_FRONT;
-	case SRC::None:		return D3D11_CULL_NONE;
 	default: throw SGE_ERROR("unsupported CullMode");
 	}
 }

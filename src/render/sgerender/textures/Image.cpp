@@ -1,10 +1,31 @@
 #include "Image.h"
+#include "ImageIO_png.h"
 
 namespace SimpleGameEngine {
 
 void Image::clear() {
 	_info = ImageInfo();
 	_pixelData.clear();
+}
+
+void Image::loadFile(StrView filename) {
+	auto ext = FilePath::extension(filename);
+	if (StringUtil::ignoreCaseCompare(ext, "png") == 0) {
+		return loadPngFile(filename);
+	}
+
+	throw SGE_ERROR("Unsupported image file extension {}", ext);
+}
+
+void Image::loadPngFile(StrView filename) {
+	MemMapFile mm;
+	mm.open(filename);
+	loadPngMem(mm);
+}
+
+void Image::loadPngMem(ByteSpan data) {
+	ImageIO_png::Reader r;
+	r.load(*this, data);
 }
 
 void Image::create(ColorType colorType, int width, int height) {
