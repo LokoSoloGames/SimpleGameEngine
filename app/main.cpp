@@ -27,7 +27,7 @@ namespace SimpleGameEngine {
 				Texture2D_CreateDesc texDesc;
 				auto& image = texDesc.imageToUpload;
 
-				image.loadFile("Textures/uvChecker.png");
+				image.loadFile("Textures/uvChecker_BC7.dds");
 
 				texDesc.size = image.size();
 				texDesc.colorType = image.colorType();

@@ -30,8 +30,13 @@ public:
 	void loadPngFile(StrView filename);
 	void loadPngMem(ByteSpan data);
 
+	void loadDdsFile(StrView filename);
+	void loadDdsMem(ByteSpan data);
+
 	void create(ColorType colorType, int width, int height);
 	void create(ColorType colorType, int width, int height, int strideInBytes);
+	void create(ColorType colorType, int width, int height, int strideInBytes, int mipmapCount, size_t dataSizeInBytes);
+
 
 	SGE_INLINE	const Info&		info()			const { return _info; }
 	SGE_INLINE	const Vec2i&	size()			const { return _info.size; }
@@ -46,8 +51,8 @@ public:
 	template<class COLOR> SGE_INLINE	const COLOR& pixel(int x, int y) const { return row<COLOR>(y)[x]; }
 	template<class COLOR> SGE_INLINE		  COLOR& pixel(int x, int y) { return row<COLOR>(y)[x]; }
 
-	template<class COLOR> SGE_INLINE Span<      COLOR>		row_noCheck(int y) { return Span<      COLOR>(reinterpret_cast<COLOR*>(rowBytes(y).data()), _info.size.x); }
-	template<class COLOR> SGE_INLINE Span<const COLOR>		row_noCheck(int y) const { return Span<const COLOR>(reinterpret_cast<const COLOR*>(rowBytes(y).data()), _info.size.x); }
+	template<class COLOR> SGE_INLINE Span<      COLOR>		row_noCheck(int y)		 { return Span<      COLOR>(reinterpret_cast<		COLOR*>(rowBytes(y).data()), _info.size.x); }
+	template<class COLOR> SGE_INLINE Span<const COLOR>		row_noCheck(int y) const { return Span<const COLOR>(reinterpret_cast<const	COLOR*>(rowBytes(y).data()), _info.size.x); }
 
 	template<class COLOR> void fill(const COLOR& color);
 
@@ -56,8 +61,10 @@ public:
 
 	const void* dataPtr() const { return _pixelData.data(); }
 
+	void copyToPixelData(ByteSpan src) { _pixelData.assign(src.begin(), src.end()); }
+
 private:
-	void _create(ColorType colorType, int width, int height, int strideInBytes, int mipmapCount, int dataSizeInBytes);
+	void _create(ColorType colorType, int width, int height, int strideInBytes, int mipmapCount, size_t dataSizeInBytes);
 	void _checkType(ColorType colorType) const {
 		if (colorType != _info.colorType) throw SGE_ERROR("Invalid ColorType");
 	}

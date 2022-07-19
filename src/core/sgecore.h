@@ -6,6 +6,9 @@
 
 #include "sgecore/BitUtil.h"
 
+#include "sgecore/serializer/binary/BinDeserializer.h"
+#include "sgecore/serializer/binary/BinSerializer.h"
+
 #include "sgecore/allocator/LinearAllocator.h"
 
 #include "sgecore/math/Math.h"
