@@ -34,21 +34,21 @@ namespace SimpleGameEngine {
 		using Helper  = RenderMesh_InternalHelper;
 		clear();
 
-		u8 uvCount = 0;
-		u8 colorCount = 0;
-		u8 normalCount = 0;
-		u8 tangentCount = 0;
-		u8 binormalCount = 0;
+		u8 uvCount			= 0;
+		u8 colorCount		= 0;
+		u8 normalCount		= 0;
+		u8 tangentCount		= 0;
+		u8 binormalCount	= 0;
 
 		_primitive = RenderPrimitiveType::Triangles;
 		size_t vertexCount = src.pos.size();
 		if (vertexCount <= 0)
 			return;
 
-		if (Helper::hasAttr(src.color.size(),    vertexCount)) colorCount = 1;
-		if (Helper::hasAttr(src.normal.size(),   vertexCount)) normalCount = 1;
-		if (Helper::hasAttr(src.tangent.size(),  vertexCount)) tangentCount = 1;
-		if (Helper::hasAttr(src.binormal.size(), vertexCount)) binormalCount = 1;
+		if (Helper::hasAttr(src.color.size(),    vertexCount)) colorCount		= 1;
+		if (Helper::hasAttr(src.normal.size(),   vertexCount)) normalCount		= 1;
+		if (Helper::hasAttr(src.tangent.size(),  vertexCount)) tangentCount		= 1;
+		if (Helper::hasAttr(src.binormal.size(), vertexCount)) binormalCount	= 1;
 
 		for (u8 i = 0; i < EditMesh::kUvCountMax; i++) {
 			if (Helper::hasAttr(src.uv[i].size(), vertexCount)) uvCount = i + 1;

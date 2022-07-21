@@ -1,8 +1,8 @@
 #pragma once
 
 #include "EditMesh.h"
-#include "../vertex/Vertex.h"
-#include "../buffer/RenderGpuBuffer.h"
+#include <sgerender/vertex/Vertex.h>
+#include <sgerender/buffer/RenderGpuBuffer.h>
 
 namespace SimpleGameEngine {
 	class RenderMesh;
@@ -15,9 +15,9 @@ namespace SimpleGameEngine {
 		RenderGpuBuffer*	vertexBuffer() const { return constCast(_vertexBuffer); }
 		RenderGpuBuffer*	indexBuffer()  const { return constCast(_indexBuffer);  }
 
-		size_t vertexCount() const				{ return _vertexCount; }
-		size_t indexCount() const				{ return _indexCount; }
-		RenderDataType indexType() const		{ return _indexType; }
+		size_t vertexCount() const			{ return _vertexCount; }
+		size_t indexCount() const			{ return _indexCount; }
+		RenderDataType indexType() const	{ return _indexType; }
 
 		RenderPrimitiveType primitive() const;
 		const VertexLayout* vertexLayout() const;
