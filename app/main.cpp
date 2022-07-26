@@ -2,6 +2,7 @@
 #include <sgecore.h>
 #include <sgerender.h>
 #include <sgerender/mesh/RenderMesh.h>
+#include <sgerender/mesh/Terrain.h>
 #include <sgerender/command/RenderCommand.h>
 #include <sgerender/mesh/reader/WavefrontObjLoader.h>
 
@@ -52,18 +53,27 @@ namespace SimpleGameEngine {
 
 				_testTexture = renderer->createTexture2D(texDesc);
 			}
-			
-			EditMesh editMesh;
-			WavefrontObjLoader::loadFile(editMesh, "Mesh/test.obj");
-			for (size_t i = editMesh.color.size(); i < editMesh.pos.size(); i++) {
-				editMesh.color.emplace_back(255, 255, 255, 255);
-			}
+			{
+				EditMesh editMesh;
+				WavefrontObjLoader::loadFile(editMesh, "Mesh/test.obj");
+				for (size_t i = editMesh.color.size(); i < editMesh.pos.size(); i++) {
+					editMesh.color.emplace_back(255, 255, 255, 255);
+				}
 
-			_renderMesh.create(editMesh);
-			auto shader = renderer->createShader("Shaders/test.shader");
-			_material = Renderer::instance()->createMaterial();
-			_material->setShader(shader);
-			_material->setParam("mainTex", _testTexture);
+				_renderMesh.create(editMesh);
+				auto shader = renderer->createShader("Shaders/test.shader");
+				_material = Renderer::instance()->createMaterial();
+				_material->setShader(shader);
+				_material->setParam("mainTex", _testTexture);
+			}
+			{
+				TerrainCreateDesc _terrainCreateDesc;
+				_terrainCreateDesc.wh = Vec2i(8, 8);
+				_terrain.create(_terrainCreateDesc);
+				auto shader = renderer->createShader("Shaders/test2.shader");
+				_terrainMaterial = Renderer::instance()->createMaterial();
+				_terrainMaterial->setShader(shader); 
+			}
 
 		}
 
@@ -116,6 +126,13 @@ namespace SimpleGameEngine {
 				_material->setParam("sge_light_dir", Vec3f(-5, -10, -2));
 				_material->setParam("sge_light_power", 4.0f);
 				_material->setParam("sge_light_color", Vec3f(1, 1, 1));
+
+				_terrainMaterial->setParam("sge_matrix_model", model);
+				_terrainMaterial->setParam("sge_matrix_view", view);
+				_terrainMaterial->setParam("sge_matrix_proj", proj);
+				_terrainMaterial->setParam("sge_matrix_mvp", mvp);
+
+				_terrainMaterial->setParam("sge_camera_pos", _camera.pos());
 			}
 
 			auto s = 1.0f;
@@ -129,6 +146,7 @@ namespace SimpleGameEngine {
 			_cmdBuf.reset();
 			_cmdBuf.clearFrameBuffers()->setColor({ 0, 0, 0.2f, 1 });
 			_cmdBuf.drawMesh(SGE_LOC, _renderMesh, _material);
+			_cmdBuf.drawTerrain(SGE_LOC, _terrain, _terrainMaterial);
 			_cmdBuf.swapBuffers();
 
 			_renderContext->commit(_cmdBuf);
@@ -141,6 +159,9 @@ namespace SimpleGameEngine {
 		SPtr<Material> _material;
 		SPtr<Texture2D>	_testTexture;
 		SPtr<RenderContext>	_renderContext;
+
+		Terrain _terrain;
+		SPtr<Material> _terrainMaterial;
 		Math::Camera3f	_camera;
 	};
 

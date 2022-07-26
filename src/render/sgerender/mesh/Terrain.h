@@ -1,3 +1,5 @@
+#pragma once
+
 #include <render-pch.h>
 #include <sgerender/buffer/RenderGpuBuffer.h>
 #include "EditMesh.h"
@@ -13,6 +15,13 @@ namespace SimpleGameEngine {
 	public:
 		void create(const TerrainCreateDesc& desc);
 		void setAdjacentLOD(u8 mask);
+
+		RenderPrimitiveType primitive() const {
+			return RenderPrimitiveType::Triangles;
+		}
+		const VertexLayout* vertexLayout() const {
+			return _vertexLayout;
+		}
 
 		RenderGpuBuffer* vertexBuffer() const { return constCast(_vertexBuffer); }
 		RenderGpuBuffer* indexBuffer()  const { return constCast(_indexBuffer); }
@@ -32,10 +41,5 @@ namespace SimpleGameEngine {
 		SPtr<RenderGpuBuffer>	_indexBuffer;
 
 		const VertexLayout* _vertexLayout = nullptr;
-	};
-
-	struct TerrainCreateDesc {
-		Vec2i wh;
-
 	};
 }

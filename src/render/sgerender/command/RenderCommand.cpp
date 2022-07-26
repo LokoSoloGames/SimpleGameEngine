@@ -1,5 +1,6 @@
 #include "RenderCommand.h"
 #include "../mesh/RenderMesh.h"
+#include "../mesh/Terrain.h"
 
 namespace SimpleGameEngine {
 	void RenderCommandBuffer::drawMesh(const SrcLoc& debugLoc, const RenderMesh& mesh, Material* material) {
@@ -27,6 +28,28 @@ namespace SimpleGameEngine {
 			cmd->indexBuffer		= subMesh.indexBuffer();
 			cmd->indexType			= subMesh.indexType();
 			cmd->indexCount			= subMesh.indexCount();
+		}
+	}
+
+	void RenderCommandBuffer::drawTerrain(const SrcLoc& debugLoc, const Terrain& terrain, Material* material) {
+		if (!material) { SGE_ASSERT(false); return; }
+
+		auto passes = material->passes();
+
+		for (size_t i = 0; i < passes.size(); i++) {
+			auto* cmd = newCommand<RenderCommand_DrawCall>();
+#if _DEBUG
+			cmd->debugLoc = debugLoc;
+#endif
+			cmd->material = material;
+			cmd->materialPassIndex = i;
+			cmd->primitive = terrain.primitive();
+			cmd->vertexLayout = terrain.vertexLayout();
+			cmd->vertexBuffer = terrain.vertexBuffer();
+			cmd->vertexCount = terrain.vertexCount();
+			cmd->indexBuffer = terrain.indexBuffer();
+			cmd->indexType = terrain.indexType();
+			cmd->indexCount = terrain.indexCount();
 		}
 	}
 

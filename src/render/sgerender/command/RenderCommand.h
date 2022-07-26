@@ -7,6 +7,7 @@
 namespace SimpleGameEngine {
 	class RenderMesh;
 	class RenderSubMesh;
+	class Terrain;
 
 	enum class RenderCommandType {
 		None,
@@ -87,6 +88,7 @@ namespace SimpleGameEngine {
 
 		void drawMesh	(const SrcLoc& debugLoc, const RenderMesh&    mesh,	   Material* material);
 		void drawSubMesh(const SrcLoc& debugLoc, const RenderSubMesh& subMesh, Material* material);
+		void drawTerrain(const SrcLoc& debugLoc, const Terrain& terrain, Material* material);
 
 		void reset();
 
