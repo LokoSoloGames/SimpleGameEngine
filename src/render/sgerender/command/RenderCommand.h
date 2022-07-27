@@ -8,6 +8,7 @@ namespace SimpleGameEngine {
 	class RenderMesh;
 	class RenderSubMesh;
 	class Terrain;
+	class SubTerrain;
 
 	enum class RenderCommandType {
 		None,
@@ -86,9 +87,10 @@ namespace SimpleGameEngine {
 			return newCommand<RenderCommand_SwapBuffers>();
 		}
 
-		void drawMesh	(const SrcLoc& debugLoc, const RenderMesh&    mesh,	   Material* material);
-		void drawSubMesh(const SrcLoc& debugLoc, const RenderSubMesh& subMesh, Material* material);
-		void drawTerrain(const SrcLoc& debugLoc, const Terrain& terrain, Material* material);
+		void drawMesh		(const SrcLoc& debugLoc, const RenderMesh&    mesh,	   Material* material);
+		void drawSubMesh	(const SrcLoc& debugLoc, const RenderSubMesh& subMesh, Material* material);
+		void drawTerrain	(const SrcLoc& debugLoc, const Terrain& terrain, Material* material);
+		void drawSubTerrain	(const SrcLoc& debugLoc, const SubTerrain& terrain, Material* material);
 
 		void reset();
 

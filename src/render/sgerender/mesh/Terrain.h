@@ -5,8 +5,40 @@
 #include "EditMesh.h"
 
 namespace SimpleGameEngine {
+	class Terrain;
+
+	class SubTerrain {
+	public :
+		void create(const Vec2i wh, const Vec3f offset);
+		void setLod();
+		void clear();
+
+		RenderGpuBuffer* vertexBuffer() const { return constCast(_vertexBuffer); }
+		RenderGpuBuffer* indexBuffer()  const { return constCast(_indexBuffer); }
+
+		size_t vertexCount() const { return _vertexCount; }
+		size_t indexCount() const { return _indexCount; }
+		RenderDataType indexType() const { return _indexType; }
+
+		RenderPrimitiveType primitive() const;
+		const VertexLayout* vertexLayout() const;
+
+		friend class Terrain;
+	protected:
+		Terrain* _terrain = nullptr;
+		RenderDataType _indexType = RenderDataType::None;
+
+		SPtr<RenderGpuBuffer>	_vertexBuffer;
+		SPtr<RenderGpuBuffer>	_indexBuffer;
+
+		Vector<u32>	indices;
+		size_t _vertexCount = 0;
+		size_t _indexCount = 0;
+	};
+
 	struct TerrainCreateDesc {
-		Vec2i wh;
+		Vec2i subTerrainSize;
+		Vec2i subTerrainCount;
 		// Texture?
 		// Height Map?
 	};
@@ -14,7 +46,7 @@ namespace SimpleGameEngine {
 	class Terrain {
 	public:
 		void create(const TerrainCreateDesc& desc);
-		void setAdjacentLOD(u8 mask);
+		void setSubTerrainCount(size_t newSize);
 
 		RenderPrimitiveType primitive() const {
 			return RenderPrimitiveType::Triangles;
@@ -23,23 +55,18 @@ namespace SimpleGameEngine {
 			return _vertexLayout;
 		}
 
-		RenderGpuBuffer* vertexBuffer() const { return constCast(_vertexBuffer); }
-		RenderGpuBuffer* indexBuffer()  const { return constCast(_indexBuffer); }
-
-		size_t vertexCount() const { return pos.size(); }
-		size_t indexCount() const { return indices.size(); }
-		RenderDataType indexType() const { return _indexType; }
-
+		Span<      SubTerrain>	subTerrains()		{ return _subTerrains; }
+		Span<const SubTerrain>	subTerrains() const	{ return _subTerrains; }
 	private:
-		Vector<Tuple3f>	pos;
-		Vector<u32>	indices;
-		Vector<Color4b>	colors;
-
-		RenderDataType _indexType = RenderDataType::None;
-
-		SPtr<RenderGpuBuffer>	_vertexBuffer;
-		SPtr<RenderGpuBuffer>	_indexBuffer;
-
 		const VertexLayout* _vertexLayout = nullptr;
+		Vector_<SubTerrain, 1>	_subTerrains;
 	};
+
+	SGE_INLINE RenderPrimitiveType SubTerrain::primitive() const {
+		return _terrain->primitive();
+	}
+
+	SGE_INLINE const VertexLayout* SubTerrain::vertexLayout() const {
+		return _terrain->vertexLayout();
+	}
 }

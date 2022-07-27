@@ -67,9 +67,10 @@ namespace SimpleGameEngine {
 				_material->setParam("mainTex", _testTexture);
 			}
 			{
-				TerrainCreateDesc _terrainCreateDesc;
-				_terrainCreateDesc.wh = Vec2i(8, 8);
-				_terrain.create(_terrainCreateDesc);
+				TerrainCreateDesc _desc;
+				_desc.subTerrainCount = Vec2i(2, 2);
+				_desc.subTerrainSize = Vec2i(8, 8);
+				_terrain.create(_desc);
 				auto shader = renderer->createShader("Shaders/test2.shader");
 				_terrainMaterial = Renderer::instance()->createMaterial();
 				_terrainMaterial->setShader(shader); 

@@ -30,8 +30,13 @@ namespace SimpleGameEngine {
 			cmd->indexCount			= subMesh.indexCount();
 		}
 	}
-
 	void RenderCommandBuffer::drawTerrain(const SrcLoc& debugLoc, const Terrain& terrain, Material* material) {
+		for (auto& st : terrain.subTerrains()) {
+			drawSubTerrain(debugLoc, st, material);
+		}
+	}
+
+	void RenderCommandBuffer::drawSubTerrain(const SrcLoc& debugLoc, const SubTerrain& subTerrain, Material* material) {
 		if (!material) { SGE_ASSERT(false); return; }
 
 		auto passes = material->passes();
@@ -43,13 +48,13 @@ namespace SimpleGameEngine {
 #endif
 			cmd->material = material;
 			cmd->materialPassIndex = i;
-			cmd->primitive = terrain.primitive();
-			cmd->vertexLayout = terrain.vertexLayout();
-			cmd->vertexBuffer = terrain.vertexBuffer();
-			cmd->vertexCount = terrain.vertexCount();
-			cmd->indexBuffer = terrain.indexBuffer();
-			cmd->indexType = terrain.indexType();
-			cmd->indexCount = terrain.indexCount();
+			cmd->primitive = subTerrain.primitive();
+			cmd->vertexLayout = subTerrain.vertexLayout();
+			cmd->vertexBuffer = subTerrain.vertexBuffer();
+			cmd->vertexCount = subTerrain.vertexCount();
+			cmd->indexBuffer = subTerrain.indexBuffer();
+			cmd->indexType = subTerrain.indexType();
+			cmd->indexCount = subTerrain.indexCount();
 		}
 	}
 

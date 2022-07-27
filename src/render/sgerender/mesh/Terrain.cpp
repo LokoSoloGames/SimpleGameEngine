@@ -31,32 +31,6 @@ namespace SimpleGameEngine {
 	};
 
 	void Terrain::create(const TerrainCreateDesc& desc) {
-		using Helper = Terrain_InternalHelper;
-
-		int size = (desc.wh.x + 1) * (desc.wh.y + 1);
-		pos.reserve(size);
-		colors.reserve(size);
-		for (int y = 0; y <= desc.wh.y; y++) {
-			for (int x = 0; x <= desc.wh.x; x++) {
-				pos.emplace_back(x, 0, y);
-				colors.emplace_back(255, 255, 255, 255);
-			}
-		}
-
-		// set basic indices
-		indices.reserve(desc.wh.x * desc.wh.y * 6);
-		for (int y = 0; y < desc.wh.y; y++) {
-			for (int x = 0; x < desc.wh.x; x++) {
-				int currentIdx = y * (desc.wh.x + 1) + x;
-				indices.emplace_back(currentIdx);
-				indices.emplace_back(currentIdx + (desc.wh.x + 1));
-				indices.emplace_back(currentIdx + (desc.wh.x + 1) + 1);
-				indices.emplace_back(currentIdx);
-				indices.emplace_back(currentIdx + (desc.wh.x + 1) + 1);
-				indices.emplace_back(currentIdx + 1);
-			}
-		}
-
 		auto vertexType = VertexTypeUtil::make(
 			RenderDataTypeUtil::get<Tuple3f>(),
 			RenderDataTypeUtil::get<Color4b>(), 1,
@@ -65,17 +39,68 @@ namespace SimpleGameEngine {
 
 		_vertexLayout = VertexLayoutManager::instance()->getLayout(vertexType);
 		if (!_vertexLayout) {
-			throw SGE_ERROR("cannot find vertex Layout for mesh");
+			throw SGE_ERROR("cannot find vertex Layout for terrain");
+		}
+		setSubTerrainCount(desc.subTerrainCount.x * desc.subTerrainCount.y);
+		auto* p = _subTerrains.data();
+		for (int y = 0; y < desc.subTerrainCount.y; y++) {
+			for (int x = 0; x < desc.subTerrainCount.x; x++) {
+				Vec3f offset(static_cast<float>(desc.subTerrainSize.x * x), 0, static_cast<float>(desc.subTerrainSize.y * y));
+				p->create(desc.subTerrainSize, offset);
+				p++;
+			}
+		}
+	}
+
+	void Terrain::setSubTerrainCount(size_t newSize) {
+		size_t oldSize = _subTerrains.size();
+		_subTerrains.resize(newSize);
+		for (size_t i = oldSize; i < newSize; i++) {
+			_subTerrains[i]._terrain = this;
+		}
+	}
+
+	void SubTerrain::create(const Vec2i wh, const Vec3f offset) {
+		using Helper = Terrain_InternalHelper;
+		_vertexCount = (wh.x + 1) * (wh.y + 1);
+		
+		Vector<Tuple3f> pos;
+		Vector<Color4b> colors;
+		pos.reserve(_vertexCount);
+		colors.reserve(_vertexCount);
+		auto halfWh = Vec2f(static_cast<float>(wh.x) / 2, static_cast<float>(wh.y) / 2);
+		for (float y = -halfWh.y; y <= halfWh.y; y += 1) {
+			for (float x = -halfWh.x; x <= halfWh.x; x += 1) {
+				pos.emplace_back(Vec3f(x, 0, y) + offset);
+				colors.emplace_back(255, 255, 255, 255);
+			}
 		}
 
+		// set basic indices
+		indices.reserve(wh.x * wh.y * 6);
+		for (int y = 0; y < wh.y; y++) {
+			for (int x = 0; x < wh.x; x++) {
+				int currentIdx = y * (wh.x + 1) + x;
+				indices.emplace_back(currentIdx);
+				indices.emplace_back(currentIdx + (wh.x + 1));
+				indices.emplace_back(currentIdx + (wh.x + 1) + 1);
+				indices.emplace_back(currentIdx);
+				indices.emplace_back(currentIdx + (wh.x + 1) + 1);
+				indices.emplace_back(currentIdx + 1);
+			}
+		}
+		_indexCount = indices.size();
+
+		auto* vertexLayout = _terrain->vertexLayout();
+
 		Vector_<u8, 1024>	vertexData;
-		vertexData.resize(_vertexLayout->stride * size);
+		vertexData.resize(vertexLayout->stride * _vertexCount);
 
 		auto* pData = vertexData.data();
-		auto stride = _vertexLayout->stride;
-		auto vc = size;
+		auto stride = vertexLayout->stride;
+		auto vc = _vertexCount;
 
-		for (auto& e : _vertexLayout->elements) {
+		for (auto& e : vertexLayout->elements) {
 			using S = VertexSemantic;
 			using ST = VertexSemanticType;
 			using U = VertexSemanticUtil;
@@ -93,7 +118,7 @@ namespace SimpleGameEngine {
 		{
 			RenderGpuBuffer::CreateDesc _desc;
 			_desc.type = RenderGpuBufferType::Vertex;
-			_desc.bufferSize = size * _vertexLayout->stride;
+			_desc.bufferSize = _vertexCount * vertexLayout->stride;
 			_vertexBuffer = renderer->createGpuBuffer(_desc);
 			_vertexBuffer->uploadToGpu(vertexData);
 		}
@@ -101,7 +126,7 @@ namespace SimpleGameEngine {
 			ByteSpan indexData;
 			Vector_<u16, 1024> index16Data;
 
-			if (size > UINT16_MAX) {
+			if (_vertexCount > UINT16_MAX) {
 				_indexType = RenderDataType::UInt32;
 				indexData = spanCast<const u8, const u32>(indices);
 			}
@@ -114,12 +139,19 @@ namespace SimpleGameEngine {
 				}
 				indexData = spanCast<const u8, const u16>(index16Data);
 			}
-		
+
 			RenderGpuBuffer::CreateDesc _desc;
 			_desc.type = RenderGpuBufferType::Index;
 			_desc.bufferSize = indexData.size();
 			_indexBuffer = renderer->createGpuBuffer(_desc);
-			_indexBuffer->uploadToGpu(indexData); 
+			_indexBuffer->uploadToGpu(indexData);
 		}
+	}
+
+	void SubTerrain::clear() {
+		_vertexBuffer = nullptr;
+		_indexBuffer = nullptr;
+		_vertexCount = 0;
+		_indexCount = 0;
 	}
 }
