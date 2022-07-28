@@ -77,16 +77,20 @@ namespace SimpleGameEngine {
 		}
 
 		// set basic indices
-		indices.reserve(wh.x * wh.y * 6);
-		for (int y = 0; y < wh.y; y++) {
-			for (int x = 0; x < wh.x; x++) {
+		int lod = 1;
+		int step = static_cast<int>(std::pow(2, lod));
+		int columnStep = (wh.x + 1) * step;
+		indices.reserve(wh.x * wh.y * 6 / (step * step));
+		for (int y = 0; y < wh.y; y += step) {
+			for (int x = 0; x < wh.x; x += step) {
 				int currentIdx = y * (wh.x + 1) + x;
+				if (currentIdx + columnStep + step >= _vertexCount) continue;
 				indices.emplace_back(currentIdx);
-				indices.emplace_back(currentIdx + (wh.x + 1));
-				indices.emplace_back(currentIdx + (wh.x + 1) + 1);
+				indices.emplace_back(currentIdx + columnStep);
+				indices.emplace_back(currentIdx + columnStep + step);
 				indices.emplace_back(currentIdx);
-				indices.emplace_back(currentIdx + (wh.x + 1) + 1);
-				indices.emplace_back(currentIdx + 1);
+				indices.emplace_back(currentIdx + columnStep + step);
+				indices.emplace_back(currentIdx + step);
 			}
 		}
 		_indexCount = indices.size();
