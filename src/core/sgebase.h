@@ -69,6 +69,8 @@ namespace SimpleGameEngine {
 
 	template<class T> SGE_INLINE T* constCast(const T* v) { return const_cast<T*>(v); }
 	template<class T> SGE_INLINE T& constCast(const T& v) { return const_cast<T&>(v); }
+	
+	template<class T> SGE_INLINE void swap(T& a, T& b) { T tmp = a; a = b; b = tmp; }
 
 	using u8  = uint8_t;
 	using u16 = uint16_t;
@@ -103,9 +105,38 @@ namespace SimpleGameEngine {
 		return Span<DST>(reinterpret_cast<DST*>(src.data()), sizeInBytes / sizeof(DST));
 	}
 
-	template<class T, size_t N, bool bEnableOverflow = true> using Vector_ = eastl::fixed_vector<T, N, bEnableOverflow>;
+	template<class T, size_t N, bool bEnableOverflow = true>
+	struct Vector_Base {
+		using Type = typename eastl::fixed_vector<T, N, bEnableOverflow>;
+	};
 
-	template<class T> using Vector = eastl::vector<T>;
+	template<class T>
+	struct Vector_Base<T, 0, true> {
+		using Type = typename eastl::vector<T>;
+	};
+
+	template<class T, size_t N = 0, bool bEnableOverflow = true>
+	class Vector : public Vector_Base<T, N, bEnableOverflow>::Type {
+		using Base = typename Vector_Base<T, N, bEnableOverflow>::Type;
+	public:
+		using Base::begin;
+		using Base::end;
+
+		void appendRange(const Span<T>& r) { Base::insert(end(), r.begin(), r.end()); }
+
+		Span<      T> span() {		 return Span<      T>(begin(), end()); }
+		Span<const T> span() const { return Span<const T>(begin(), end()); }
+
+		operator Span<      T>() {		 return span(); }
+		operator Span<const T>() const { return span(); }
+
+		Span<      T> subspan(size_t offset, size_t count) {		return Span<      T>(begin() + offset, count); }
+		Span<const T> subspan(size_t offset, size_t count) const {  return Span<const T>(begin() + offset, count); }
+
+		Span<      T> subspan(size_t offset) {		 return subspan(offset, size() - offset); }
+		Span<const T> subspan(size_t offset) const { return subspan(offset, size() - offset); }
+	};
+
 	template<class KEY, class VALUE> using Map = eastl::map<KEY, VALUE>;
 	template<class KEY, class VALUE> using VectorMap = eastl::vector_map<KEY, VALUE>;
 	template<class VALUE> using StringMap = eastl::string_map<VALUE>;
@@ -118,17 +149,17 @@ namespace SimpleGameEngine {
 
 	template<class T, size_t N, bool bEnableOverflow = true>
 	struct StringT_Base {
-		using type = typename eastl::fixed_string<T, N, bEnableOverflow>;
+		using Type = typename eastl::fixed_string<T, N, bEnableOverflow>;
 	};
 
 	template<class T>
 	struct StringT_Base<T, 0, true> {
-		using type = typename eastl::basic_string<T>;
+		using Type = typename eastl::basic_string<T>;
 	};
 
 	template<class T, size_t N, bool bEnableOverflow = true> // using FixedStringT = eastl::fixed_string<T, N, bEnableOverflow>;
-	class StringT : public StringT_Base<T, N, bEnableOverflow>::type {
-		using Base = typename StringT_Base<T, N, bEnableOverflow>::type;
+	class StringT : public StringT_Base<T, N, bEnableOverflow>::Type {
+		using Base = typename StringT_Base<T, N, bEnableOverflow>::Type;
 	public:
 		StringT() = default;
 		StringT(const T* begin, const T* end) : Base(begin, end) {}

@@ -56,8 +56,8 @@ namespace SimpleGameEngine {
 		};
 
 		String shaderName;
-		Vector_<Prop, 8>	props;
-		Vector_<Pass, 1>	passes;
+		Vector<Prop, 8>	props;
+		Vector<Pass, 1>	passes;
 
 		void clear();
 
@@ -132,7 +132,7 @@ namespace SimpleGameEngine {
 			i16				bindPoint = 0;
 			i16				bindCount = 0;
 			size_t			dataSize = 0;
-			Vector_<Variable, 4>	variables;
+			Vector<Variable, 4>	variables;
 
 			template<class SE>
 			void onJson(SE& se) {
@@ -151,9 +151,9 @@ namespace SimpleGameEngine {
 			}
 		};
 
-		Vector_<Input, 8>		inputs;
-		Vector_<Param, 8>		params;
-		Vector_<ConstBuffer, 4>	constBuffers;
+		Vector<Input, 8>		inputs;
+		Vector<Param, 8>		params;
+		Vector<ConstBuffer, 4>	constBuffers;
 
 		//----------
 		class Texture {
@@ -171,7 +171,7 @@ namespace SimpleGameEngine {
 				SGE_NAMED_IO(se, dataType);
 			}
 		};
-		Vector_<Texture, 8>		textures;
+		Vector<Texture, 8>		textures;
 
 		//----------
 		class Sampler {
@@ -189,7 +189,7 @@ namespace SimpleGameEngine {
 				SGE_NAMED_IO(se, dataType);
 			}
 		};
-		Vector_<Sampler, 8>		samplers;
+		Vector<Sampler, 8>		samplers;
 
 		//----------
 		template<class SE>

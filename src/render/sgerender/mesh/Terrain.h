@@ -59,7 +59,7 @@ namespace SimpleGameEngine {
 		Span<const SubTerrain>	subTerrains() const	{ return _subTerrains; }
 	private:
 		const VertexLayout* _vertexLayout = nullptr;
-		Vector_<SubTerrain, 1>	_subTerrains;
+		Vector<SubTerrain, 1>	_subTerrains;
 	};
 
 	SGE_INLINE RenderPrimitiveType SubTerrain::primitive() const {

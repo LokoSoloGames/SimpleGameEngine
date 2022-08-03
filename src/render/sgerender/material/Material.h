@@ -43,11 +43,16 @@ namespace SimpleGameEngine {
 			const Info* _info = nullptr;
 			bool	_gpuDirty = false;
 
-			void _setParam(const VarInfo* varInfo, const float&		value)	{ _setParamCheckType(varInfo, value); }
-			void _setParam(const VarInfo* varInfo, const Tuple2f&	value)	{ _setParamCheckType(varInfo, value); }
-			void _setParam(const VarInfo* varInfo, const Tuple3f&	value)	{ _setParamCheckType(varInfo, value); }
-			void _setParam(const VarInfo* varInfo, const Tuple4f&	value)	{ _setParamCheckType(varInfo, value); }
-			void _setParam(const VarInfo* varInfo, const Mat4f&		value)	{ _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const i32&		value) { _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const u32&		value) { _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const float&		value) { _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Tuple2i&	value) { _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Tuple3i&	value) { _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Tuple4i&	value) { _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Tuple2f&	value) { _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Tuple3f&	value) { _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Tuple4f&	value) { _setParamCheckType(varInfo, value); }
+			void _setParam(const VarInfo* varInfo, const Mat4f&		value) { _setParamCheckType(varInfo, value); }
 
 			template<class V>
 			void _setParamCheckType(const VarInfo* varInfo, const V& value) {
@@ -117,8 +122,8 @@ namespace SimpleGameEngine {
 
 		Pass* _pass = nullptr;
 		ShaderStage* _shaderStage = nullptr;
-		Vector_<ConstBuffer, 4>	_constBuffers;
-		Vector_<TexParam, 4>	_texParams;
+		Vector<ConstBuffer, 4>	_constBuffers;
+		Vector<TexParam, 4>	_texParams;
 	};
 
 	struct MaterialPass_VertexStage : public MaterialPass_Stage {
@@ -177,12 +182,17 @@ namespace SimpleGameEngine {
 
 		void setShader(Shader* shader);
 
-		void setParam(StrView name, Texture2D* v)		{ _setTexParam(name, v); }
-		void setParam(StrView name, const float& v)		{ _setParam(name, v); }
-		void setParam(StrView name, const Tuple2f& v)	{ _setParam(name, v); }
-		void setParam(StrView name, const Tuple3f& v)	{ _setParam(name, v); }
-		void setParam(StrView name, const Tuple4f& v)	{ _setParam(name, v); }
-		void setParam(StrView name, const Mat4f& v)		{ _setParam(name, v); }
+		void setParam(StrView name, Texture2D* v)	{ _setTexParam(name, v); }
+		void setParam(StrView name, const i32&		v) { _setParam(name, v); }
+		void setParam(StrView name, const u32&		v) { _setParam(name, v); }
+		void setParam(StrView name, const float&	v) { _setParam(name, v); }
+		void setParam(StrView name, const Tuple2i&	v) { _setParam(name, v); }
+		void setParam(StrView name, const Tuple3i&	v) { _setParam(name, v); }
+		void setParam(StrView name, const Tuple4i&	v) { _setParam(name, v); }
+		void setParam(StrView name, const Tuple2f&	v) { _setParam(name, v); }
+		void setParam(StrView name, const Tuple3f&	v) { _setParam(name, v); }
+		void setParam(StrView name, const Tuple4f&	v) { _setParam(name, v); }
+		void setParam(StrView name, const Mat4f&	v) { _setParam(name, v); }
 
 		using Pass = MaterialPass;
 		using Stage = MaterialPass_Stage;
@@ -212,7 +222,7 @@ namespace SimpleGameEngine {
 			}
 		}
 
-		Vector_<UPtr<Pass>, 2>	_passes;
+		Vector<UPtr<Pass>, 2>	_passes;
 		SPtr<Shader> _shader;
 		virtual void onSetShader() {}
 		virtual UPtr<Pass> onCreatePass(ShaderPass* shaderPass) = 0;

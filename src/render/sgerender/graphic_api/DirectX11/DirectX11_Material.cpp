@@ -70,7 +70,7 @@ namespace SimpleGameEngine {
 			dxLayout = it->second;
 		}
 		else {
-			Vector_<D3D11_INPUT_ELEMENT_DESC, 32> inputDesc;
+			Vector<D3D11_INPUT_ELEMENT_DESC, 32> inputDesc;
 
 			auto* vsInfo = info();
 			for (auto& input : vsInfo->inputs) {

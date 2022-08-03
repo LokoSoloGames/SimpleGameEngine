@@ -116,7 +116,7 @@ namespace SimpleGameEngine {
 		if (!cmd.vertexLayout) { SGE_ASSERT(false); return; }
 
 		auto* vertexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.vertexBuffer.ptr());
-		if (!vertexBuffer) { SGE_ASSERT(false); return; }
+		//if (!vertexBuffer) { SGE_ASSERT(false); return; }
 
 		if (cmd.vertexCount <= 0) { SGE_ASSERT(false); return; }
 		if (cmd.primitive == RenderPrimitiveType::None) { SGE_ASSERT(false); return; }
@@ -141,8 +141,8 @@ namespace SimpleGameEngine {
 		UINT vertexCount = static_cast<UINT>(cmd.vertexCount);
 		UINT indexCount = static_cast<UINT>(cmd.indexCount);
 
-		DX11_ID3DBuffer* pVBuffer[] = { vertexBuffer->getBuffer() };
-		ctx->IASetVertexBuffers(0, 1, pVBuffer, &stride, &offset);
+		DX11_ID3DBuffer* ppVertexBuffers[] = { vertexBuffer ? vertexBuffer->getBuffer() : nullptr };
+		ctx->IASetVertexBuffers(0, 1, ppVertexBuffers, &stride, &offset);
 		
 		if (indexCount > 0) {
 			auto indexType = Util::getFormat(cmd.indexType);

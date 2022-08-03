@@ -49,6 +49,6 @@ namespace SimpleGameEngine {
 	protected:
 		String	_filename;
 		ShaderInfo _info;
-		Vector_<UPtr<ShaderPass>, 2> _passes;
+		Vector<UPtr<ShaderPass>, 2> _passes;
 	};
 }

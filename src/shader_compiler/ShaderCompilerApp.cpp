@@ -15,9 +15,12 @@ namespace SimpleGameEngine {
 				Directory::setCurrent(path);
 			}
 
-			ShaderInfo info;
+			compile("Shaders/test.shader");
+			compile("Shaders/test2.shader");
+		}
 
-			StrView shaderFilename = "Shaders/test.shader";
+		void compile(StrView shaderFilename) {
+			ShaderInfo info;
 
 			String outputPath = Fmt("LocalTemp/Imported/{}", shaderFilename);
 			Directory::create(outputPath);
@@ -60,9 +63,6 @@ namespace SimpleGameEngine {
 			}
 
 			SGE_LOG("---- end ----");
-		}
-
-		void compile(StrView filename) {
 		}
 
 	};
