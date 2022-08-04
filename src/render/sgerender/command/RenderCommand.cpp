@@ -1,6 +1,6 @@
 #include "RenderCommand.h"
 #include "../mesh/RenderMesh.h"
-#include "../mesh/Terrain.h"
+#include "../mesh/RenderTerrain.h"
 
 namespace SimpleGameEngine {
 	void RenderCommandBuffer::drawMesh(const SrcLoc& debugLoc, const RenderMesh& mesh, Material* material) {
@@ -30,7 +30,7 @@ namespace SimpleGameEngine {
 			cmd->indexCount			= subMesh.indexCount();
 		}
 	}
-	void RenderCommandBuffer::drawTerrain(const SrcLoc& debugLoc, const Terrain& terrain, Material* material) {
+	void RenderCommandBuffer::drawTerrain(const SrcLoc& debugLoc, const RenderTerrain& terrain, Material* material) {
 		for (auto& st : terrain.subTerrains()) {
 			drawSubTerrain(debugLoc, st, material);
 		}

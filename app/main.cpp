@@ -2,7 +2,7 @@
 #include <sgecore.h>
 #include <sgerender.h>
 #include <sgerender/mesh/RenderMesh.h>
-#include <sgerender/mesh/Terrain.h>
+#include <sgerender/mesh/RenderTerrain.h>
 #include <sgerender/command/RenderCommand.h>
 #include <sgerender/mesh/reader/WavefrontObjLoader.h>
 
@@ -161,7 +161,7 @@ namespace SimpleGameEngine {
 		SPtr<Texture2D>	_testTexture;
 		SPtr<RenderContext>	_renderContext;
 
-		Terrain _terrain;
+		RenderTerrain _terrain;
 		SPtr<Material> _terrainMaterial;
 		Math::Camera3f	_camera;
 	};

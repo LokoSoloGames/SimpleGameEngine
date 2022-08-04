@@ -1,36 +1,13 @@
-#include "Terrain.h"
-#include <sgerender/Renderer.h>
-#include <sgerender/vertex/VertexLayoutManager.h>
+#include "RenderTerrain.h"
 
 namespace SimpleGameEngine {
-	struct Terrain_InternalHelper {
-		template<class DST, class T> inline
-			static void copyVertexData(DST* dst
-				, size_t vertexCount
-				, const VertexLayout::Element& element
-				, size_t stride
-				, const T* src)
-		{
-			u8* p = dst + element.offset;
+	void RenderTerrain::createFromHeightMapFile(const CreateDesc& desc, StrView heightMapFileName) {
+		Image img;
+		img.loadPngFile(heightMapFileName);
+		createFromHeightMap(desc, img);
+	}
 
-			for (size_t i = 0; i < vertexCount; i++) {
-				*reinterpret_cast<T*>(p) = *src;
-				src++;
-				p += stride;
-			}
-		}
-
-		static bool hasAttr(size_t arraySize, size_t vertexCount) {
-			if (arraySize <= 0) return false;
-			if (arraySize < vertexCount) {
-				SGE_ASSERT(false);
-				return false;
-			}
-			return true;
-		}
-	};
-
-	void Terrain::create(const TerrainCreateDesc& desc) {
+	void RenderTerrain::createFromHeightMap(const CreateDesc& desc, const Image& heightMap) {
 		auto vertexType = VertexTypeUtil::make(
 			RenderDataTypeUtil::get<Tuple3f>(),
 			RenderDataTypeUtil::get<Color4b>(), 1,
@@ -52,7 +29,7 @@ namespace SimpleGameEngine {
 		}
 	}
 
-	void Terrain::setSubTerrainCount(size_t newSize) {
+	void RenderTerrain::setSubTerrainCount(size_t newSize) {
 		size_t oldSize = _subTerrains.size();
 		_subTerrains.resize(newSize);
 		for (size_t i = oldSize; i < newSize; i++) {
@@ -60,7 +37,7 @@ namespace SimpleGameEngine {
 		}
 	}
 
-	void SubTerrain::create(const Vec2i wh, const Vec3f offset) {
+	void Patch::create(const Vec2i wh, const Vec3f offset) {
 		using Helper = Terrain_InternalHelper;
 		_vertexCount = (wh.x + 1) * (wh.y + 1);
 		
@@ -152,10 +129,40 @@ namespace SimpleGameEngine {
 		}
 	}
 
-	void SubTerrain::clear() {
+	void RenderTerrain::destroy() {
+		_terrainSize.set(0, 0);
+		_terrainHeight = 0;
+		_heightmapResolution.set(0, 0);
+		_maxLod = 1;
+		_patchCount.set(0, 0);
+		_patches.clear();
+		_patchIndices.clear();
+
 		_vertexBuffer = nullptr;
-		_indexBuffer = nullptr;
+		_vertexLayout = nullptr;
 		_vertexCount = 0;
-		_indexCount = 0;
+	}
+
+	void RenderTerrain::render(RenderRequest& req) {
+		for (auto& p : _patches) {
+			p.calculateDisplayLevel(req.camera_pos);
+		}
+
+		for (auto& p : _patches) {
+			p.render(req);
+		}
+	}
+
+	inline
+	bool RenderTerrain::Patch::_adjacentPatchHasHigherLod(int x, int y) const {
+		auto* adj = _terrain->patch(_index.x + x, _index.y + y);
+		if (!adj) return false;
+		return adj->displayLevel() > _displayLevel;
+	}
+
+	void RenderTerrain::Patch::calculateDisplayLevel(const Vec3f& viewPos) {
+		auto distance = (worldCenterPos() - viewPos).length();
+		auto d = _terrain->patchSize().x * 5;
+		_displayLevel = static_cast<int>(distance / d);
 	}
 }
