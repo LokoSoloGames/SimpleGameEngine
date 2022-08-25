@@ -8,7 +8,6 @@ namespace SimpleGameEngine {
 	class RenderMesh;
 	class RenderSubMesh;
 	class RenderTerrain;
-	class SubTerrain;
 
 	enum class RenderCommandType {
 		None,
@@ -79,19 +78,6 @@ namespace SimpleGameEngine {
 
 	class RenderCommandBuffer : public NonCopyable {
 	public:
-		RenderCommand_ClearFrameBuffers* clearFrameBuffers() {
-			return newCommand<RenderCommand_ClearFrameBuffers>();
-		}
-
-		RenderCommand_SwapBuffers* swapBuffers() {
-			return newCommand<RenderCommand_SwapBuffers>();
-		}
-
-		void drawMesh		(const SrcLoc& debugLoc, const RenderMesh&    mesh,	   Material* material);
-		void drawSubMesh	(const SrcLoc& debugLoc, const RenderSubMesh& subMesh, Material* material);
-		void drawTerrain	(const SrcLoc& debugLoc, const RenderTerrain& terrain, Material* material);
-		void drawSubTerrain	(const SrcLoc& debugLoc, const SubTerrain& terrain, Material* material);
-
 		void reset();
 
 		Span<RenderCommand*>	commands() { return _commands; }

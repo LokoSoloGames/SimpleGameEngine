@@ -59,13 +59,13 @@ namespace SimpleGameEngine {
 		if (_fd == kInvalid()) {
 			DWORD err = ::GetLastError();
 			switch( err ) {
-				case ERROR_FILE_NOT_FOUND:		throw SGE_ERROR("file not found");
-				case ERROR_PATH_NOT_FOUND:		throw SGE_ERROR("path not found");
-				case ERROR_FILE_EXISTS:			throw SGE_ERROR("file doesn't exists");
-				case ERROR_ALREADY_EXISTS:		throw SGE_ERROR("file already exists");
-				case ERROR_ACCESS_DENIED:		throw SGE_ERROR("access denied");
-				case ERROR_SHARING_VIOLATION:	throw SGE_ERROR("sharing violation");
-				default:						throw SGE_ERROR("open file error");
+				case ERROR_FILE_NOT_FOUND:		throw SGE_ERROR("file not found - {}", filename);
+				case ERROR_PATH_NOT_FOUND:		throw SGE_ERROR("path not found - {}", filename);
+				case ERROR_FILE_EXISTS:			throw SGE_ERROR("file doesn't exists - {}", filename);
+				case ERROR_ALREADY_EXISTS:		throw SGE_ERROR("file already exists - {}", filename);
+				case ERROR_ACCESS_DENIED:		throw SGE_ERROR("access denied - {}", filename);
+				case ERROR_SHARING_VIOLATION:	throw SGE_ERROR("sharing violation - {}", filename);
+				default:						throw SGE_ERROR("open file error - {}", filename);
 			}
 		}
 	}

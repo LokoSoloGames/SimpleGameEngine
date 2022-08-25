@@ -1,7 +1,7 @@
 #pragma once
 
-#include <render-pch.h>
-#include <sgerender.h>
+#include "RenderMesh.h"
+#include "../command/RenderRequest.h"
 
 namespace SimpleGameEngine {
 #define RenderTerrain3_ZoneMask_ENUM_LIST(E) \
@@ -15,8 +15,9 @@ namespace SimpleGameEngine {
 	SGE_ENUM_ALL_OPERATOR(RenderTerrain3_ZoneMask)
 
 	struct RenderTerrainCreateDesc {
-		Vec3f& terrainPos;
-		Vec2f& terrainSize;
+	public:
+		Vec3f terrainPos;
+		Vec2f terrainSize;
 		float terrainHeight;
 		int maxLod;
 	};
@@ -96,6 +97,8 @@ namespace SimpleGameEngine {
 		int		_maxLod = 1;
 		Vec2i	_patchCount{ 0, 0 };
 
+		static const int k_patchTypeCount = 16;
+
 		Vector<Patch>			_patches;
 		Vector<PatchIndices>	_patchIndices;
 
@@ -105,4 +108,27 @@ namespace SimpleGameEngine {
 
 		SPtr<Texture2D>			_heightMapTexture;
 	};
+
+	SGE_INLINE RenderTerrain::PatchIndices* RenderTerrain::patchIndices(int level, ZoneMask zoneMask) {
+		int idx = level * k_patchTypeCount + static_cast<u8>(zoneMask);
+		if (idx < 0 || idx >= _patchIndices.size()) {
+			SGE_ASSERT(false);
+			return nullptr;
+		}
+
+		return &_patchIndices[idx];
+	}
+
+	SGE_INLINE RenderTerrain::Patch* RenderTerrain::patch(int x, int y) {
+		if (x < 0 || y < 0 || x >= _patchCount.x || y >= _patchCount.y)
+			return nullptr;
+		return &_patches[y * _patchCount.x + x];
+	}
+
+	SGE_INLINE Vec3f RenderTerrain::Patch::worldCenterPos() {
+		auto s = _terrain->patchSize();
+		auto pos = (Vec2f::s_cast(_index) + 0.5f) * s;
+		auto o = _terrain->terrainPos() + Vec3f(pos.x, 0, pos.y);
+		return o;
+	}
 }

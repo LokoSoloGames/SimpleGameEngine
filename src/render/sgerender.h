@@ -5,7 +5,6 @@
 #include <sgerender/RenderCommon.h>
 
 #include <sgerender/command/RenderCommand.h>
-#include <sgerender/command/RenderRequest.h>
 
 #include <sgerender/mesh/RenderMesh.h>
 #include <sgerender/mesh/RenderTerrain.h>

@@ -25,6 +25,9 @@ namespace SimpleGameEngine {
 		//TODO: move to separate cbuffer
 		void setMaterialCommonParams(Material* mtl);
 
+		void drawMesh(const SrcLoc& debugLoc, const RenderMesh& mesh, Material* material);
+		void drawSubMesh(const SrcLoc& debugLoc, const RenderSubMesh& subMesh, Material* material);
+
 		RenderCommand_ClearFrameBuffers* clearFrameBuffers() {
 			return commandBuffer.newCommand<RenderCommand_ClearFrameBuffers>();
 		}

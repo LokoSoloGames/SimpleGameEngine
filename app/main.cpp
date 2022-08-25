@@ -1,10 +1,6 @@
 #include <nativeui/NativeUI.h>
 #include <sgecore.h>
 #include <sgerender.h>
-#include <sgerender/mesh/RenderMesh.h>
-#include <sgerender/mesh/RenderTerrain.h>
-#include <sgerender/command/RenderCommand.h>
-#include <sgerender/mesh/reader/WavefrontObjLoader.h>
 
 namespace SimpleGameEngine {
 
@@ -21,7 +17,7 @@ namespace SimpleGameEngine {
 				_renderContext = renderer->createContext(renderContextDesc);
 			}
 
-			_camera.setPos(0, 5, 5);
+			_camera.setPos(0, 10, 10);
 			_camera.setAim(0, 0, 0);
 
 			{
@@ -67,13 +63,17 @@ namespace SimpleGameEngine {
 				_material->setParam("mainTex", _testTexture);
 			}
 			{
-				TerrainCreateDesc _desc;
-				_desc.subTerrainCount = Vec2i(2, 2);
-				_desc.subTerrainSize = Vec2i(8, 8);
-				_terrain.create(_desc);
-				auto shader = renderer->createShader("Shaders/test2.shader");
-				_terrainMaterial = Renderer::instance()->createMaterial();
-				_terrainMaterial->setShader(shader); 
+				float size = 2048;
+				float pos = size / -2;
+				float y = -100;
+				float height = 200;
+				int maxLod = 7;
+				RenderTerrainCreateDesc _desc;
+				_desc.terrainPos = Vec3f(pos, y, pos);
+				_desc.terrainSize = Vec2f(size, size);
+				_desc.terrainHeight = height;
+				_desc.maxLod = maxLod;
+				_terrain.createFromHeightMapFile(_desc, "Terrain/TerrainTest/TerrainHeight_Small.png");
 			}
 
 		}
@@ -92,12 +92,12 @@ namespace SimpleGameEngine {
 					}break;
 
 					case Button::Middle: {
-						auto d = ev.deltaPos * 0.005f;
+						auto d = ev.deltaPos * 0.1f;
 						_camera.move(d.x, d.y, 0);
 					}break;
 
 					case Button::Right: {
-						auto d = ev.deltaPos * -0.005f;
+						auto d = ev.deltaPos * -0.1f;
 						_camera.dolly(d.x + d.y);
 					}break;
 				}
@@ -110,60 +110,42 @@ namespace SimpleGameEngine {
 
 			_camera.setViewport(clientRect());
 
-			{
-				auto model = Mat4f::s_identity();
-				auto view = _camera.viewMatrix();
-				auto proj = _camera.projMatrix();
-				auto mvp = proj * view * model;
+			_renderContext->setFrameBufferSize(clientRect().size);
+			_renderContext->beginRender();
 
-				_material->setParam("sge_matrix_model", model);
-				_material->setParam("sge_matrix_view", view);
-				_material->setParam("sge_matrix_proj", proj);
-				_material->setParam("sge_matrix_mvp", mvp);
+			_renderRequest.reset();
+			_renderRequest.matrix_model = Mat4f::s_identity();
+			_renderRequest.matrix_view = _camera.viewMatrix();
+			_renderRequest.matrix_proj = _camera.projMatrix();
+			_renderRequest.camera_pos = _camera.pos();
 
-				_material->setParam("sge_camera_pos", _camera.pos());
-
-				_material->setParam("sge_light_pos", Vec3f(10, 10, 0));
-				_material->setParam("sge_light_dir", Vec3f(-5, -10, -2));
-				_material->setParam("sge_light_power", 4.0f);
-				_material->setParam("sge_light_color", Vec3f(1, 1, 1));
-
-				_terrainMaterial->setParam("sge_matrix_model", model);
-				_terrainMaterial->setParam("sge_matrix_view", view);
-				_terrainMaterial->setParam("sge_matrix_proj", proj);
-				_terrainMaterial->setParam("sge_matrix_mvp", mvp);
-
-				_terrainMaterial->setParam("sge_camera_pos", _camera.pos());
-			}
+			_renderRequest.clearFrameBuffers()->setColor({ 0, 0, 0.2f, 1 });
 
 			auto s = 1.0f;
 
 			_material->setParam("test_float", s * 0.5f);
 			_material->setParam("test_color", Color4f(s, s, s, 1));
+//------
+			_renderRequest.drawMesh(SGE_LOC, _renderMesh, _material);
 
-			_renderContext->setFrameBufferSize(clientRect().size);
-			_renderContext->beginRender();
+			_terrain.render(_renderRequest);
 
-			_cmdBuf.reset();
-			_cmdBuf.clearFrameBuffers()->setColor({ 0, 0, 0.2f, 1 });
-			_cmdBuf.drawMesh(SGE_LOC, _renderMesh, _material);
-			_cmdBuf.drawTerrain(SGE_LOC, _terrain, _terrainMaterial);
-			_cmdBuf.swapBuffers();
+			_renderRequest.swapBuffers();
 
-			_renderContext->commit(_cmdBuf);
+			_renderContext->commit(_renderRequest.commandBuffer);
+
 
 			_renderContext->endRender();
 			drawNeeded();
 		}
 		RenderMesh _renderMesh;
-		RenderCommandBuffer _cmdBuf;
 		SPtr<Material> _material;
 		SPtr<Texture2D>	_testTexture;
 		SPtr<RenderContext>	_renderContext;
-
 		RenderTerrain _terrain;
-		SPtr<Material> _terrainMaterial;
+
 		Math::Camera3f	_camera;
+		RenderRequest	_renderRequest;
 	};
 
 	class EditorApp : public NativeUIApp {
