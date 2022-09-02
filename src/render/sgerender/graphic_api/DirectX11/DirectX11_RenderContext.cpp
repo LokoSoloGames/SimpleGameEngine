@@ -21,7 +21,8 @@ namespace SimpleGameEngine {
 		scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;     // use 32-bit color
 		scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;      // how swap chain is to be used
 		scd.OutputWindow = desc.window->_hwnd;                  // the window to be used
-		scd.SampleDesc.Count = 4;                               // how many multisamples
+		scd.SampleDesc.Count = 1;                               // how many multisamples
+		scd.SampleDesc.Quality = 0;;                            // how many multisamples
 		scd.Windowed = TRUE;                                    // windowed/full-screen mode
 		scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;     // allow full-screen switching
 
@@ -78,13 +79,15 @@ namespace SimpleGameEngine {
 		}
 
 		DX11_ID3DRenderTargetView* rt[] = {_renderTargetView};
-		ctx->OMSetRenderTargets(1, rt, nullptr);
+		ctx->OMSetRenderTargets(1, rt, _depthStencilView);
 
 		D3D11_VIEWPORT viewport = {};
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
 		viewport.Width = _window->clientRect().w;
 		viewport.Height = _window->clientRect().h;
+		viewport.MinDepth = 0;
+		viewport.MaxDepth = 1;
 
 		ctx->RSSetViewports(1, &viewport);
 	}
