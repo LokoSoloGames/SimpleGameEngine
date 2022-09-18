@@ -122,7 +122,7 @@ namespace SimpleGameEngine {
 		using Base::begin;
 		using Base::end;
 
-		void appendRange(const Span<T>& r) { Base::insert(end(), r.begin(), r.end()); }
+		void appendRange(const Span<const T>& r) { Base::insert(end(), r.begin(), r.end()); }
 
 		Span<      T> span() {		 return Span<      T>(begin(), end()); }
 		Span<const T> span() const { return Span<const T>(begin(), end()); }

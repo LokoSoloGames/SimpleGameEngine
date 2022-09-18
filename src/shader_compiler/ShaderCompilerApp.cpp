@@ -18,6 +18,7 @@ namespace SimpleGameEngine {
 			compile("Shaders/test.shader");
 			compile("Shaders/test2.shader");
 			compile("Shaders/terrain.shader");
+			compile("Shaders/imgui.shader");
 		}
 
 		void compile(StrView shaderFilename) {

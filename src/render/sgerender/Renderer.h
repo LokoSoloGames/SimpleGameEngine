@@ -35,7 +35,7 @@ namespace SimpleGameEngine {
 
 		bool vsync() const		{ return _vsync; }
 
-		SPtr<RenderContext>		createContext(RenderContextCreateDesc& desc) { return onCreateContext(desc); }
+		SPtr<RenderContext>		createContext(RenderContextCreateDesc& desc);
 		SPtr<RenderGpuBuffer>	createGpuBuffer(RenderGpuBufferCreateDesc& desc) { return onCreateGpuBuffer(desc); }
 		SPtr<Texture2D>			createTexture2D(Texture2D_CreateDesc& desc) { return onCreateTexture2D(desc); }
 		SPtr<Shader>			createShader(StrView filename);

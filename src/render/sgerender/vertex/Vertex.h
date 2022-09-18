@@ -14,7 +14,7 @@ namespace SimpleGameEngine {
 // normalCount      : 2 bit (from 42)
 // tangentCount     : 2 bit (from 44)
 // binormalCount    : 2 bit (from 46)
-// vertexId         : 1 bit (from 47)
+// vertexId         : 1 bit (from 48)
 enum class VertexType : u64 { None };
 
 struct VertexTypeUtil {
@@ -52,7 +52,7 @@ struct VertexTypeUtil {
 
 	static constexpr VertexType addVertexId(VertexType t) {
 		return static_cast<VertexType>(static_cast<u64>(t)
-			| (static_cast<u64>(1) << 47));
+			| (static_cast<u64>(1) << 48));
 	}
 
 	static constexpr VertexType make(
@@ -398,6 +398,8 @@ SGE_ENUM_CLASS(VertexSemantic, u16)
 
 	template<u8 UV_COUNT> using Vertex_PosBinormalUv		= VertexT_Binormal<Tuple3f, 1, Vertex_PosTangentUv<UV_COUNT>>;
 	template<u8 UV_COUNT> using Vertex_PosColorBinormalUv	= VertexT_Binormal<Tuple3f, 1, Vertex_PosColorTangentUv<UV_COUNT>>;
+
+	using Vertex_ImGui = VertexT_Color<Color4b, 1, VertexT_Uv<Tuple2f, 1, Vertex_Pos2f>>;
 
 	using Vertex_VertexId = VertexT_VertexId<VertexBase>;
 

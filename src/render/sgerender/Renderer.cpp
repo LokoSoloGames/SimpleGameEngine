@@ -47,6 +47,12 @@ namespace SimpleGameEngine {
 		_instance = nullptr;
 	}
 
+	SPtr<RenderContext> Renderer::createContext(RenderContextCreateDesc& desc) {
+		SPtr<RenderContext> p = onCreateContext(desc);
+		p->onPostCreate();
+		return p;
+	}
+
 	SPtr<Texture2D> Renderer::createSolidColorTexture2D(const Color4b& color) {
 		int w = 4, h = 4;
 		Texture2D_CreateDesc texDesc;

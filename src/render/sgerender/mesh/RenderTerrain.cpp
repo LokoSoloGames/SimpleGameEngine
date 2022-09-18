@@ -182,8 +182,9 @@ namespace SimpleGameEngine {
 	void RenderTerrain::PatchIndices::create(Terrain* terrain, int level, ZoneMask zoneMask) {
 		Vector<VertexIndex>	indexData;
 
+		auto lastLod = terrain->maxLod() - 1;
 		int verticesPerRow = terrain->patchVerticesPerRow();
-		int rows = 1 << (terrain->maxLod() - 1 - level);
+		int rows = 1 << (lastLod - level);
 		int n = rows / 2;
 		int step = 1 << level;
 
@@ -242,28 +243,35 @@ namespace SimpleGameEngine {
 			{ // north
 				auto& sector = enumHas(zoneMask, ZoneMask::North) ? sector1 : sector0;
 				_addToIndices(indexData, sector, verticesPerRow, Vec2i(1, -1), false);
-				_addToIndices(indexData, sector, verticesPerRow, Vec2i(-1, -1), false);
+				if (level < lastLod) {
+					_addToIndices(indexData, sector, verticesPerRow, Vec2i(-1, -1), false);
+				}
 			}
 			{ // east
 				auto& sector = enumHas(zoneMask, ZoneMask::East) ? sector1 : sector0;
 				_addToIndices(indexData, sector, verticesPerRow, Vec2i(1, 1), true);
-				_addToIndices(indexData, sector, verticesPerRow, Vec2i(-1, 1), true);
+				if (level < lastLod) {
+					_addToIndices(indexData, sector, verticesPerRow, Vec2i(-1, 1), true);
+				}
 			}
 			{ // south
 				auto& sector = enumHas(zoneMask, ZoneMask::South) ? sector1 : sector0;
 				_addToIndices(indexData, sector, verticesPerRow, Vec2i(1, 1), false);
-				_addToIndices(indexData, sector, verticesPerRow, Vec2i(-1, 1), false);
+				if (level < lastLod) {
+					_addToIndices(indexData, sector, verticesPerRow, Vec2i(-1, 1), false);
+				}
 			}
 			{ // west
 				auto& sector = enumHas(zoneMask, ZoneMask::West) ? sector1 : sector0;
 				_addToIndices(indexData, sector, verticesPerRow, Vec2i(1, -1), true);
-				_addToIndices(indexData, sector, verticesPerRow, Vec2i(-1, -1), true);
+				if (level < lastLod) {
+					_addToIndices(indexData, sector, verticesPerRow, Vec2i(-1, -1), true);
+				}
 			}
 		}
 
 		{
 			auto* renderer = Renderer::instance();
-
 			auto byteSpan = spanCast<const u8>(indexData.span());
 
 			RenderGpuBuffer::CreateDesc desc;
@@ -271,7 +279,6 @@ namespace SimpleGameEngine {
 			desc.bufferSize = byteSpan.size();
 
 			_indexCount = indexData.size();
-
 			_indexBuffer = renderer->createGpuBuffer(desc);
 			_indexBuffer->uploadToGpu(byteSpan);
 		}

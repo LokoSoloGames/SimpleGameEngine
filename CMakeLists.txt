@@ -12,6 +12,7 @@ find_package(GLEW CONFIG REQUIRED)
 find_package(EASTL CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(libpng CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 
 function(sge_set_target_warning_level target_name)
     if(MSVC)

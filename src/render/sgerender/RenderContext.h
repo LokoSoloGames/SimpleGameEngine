@@ -2,8 +2,11 @@
 
 #include <nativeui/NativeUI.h>
 #include "command/RenderCommand.h"
+#include "ImGui_SGE.h"
 
 namespace SimpleGameEngine {
+
+	class RenderRequest;
 
 	struct RenderContextCreateDesc {
 		NativeUIWindow* window = nullptr;
@@ -13,15 +16,20 @@ namespace SimpleGameEngine {
 	public:
 		using CreateDesc = RenderContextCreateDesc;
 
-		void beginRender() { onBeginRender(); }
-		void endRender() { onEndRender(); }
+		void beginRender();
+		void endRender();
 
 		void setFrameBufferSize(Vec2f newSize);
+		const Vec2f& frameBufferSize() const { return _frameBufferSize; }
 
 		void commit(RenderCommandBuffer& cmdBuf) { onCommit(cmdBuf); }
 
 		RenderContext(CreateDesc& desc);
 		virtual ~RenderContext() = default;
+
+		void onPostCreate();
+		void drawUI(RenderRequest& req);
+		void onUIMouseEvent(UIMouseEvent& ev);
 
 	protected:
 		virtual void onBeginRender() {};
@@ -52,8 +60,9 @@ namespace SimpleGameEngine {
 				}
 			}
 
-			#undef CMD_CASE
-		
+			#undef CMD_CASE	
 		}
+
+		ImGui_SGE _imgui;
 	};
 }

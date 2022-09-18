@@ -139,17 +139,19 @@ namespace SimpleGameEngine {
 		ctx->IASetPrimitiveTopology(primitive);
 
 		// select which vertex buffer to display
-		UINT offset = 0;
 		UINT stride = static_cast<UINT>(cmd.vertexLayout->stride);
+		UINT vertexOffset = static_cast<UINT>(cmd.vertexOffset);
+		UINT indexOffset = static_cast<UINT>(cmd.indexOffset);
+
 		UINT vertexCount = static_cast<UINT>(cmd.vertexCount);
 		UINT indexCount = static_cast<UINT>(cmd.indexCount);
 
 		DX11_ID3DBuffer* ppVertexBuffers[] = { vertexBuffer ? vertexBuffer->getBuffer() : nullptr };
-		ctx->IASetVertexBuffers(0, 1, ppVertexBuffers, &stride, &offset);
+		ctx->IASetVertexBuffers(0, 1, ppVertexBuffers, &stride, &vertexOffset);
 		
 		if (indexCount > 0) {
 			auto indexType = Util::getFormat(cmd.indexType);
-			ctx->IASetIndexBuffer(indexBuffer->getBuffer(), indexType, 0);
+			ctx->IASetIndexBuffer(indexBuffer->getBuffer(), indexType, indexOffset);
 			ctx->DrawIndexed(indexCount, 0, 0);
 		} else {
 			ctx->Draw(vertexCount, 0);

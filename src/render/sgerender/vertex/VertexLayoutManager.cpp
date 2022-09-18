@@ -4,6 +4,7 @@ namespace SimpleGameEngine {
 
 VertexLayoutManager::VertexLayoutManager() {
 	registerLayout<Vertex_Pos2f>();
+	registerLayout<Vertex_ImGui>();
 
 	registerLayout<Vertex_Pos>();
 	registerLayout<Vertex_PosColor>();
