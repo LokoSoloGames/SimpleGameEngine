@@ -41,3 +41,5 @@
 #include "sgecore/file/FileStream.h"
 #include "sgecore/file/MemMapFile.h"
 #include "sgecore/file/Directory.h"
+
+#include "nativeui/NativeUI.h"

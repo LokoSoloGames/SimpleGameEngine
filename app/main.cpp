@@ -83,6 +83,8 @@ namespace SimpleGameEngine {
 		}
 
 		virtual void onUIMouseEvent(UIMouseEvent& ev) override {
+			_renderContext->onUIMouseEvent(ev);
+
 			if (ev.isDragging()) {
 				using Button = UIMouseEventButton;
 				switch (ev.pressedButtons) {
@@ -129,11 +131,10 @@ namespace SimpleGameEngine {
 			_renderRequest.drawMesh(SGE_LOC, _renderMesh, _material);
 
 			_terrain.render(_renderRequest);
-
+			_renderContext->drawUI(_renderRequest);
 			_renderRequest.swapBuffers();
 
 			_renderContext->commit(_renderRequest.commandBuffer);
-
 
 			_renderContext->endRender();
 			drawNeeded();

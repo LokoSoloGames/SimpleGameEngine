@@ -1,6 +1,6 @@
 #pragma once
 
-#include <render-pch.h>
+#include <sgerender/RenderDataType.h>
 
 namespace SimpleGameEngine {
 	

@@ -1,10 +1,10 @@
 #pragma once
 
 #include <imgui.h>
-#include <sgerender/textures/Texture.h>
 #include <sgerender/material/Material.h>
 
 namespace SimpleGameEngine {
+	class RenderContext;
 	class RenderRequest;
 
 	class ImGui_SGE : public NonCopyable {
