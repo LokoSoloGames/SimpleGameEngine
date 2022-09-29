@@ -247,13 +247,40 @@ namespace SimpleGameEngine {
 
 	class RefCountBase : public NonCopyable {
 	public:
+		virtual ~RefCountBase() = default;
 		std::atomic_int	_refCount;
 	};
+
+	class Object;
+	class TypeInfo;
+	template<class T>	const TypeInfo* typeof();
+	template<>			const TypeInfo* typeof<Object>();
 
 	class Object : public RefCountBase {
 	public:
 		virtual ~Object() = default;
+		virtual const TypeInfo* getType() const {
+			return typeof<Object>();
+		}
 	};
+
+	template<class T> inline
+	const TypeInfo* typeof() {
+		return T::s_getType();
+	}
+
+	inline const TypeInfo* typeof(Object& obj) {
+		return obj.getType();
+	}
+
+	template<class DST> inline
+	DST* sge_cast(Object* src) {
+		if (!src) return nullptr;
+		auto* ti = typeof(*src);
+		if (!ti) return nullptr;
+		if (!ti->isKindOf<DST>()) return nullptr;
+		return static_cast<DST*>(src);
+	}
 
 	template<class T> inline void sge_delete(T* p) noexcept { delete p; }
 } // namespace

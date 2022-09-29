@@ -12,7 +12,7 @@ namespace SimpleGameEngine {
 		NativeUIWindow* window = nullptr;
 	};
 
-	class RenderContext : public Object {
+	class RenderContext : public RefCountBase {
 	public:
 		using CreateDesc = RenderContextCreateDesc;
 

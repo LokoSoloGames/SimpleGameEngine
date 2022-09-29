@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sgebase.h"
+#include "sgecore/reflection/Reflection.h"
 #include "app/ConsoleApp.h"
 #include "app/ProjectSettings.h"
 

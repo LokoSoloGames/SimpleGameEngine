@@ -18,7 +18,7 @@ namespace SimpleGameEngine {
 		size_t	stride = 16;
 	};
 
-	class RenderGpuBuffer : public Object {
+	class RenderGpuBuffer : public RefCountBase {
 	public:
 		using CreateDesc = RenderGpuBufferCreateDesc;
 

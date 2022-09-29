@@ -3,7 +3,7 @@
 #include "RenderCommand.h"
 
 namespace SimpleGameEngine {
-	class RenderRequest : public Object {
+	class RenderRequest : public RefCountBase {
 	public:
 		Mat4f		matrix_model;
 		Mat4f		matrix_view;
