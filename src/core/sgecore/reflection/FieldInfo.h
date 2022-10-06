@@ -6,7 +6,7 @@ namespace SimpleGameEngine {
 		template<class OBJ, class FIELD>
 		FieldInfo(const char* name_, FIELD OBJ::* ptr)
 			: name(name_)
-			, fieldType(my_typeof<FIELD>())
+			, fieldType(typeof<FIELD>())
 			, offset(memberOffset(ptr))
 		{ }
 

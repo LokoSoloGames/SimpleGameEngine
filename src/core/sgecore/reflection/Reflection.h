@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sgebase.h>
+#include <sgecore.h>
 #include "FieldInfo.h"
 #include "TypeInfo.h"
 

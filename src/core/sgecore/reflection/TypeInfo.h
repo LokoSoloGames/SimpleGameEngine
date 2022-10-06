@@ -12,7 +12,6 @@ namespace SimpleGameEngine {
 		const TypeInfo* base = nullptr;
 		size_t dataSize = 0;
 
-
 		const FieldInfo* fieldsArray = nullptr;
 		size_t fieldCount = 0;
 

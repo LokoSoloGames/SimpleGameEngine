@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(PROJECT_NAME SimpleGameEngineEditor)
+set(PROJECT_NAME SimpleGameEngineEngine)
 message("==== ${PROJECT_NAME} ====")
 project(${PROJECT_NAME})
 
@@ -13,8 +13,8 @@ foreach(FILE ${src_files})
     source_group("${GROUP}" FILES "${FILE}")
 endforeach()
 add_library(${PROJECT_NAME} ${src_files})
-set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER SGE/Editor)
+set_target_properties (${PROJECT_NAME} PROPERTIES FOLDER SGE/Engine)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC SimpleGameEngineEngine)
+target_link_libraries(${PROJECT_NAME} PUBLIC SimpleGameEngineRender)
 sge_set_target_warning_level(${PROJECT_NAME})
