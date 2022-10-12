@@ -1,11 +1,13 @@
 #pragma once
 
 #include "sgebase.h"
-#include "sgecore/reflection/Reflection.h"
+
 #include "app/ConsoleApp.h"
 #include "app/ProjectSettings.h"
 
 #include "sgecore/BitUtil.h"
+
+#include <sgecore/Object.h>
 
 #include "sgecore/serializer/binary/BinDeserializer.h"
 #include "sgecore/serializer/binary/BinSerializer.h"

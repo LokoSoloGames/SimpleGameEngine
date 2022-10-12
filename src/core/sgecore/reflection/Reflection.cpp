@@ -2,7 +2,7 @@
 
 namespace SimpleGameEngine {
 #define SGE_TYPEOF_IMPL(T) \
-	template<> const TypeInfo* typeof<T>() { \
+	template<> const TypeInfo* sge_typeof<T>() { \
 		static TypeInfoInitNoBase<T> ti(#T); \
 		return &ti; \
 	} \
@@ -24,17 +24,6 @@ namespace SimpleGameEngine {
 	SGE_TYPEOF_IMPL(char16_t)
 	SGE_TYPEOF_IMPL(char32_t)
 	SGE_TYPEOF_IMPL(wchar_t)
-
-	template<> const TypeInfo* typeof<Object>() {
-		class TI : public TypeInfo {
-		public:
-			TI() {
-				name = "Object";
-			}
-		};
-		static TI ti;
-		return &ti;
-	}
 
 	TypeManager* TypeManager::instance() {
 		static TypeManager m;

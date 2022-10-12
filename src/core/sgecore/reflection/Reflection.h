@@ -1,10 +1,14 @@
 #pragma once
 
-#include <sgecore.h>
+#include <sgebase.h>
 #include "FieldInfo.h"
 #include "TypeInfo.h"
 
 namespace SimpleGameEngine {
+	template<class T> inline
+		const TypeInfo* sge_typeof() {
+		return T::s_getType();
+	}
 
 #define SGE_TYPE(T, BASE) \
 private: \
@@ -39,7 +43,7 @@ private: \
 	};
 
 	#define SGE_TYPEOF_DEFINE(T) \
-	template<> const TypeInfo* typeof<T>();
+	template<> const TypeInfo* sge_typeof<T>();
 	//----
 
 	SGE_TYPEOF_DEFINE(float)
@@ -59,4 +63,13 @@ private: \
 	SGE_TYPEOF_DEFINE(char16_t)
 	SGE_TYPEOF_DEFINE(char32_t)
 	SGE_TYPEOF_DEFINE(wchar_t)
+
+	template<class DST> inline
+	DST* sge_cast(Object* src) {
+		if (!src) return nullptr;
+		auto* ti = Object(*src);
+		if (!ti) return nullptr;
+		if (!ti->isKindOf<DST>()) return nullptr;
+		return static_cast<DST*>(src);
+	}
 }

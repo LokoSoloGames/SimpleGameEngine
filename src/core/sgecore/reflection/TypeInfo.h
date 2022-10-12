@@ -3,6 +3,7 @@
 #include <type_traits>
 
 namespace SimpleGameEngine {
+	class Object;
 	class FieldInfo;
 	class FieldsEnumerator;
 
@@ -37,7 +38,7 @@ namespace SimpleGameEngine {
 
 		template<class R>
 		bool isKindOf() const {
-			return isKindOf(typeof<R>());
+			return isKindOf(sge_typeof<R>());
 		}
 	protected:
 		Creator creator;
@@ -68,7 +69,7 @@ namespace SimpleGameEngine {
 	public:
 		TypeInfoInit(const char* name_) : TypeInfoInitNoBase<T>(name_) {
 			static_assert(std::is_base_of<Base, T>::value, "invalid base class");
-			this->base = typeof<Base>();
+			this->base = sge_typeof<Base>();
 
 			this->creator = &TypeCreator<T>;
 		};

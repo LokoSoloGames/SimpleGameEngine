@@ -1,12 +1,15 @@
 #pragma once
 
 namespace SimpleGameEngine {
+	class Object;
+	class TypeInfo;
+
 	class FieldInfo {
 	public:
 		template<class OBJ, class FIELD>
 		FieldInfo(const char* name_, FIELD OBJ::* ptr)
 			: name(name_)
-			, fieldType(typeof<FIELD>())
+			, fieldType(sge_typeof<FIELD>())
 			, offset(memberOffset(ptr))
 		{ }
 
