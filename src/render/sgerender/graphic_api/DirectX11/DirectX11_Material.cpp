@@ -147,7 +147,7 @@ namespace SimpleGameEngine {
 
 			rasterDesc.FrontCounterClockwise = true;
 			rasterDesc.MultisampleEnable = false;
-			rasterDesc.ScissorEnable = false;
+			rasterDesc.ScissorEnable = true;
 			rasterDesc.SlopeScaledDepthBias = 0.0f;
 			auto hr = dev->CreateRasterizerState(&rasterDesc, rasterizerState.ptrForInit());
 			DX11Util::throwIfError(hr);

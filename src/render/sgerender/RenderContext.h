@@ -55,6 +55,7 @@ namespace SimpleGameEngine {
 					CMD_CASE(ClearFrameBuffers)
 					CMD_CASE(SwapBuffers);
 					CMD_CASE(DrawCall);
+					CMD_CASE(SetScissorRect);
 				default:
 					throw SGE_ERROR("unhandled command");
 				}

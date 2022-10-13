@@ -115,7 +115,7 @@ namespace SimpleGameEngine {
 			_renderContext->setFrameBufferSize(clientRect().size);
 			_renderContext->beginRender();
 
-			_renderRequest.reset();
+			_renderRequest.reset(_renderContext);
 			_renderRequest.matrix_model = Mat4f::s_identity();
 			_renderRequest.matrix_view = _camera.viewMatrix();
 			_renderRequest.matrix_proj = _camera.projMatrix();

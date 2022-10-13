@@ -8,8 +8,9 @@ namespace SimpleGameEngine {
 		light_color = Vec3f(1, 1, 1);
 	}
 
-	void RenderRequest::reset() {
-		commandBuffer.reset();
+	void RenderRequest::reset(RenderContext* ctx) {
+		_renderContext = ctx;
+		commandBuffer.reset(ctx);
 	}
 
 	void RenderRequest::setMaterialCommonParams(Material* mtl) {
@@ -44,7 +45,7 @@ namespace SimpleGameEngine {
 		auto passes = material->passes();
 
 		for (size_t i = 0; i < passes.size(); i++) {
-			auto* cmd = commandBuffer.newCommand<RenderCommand_DrawCall>();
+			auto* cmd = commandBuffer.addDrawCall();
 #if _DEBUG
 			cmd->debugLoc = debugLoc;
 #endif

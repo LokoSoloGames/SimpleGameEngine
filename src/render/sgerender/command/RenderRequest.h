@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RenderCommand.h"
+#include <sgerender/mesh/RenderMesh.h>
 
 namespace SimpleGameEngine {
 	class RenderRequest : public RefCountBase {
@@ -20,7 +21,7 @@ namespace SimpleGameEngine {
 
 		RenderRequest();
 
-		void reset();
+		void reset(RenderContext* ctx);
 
 		//TODO: move to separate cbuffer
 		void setMaterialCommonParams(Material* mtl);
@@ -28,13 +29,14 @@ namespace SimpleGameEngine {
 		void drawMesh(const SrcLoc& debugLoc, const RenderMesh& mesh, Material* material);
 		void drawSubMesh(const SrcLoc& debugLoc, const RenderSubMesh& subMesh, Material* material);
 
-		RenderCommand_ClearFrameBuffers* clearFrameBuffers() {
-			return commandBuffer.newCommand<RenderCommand_ClearFrameBuffers>();
-		}
+		RenderCommand_ClearFrameBuffers*	clearFrameBuffers() { return commandBuffer.clearFrameBuffers(); }
+		RenderCommand_SwapBuffers*			swapBuffers()		{ return commandBuffer.swapBuffers(); }
+		RenderCommand_DrawCall*				addDrawCall()		{ return commandBuffer.addDrawCall(); }
 
-		RenderCommand_SwapBuffers* swapBuffers() {
-			return commandBuffer.newCommand<RenderCommand_SwapBuffers>();
-		}
+		SGE_NODISCARD	RenderScissorRectScope	scissorRectScope() { return RenderScissorRectScope(&commandBuffer); }
+		SGE_INLINE		void setScissorRect(const Rect2f& rect) { commandBuffer.setScissorRect(rect); }
+	private:
+		RenderContext* _renderContext = nullptr;
 
 	};
 }

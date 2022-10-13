@@ -51,7 +51,6 @@ namespace SimpleGameEngine {
 		}
 
 		ImGui::NewFrame();
-		ImGui::ShowDemoWindow(nullptr);
 	}
 
 	void ImGui_SGE::onEndRender(RenderContext* renderContext) {	}
@@ -110,34 +109,58 @@ namespace SimpleGameEngine {
 			_indexBuffer = renderer->createGpuBuffer(desc);
 		}
 
+		auto scissorRectScope = req.scissorRectScope();
 		{
 			_vertexData.clear();
 			_indexData.clear();
 
-			for (int i = 0; i < data->CmdListsCount; i++) {
-				auto* src = data->CmdLists[i];
+			int vertexStart = 0;
+			int indexStart = 0;
 
-				auto* cmd = req.commandBuffer.newCommand<RenderCommand_DrawCall>();
+			for (int i = 0; i < data->CmdListsCount; i++) {
+				auto* srcCmd = data->CmdLists[i];
+				for (int j = 0; j < srcCmd->CmdBuffer.Size; j++) {
+					auto& srcBuf = srcCmd->CmdBuffer[j];
+
+					// Project scissor/clipping rectangles into frame buffer space
+
+					ImVec2 clip_off = data->DisplayPos;
+					ImVec2 clip_min(srcBuf.ClipRect.x - clip_off.x, srcBuf.ClipRect.y - clip_off.y);
+					ImVec2 clip_max(srcBuf.ClipRect.z - clip_off.x, srcBuf.ClipRect.w - clip_off.y);
+				
+					if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
+						continue;
+
+					// Apply scissor/clipping rectangle
+					auto a = Vec2f_make(clip_min);
+					auto b = Vec2f_make(clip_max);
+
+					req.setScissorRect({ a, b - a });
+
+					auto* cmd = req.commandBuffer.addDrawCall();
 #if _DEBUG
-				cmd->debugLoc = SGE_LOC;
+					cmd->debugLoc = SGE_LOC;
 #endif
 
-				cmd->material = _material;
-				cmd->materialPassIndex = 0;
-				cmd->primitive = RenderPrimitiveType::Triangles;
+					cmd->material = _material;
+					cmd->materialPassIndex = 0;
+					cmd->primitive = RenderPrimitiveType::Triangles;
 
-				cmd->vertexLayout = _vertexLayout;
-				cmd->vertexBuffer = _vertexBuffer;
-				cmd->vertexOffset = _vertexData.size();
-				cmd->vertexCount = src->VtxBuffer.Size;
+					cmd->vertexLayout = _vertexLayout;
+					cmd->vertexBuffer = _vertexBuffer;
+					cmd->vertexOffset = (vertexStart + srcBuf.VtxOffset) * vertexSize;
+					cmd->vertexCount = 0;
 
-				cmd->indexType = RenderDataTypeUtil::get<ImDrawIdx>();
-				cmd->indexBuffer = _indexBuffer;
-				cmd->indexOffset = _indexData.size();
-				cmd->indexCount = src->IdxBuffer.Size;
+					cmd->indexType = RenderDataTypeUtil::get<ImDrawIdx>();
+					cmd->indexBuffer = _indexBuffer;
+					cmd->indexOffset = (indexStart + srcBuf.IdxOffset) * indexSize;
+					cmd->indexCount = srcBuf.ElemCount;
+				}
+				vertexStart += srcCmd->VtxBuffer.Size;
+				indexStart += srcCmd->IdxBuffer.Size;
 
-				_vertexData.appendRange(Span<const u8>(reinterpret_cast<const u8*>(src->VtxBuffer.Data), src->VtxBuffer.Size * vertexSize));
-				_indexData.appendRange(Span<const u8>(reinterpret_cast<const u8*>(src->IdxBuffer.Data), src->IdxBuffer.Size * indexSize));
+				_vertexData.appendRange(Span<const u8>(reinterpret_cast<const u8*>(srcCmd->VtxBuffer.Data), srcCmd->VtxBuffer.Size * vertexSize));
+				_indexData.appendRange(Span<const u8>(reinterpret_cast<const u8*>(srcCmd->IdxBuffer.Data), srcCmd->IdxBuffer.Size * indexSize));
 			}
 
 			_vertexBuffer->uploadToGpu(_vertexData);

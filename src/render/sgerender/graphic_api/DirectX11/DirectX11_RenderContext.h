@@ -17,9 +17,10 @@ namespace SimpleGameEngine {
 	public:
 		DirectX11_RenderContext(DirectX11RenderContextCreateDesc& desc);
 
-		void onCmd_ClearFrameBuffers(RenderCommand_ClearFrameBuffers& cmd);
-		void onCmd_SwapBuffers(RenderCommand_SwapBuffers& cmd);
-		void onCmd_DrawCall(RenderCommand_DrawCall& cmd);
+		void onCmd_ClearFrameBuffers(RenderCommand_ClearFrameBuffers&	cmd);
+		void onCmd_SwapBuffers		(RenderCommand_SwapBuffers&			cmd);
+		void onCmd_DrawCall			(RenderCommand_DrawCall&			cmd);
+		void onCmd_SetScissorRect	(RenderCommand_SetScissorRect&		cmd);
 
 		DirectX11_Renderer* renderer() { return _renderer; }
 
