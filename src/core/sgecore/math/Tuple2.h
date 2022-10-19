@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sgecore/reflection/Reflection.h>
+
 namespace SimpleGameEngine {
 
 template<class T>

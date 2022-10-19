@@ -4,13 +4,19 @@
 #include "FieldInfo.h"
 #include "TypeInfo.h"
 
-namespace SimpleGameEngine {
-	template<class T> inline
-		const TypeInfo* sge_typeof() {
-		return T::s_getType();
-	}
+#define SGE_STRUCT_TYPE(T, BASE) \
+private: \
+	using This = T; \
+	using Base = BASE; \
+	class TI_Base : public TypeInfoInit<T, BASE> { \
+	public: \
+		TI_Base() : TypeInfoInit<T, BASE>(#T) {} \
+	}; \
+public: \
+	static const TypeInfo* s_getType(); \
+//----
 
-#define SGE_TYPE(T, BASE) \
+#define SGE_OBJECT_TYPE(T, BASE) \
 private: \
 	using This = T; \
 	using Base = BASE; \
@@ -22,7 +28,12 @@ public: \
 	static const TypeInfo* s_getType(); \
 	virtual const TypeInfo* getType() const override { return s_getType(); } \
 private: \
-//----
+//-----
+
+namespace SimpleGameEngine {
+
+	template<class T> inline const TypeInfo* sge_typeof() { return T::s_getType(); }
+	template<class T> inline const TypeInfo* sge_typeof(const T& v) { return sge_typeof<T>(); }
 
 	class TypeManager {
 	public:
@@ -44,6 +55,13 @@ private: \
 
 	#define SGE_TYPEOF_DEFINE(T) \
 	template<> const TypeInfo* sge_typeof<T>();
+	//----
+
+	#define SGE_TYPEOF_IMPL(T, NAME) \
+		template<> const TypeInfo* sge_typeof<T>() { \
+			static TypeInfoInitNoBase<T> ti(NAME); \
+			return &ti; \
+		} \
 	//----
 
 	SGE_TYPEOF_DEFINE(float)

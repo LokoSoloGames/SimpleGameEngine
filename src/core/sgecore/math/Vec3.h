@@ -17,4 +17,7 @@ namespace SimpleGameEngine {
 using Vec3f = Vec3<float>;
 using Vec3d = Vec3<double>;
 
+template<> const TypeInfo* sge_typeof<Vec3f>();
+template<> const TypeInfo* sge_typeof<Vec3d>();
+
 }

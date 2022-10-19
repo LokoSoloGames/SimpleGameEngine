@@ -13,10 +13,7 @@ namespace SimpleGameEngine {
 		const TypeInfo* base = nullptr;
 		size_t dataSize = 0;
 
-		const FieldInfo* fieldsArray = nullptr;
-		size_t fieldCount = 0;
-
-		FieldsEnumerator fields() const { return FieldsEnumerator(this); }
+		Span<const FieldInfo> fields() const { return _fields; }
 
 		typedef Object* (*Creator)();
 		
@@ -42,6 +39,7 @@ namespace SimpleGameEngine {
 		}
 	protected:
 		Creator creator;
+		Span<const FieldInfo>	_fields;
 	};
 
 	template<class T>
@@ -54,8 +52,7 @@ namespace SimpleGameEngine {
 
 		template<size_t N>
 		void setFields(const FieldInfo(&fi)[N]) {
-			fieldsArray = fi;
-			fieldCount = N;
+			_fields = fi;
 		}
 	};
 

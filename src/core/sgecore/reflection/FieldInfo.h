@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sgebase.h>
+
 namespace SimpleGameEngine {
 	class Object;
 	class TypeInfo;
@@ -13,35 +15,23 @@ namespace SimpleGameEngine {
 			, offset(memberOffset(ptr))
 		{ }
 
+		void* getValuePtr(void* obj) const { return reinterpret_cast<u8*>(obj) + offset; }
+		const void* getValuePtr(const void* obj) const { return reinterpret_cast<const u8*>(obj) + offset; }
+
+		template<class T>
+		const T& getValue(const void* obj) const {
+			SGE_ASSERT(sge_typeof<T>() == fieldType);
+			return *reinterpret_cast<const T*>(getValuePtr(obj));
+		}
+
+		template<class T>
+		void setValue(void* obj, const T& value) const {
+			SGE_ASSERT(sge_typeof<T>() == fieldType);
+			*reinterpret_cast<T*>(getValuePtr(obj)) = value;
+		}
+
 		const char* name = "";
 		const TypeInfo* fieldType = nullptr;
 		intptr_t offset = 0;
-	};
-
-	class FieldsEnumerator {
-	public:
-		FieldsEnumerator(const TypeInfo* typeInfo_) : typeInfo(typeInfo_) { }
-
-		class Iterator {
-		public:
-			Iterator(const TypeInfo* typeInfo_, size_t fieldIndex_)
-				: typeInfo(typeInfo_), fieldIndex(fieldIndex_) { }
-
-			bool operator!=(const Iterator& r) const {
-				return typeInfo != r.typeInfo || fieldIndex != r.fieldIndex;
-			}
-
-			void operator++();
-			const FieldInfo& operator*();
-
-		private:
-			const TypeInfo* typeInfo = nullptr;
-			size_t fieldIndex = 0;
-		};
-
-		Iterator begin() { return Iterator(typeInfo, 0); }
-		Iterator end() { return Iterator(nullptr, 0); }
-
-		const TypeInfo* typeInfo = nullptr;
 	};
 }
