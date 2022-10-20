@@ -1,21 +1,21 @@
 #include "Transform.h"
 
 namespace SimpleGameEngine {
-	const TypeInfo* Transform::s_getType() {
-		//class TI : public TI_Base {
-		//public:
-		//	TI() {
-		//		static FieldInfo fi[] = {
-		//			FieldInfo("_position", &This::_position),
-		//			FieldInfo("_rotation", &This::_rotation),
-		//			FieldInfo("_localScale", &This::_localScale),
-		//		};
-		//		setFields(fi);
-		//	}
-		//};
-		//static TI ti;
 
-		static TypeInfoInitNoBase<Transform> ti("Transform");
+	const TypeInfo* Transform::s_getType() {
+		class TI : public TI_Base {
+		public:
+			TI() {
+				static FieldInfo fi[] = {
+					FieldInfo("position",	&This::position),
+					FieldInfo("rotation",	&This::rotation),
+					FieldInfo("localScale",	&This::localScale),
+				};
+				setFields(fi);
+			}
+		};
+		static TI ti;
 		return &ti;
+
 	}
 }

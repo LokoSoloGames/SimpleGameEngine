@@ -139,7 +139,7 @@ namespace SimpleGameEngine {
 		auto* vertexBuffer = static_cast<DirectX11_RenderGpuBuffer*>(cmd.vertexBuffer.ptr());
 		//if (!vertexBuffer) { SGE_ASSERT(false); return; }
 
-		if (cmd.vertexCount <= 0) { SGE_ASSERT(false); return; }
+		// if (cmd.vertexCount <= 0) { SGE_ASSERT(false); return; }
 		if (cmd.primitive == RenderPrimitiveType::None) { SGE_ASSERT(false); return; }
 
 		DirectX11_RenderGpuBuffer* indexBuffer = nullptr;

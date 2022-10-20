@@ -1,6 +1,7 @@
 #include <nativeui/NativeUI.h>
 #include <sgecore.h>
 #include <sgerender.h>
+#include <sgeeditor.h>
 
 namespace SimpleGameEngine {
 
@@ -11,6 +12,7 @@ namespace SimpleGameEngine {
 			Base::onCreate(desc);
 
 			auto* renderer = Renderer::instance();
+			auto* editor = EditorContext::instance();
 			{
 				RenderContext::CreateDesc renderContextDesc;
 				renderContextDesc.window = this;
@@ -76,6 +78,16 @@ namespace SimpleGameEngine {
 				_terrain.createFromHeightMapFile(_desc, "Terrain/TerrainTest/TerrainHeight_Small.png");
 			}
 
+			{ // ECS
+				for (int i = 0; i < 10; i++) {
+					auto* e = _scene.addEntity("Object 1");
+					auto* t = e->addComponent<Transform>();
+					t->position.set(static_cast<float>(i), 5, 10);
+				}
+
+				editor->entitySelection.add(EntityId(1));
+				editor->entitySelection.add(EntityId(3));
+			}
 		}
 
 		virtual void onCloseButton() override {
@@ -131,6 +143,10 @@ namespace SimpleGameEngine {
 			_renderRequest.drawMesh(SGE_LOC, _renderMesh, _material);
 
 			_terrain.render(_renderRequest);
+
+			_hierarchyWindow.draw(_renderRequest, _scene);
+			_inspectorWindow.draw(_renderRequest, _scene);
+
 			_renderContext->drawUI(_renderRequest);
 			_renderRequest.swapBuffers();
 
@@ -146,7 +162,11 @@ namespace SimpleGameEngine {
 		RenderTerrain _terrain;
 
 		Math::Camera3f	_camera;
+		Scene			_scene;
 		RenderRequest	_renderRequest;
+
+		EditorHierarchyWindow		_hierarchyWindow;
+		EditorInspectorWindow		_inspectorWindow;
 	};
 
 	class EditorApp : public NativeUIApp {
@@ -165,6 +185,7 @@ namespace SimpleGameEngine {
 			Renderer::CreateDesc renderDesc;
 			//renderDesc.apiType = OpenGL;
 			Renderer::create(renderDesc);
+			EditorContext::createContext();
 
 			NativeUIWindow::CreateDesc winDesc;
 			winDesc.isMainWindow = true;
@@ -176,6 +197,11 @@ namespace SimpleGameEngine {
 
 		virtual void onUpdate() override {
 			_mainWin.onUpdate();
+		}
+
+		virtual void onQuit() {
+			EditorContext::destroyContext();
+			Base::onQuit();
 		}
 
 	private:

@@ -2,7 +2,15 @@
 
 namespace SimpleGameEngine {
 	const TypeInfo* Entity::s_getType() {
-		static TypeInfoInitNoBase<Entity> ti("Entity");
+		class TI : public TI_Base {
+		public:
+			TI() {
+				//static FieldInfo fi[] = {
+				//};
+				//setFields(fi);
+			}
+		};
+		static TI ti;
 		return &ti;
 	}
 }

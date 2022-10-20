@@ -28,7 +28,7 @@ endfunction()
 
 add_subdirectory(app)
 add_subdirectory(src/core)
-#add_subdirectory(src/editor)
+add_subdirectory(src/editor)
 add_subdirectory(src/render)
 add_subdirectory(src/engine)
 add_subdirectory(src/shader_compiler)

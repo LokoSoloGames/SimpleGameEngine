@@ -4,12 +4,10 @@
 
 namespace SimpleGameEngine {
 	class Transform : public Component {
-		SGE_TYPE(Transform, Component)
+		SGE_OBJECT_TYPE(Transform, Component)
 	public:
-
-	private:
-		Vec3f  _position;
-		Quat4f _rotation;
-		Vec3f  _localScale;
+		Vec3f	position{ 0,0,0 };
+		Quat4f	rotation{ 0,0,0,0 };
+		Vec3f	localScale{ 1,1,1 };
 	};
 }
