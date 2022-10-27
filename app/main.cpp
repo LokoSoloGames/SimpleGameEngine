@@ -81,7 +81,7 @@ namespace SimpleGameEngine {
 			{ // ECS
 				for (int i = 0; i < 10; i++) {
 					auto* e = _scene.addEntity("Object 1");
-					auto* t = e->addComponent<Transform>();
+					auto* t = e->addComponent<CTransform>();
 					t->position.set(static_cast<float>(i), 5, 10);
 				}
 

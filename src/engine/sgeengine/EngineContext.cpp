@@ -1,6 +1,6 @@
 #include "EngineContext.h"
 
-#include <sgeengine/ECS/Component/Transform.h>
+#include <sgeengine/ECS/Component/CTransform.h>
 
 
 namespace SimpleGameEngine {
@@ -21,7 +21,7 @@ namespace SimpleGameEngine {
 	}
 
 	EngineContext::EngineContext() {
-		registerComponentType<Transform>();
+		registerComponentType<CTransform>();
 	}
 
 	void EngineContext::_registerComponentType(const TypeInfo* type) {

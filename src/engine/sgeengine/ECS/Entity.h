@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "Component/CTransform.h"
 
 namespace SimpleGameEngine {
 	enum EntityId : u64 { None = 0 };
@@ -38,8 +39,11 @@ namespace SimpleGameEngine {
 
 		Span< SPtr<Component> >	components() { return _components; }
 
+		SPtr<CTransform> transform();
+
 	private:
 		Vector< SPtr<Component> >	_components;
+		SPtr<CTransform>			_transform;
 
 		String		_name;
 		EntityId	_id = EntityId::None;
