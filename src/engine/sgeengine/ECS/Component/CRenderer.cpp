@@ -13,4 +13,9 @@ namespace SimpleGameEngine {
 		static TI ti;
 		return &ti;
 	}
+
+	template<> inline
+	static Object* TypeCreator<CRenderer>() {
+		return nullptr;
+	}
 }

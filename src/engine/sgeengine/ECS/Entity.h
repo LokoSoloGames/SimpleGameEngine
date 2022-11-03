@@ -4,16 +4,24 @@
 #include "Component/CTransform.h"
 
 namespace SimpleGameEngine {
-	enum EntityId : u64 { None = 0 };
+	class Scene;
+	class CTransform;
+
+	enum class EntityId : u64 { None };
+	SGE_FORMATTER_ENUM_AS_INT(EntityId)
 
 	class Entity : public Object {
 		SGE_OBJECT_TYPE(Entity, Object)
 
 	public:
+		Entity();
+
 		void setName(StrView name) { _name = name; }
 		StrView name() const { return _name; }
 
-		void		setId(EntityId id) { _id = id; }
+		void		_internalInit(Scene* scene, EntityId id) { _scene = scene; _id = id; }
+
+		Scene* scene() const { return _scene; }
 		EntityId	id() const { return _id; }
 
 		template<class T>
@@ -21,7 +29,7 @@ namespace SimpleGameEngine {
 			static_assert(std::is_base_of<Component, T>::value, "invalid component class");
 			auto* c = new T();
 			_components.emplace_back(c);
-			c->internal_setEntity(this);
+			c->_internalSetEntity(this);
 			return c;
 		}
 
@@ -29,9 +37,9 @@ namespace SimpleGameEngine {
 		T* getComponent() {
 			if (_components.size() == 0) return nullptr;
 			auto typeInfo = typeof(T);
-			for (auto& c : _components) {
-				if (c.getType()->isKindOf(typeInfo)) {
-					return &c;
+			for (auto* c : _components) {
+				if (c->getType()->isKindOf(typeInfo)) {
+					return c;
 				}
 			}
 			return nullptr;
@@ -39,13 +47,14 @@ namespace SimpleGameEngine {
 
 		Span< SPtr<Component> >	components() { return _components; }
 
-		SPtr<CTransform> transform();
+		CTransform* transform() { return _transform.ptr(); }
 
 	private:
 		Vector< SPtr<Component> >	_components;
-		SPtr<CTransform>			_transform;
+		SPtr<CTransform>			_transform = nullptr;
 
 		String		_name;
+		Scene*		_scene = nullptr;
 		EntityId	_id = EntityId::None;
 	
 	};

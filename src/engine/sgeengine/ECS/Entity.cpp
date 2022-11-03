@@ -14,10 +14,7 @@ namespace SimpleGameEngine {
 		return &ti;
 	}
 
-	SPtr<CTransform> Entity::transform() {
-		if (!_transform) {
-			_transform = getComponent<CTransform>();
-		}
-		return _transform;
+	Entity::Entity() {
+		_transform = addComponent<CTransform>();
 	}
 }

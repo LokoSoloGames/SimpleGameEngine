@@ -2,6 +2,7 @@
 
 #include "Vec4.h"
 #include "Rect2.h"
+#include "Quat4.h"
 
 namespace SimpleGameEngine {
 
@@ -36,6 +37,7 @@ struct Mat4_Basic : public DATA {
 	using Vec4   = typename DATA::Vec4;
 	using Vec3   = SimpleGameEngine::Vec3<T>;
 	using Rect2  = SimpleGameEngine::Rect2<T>;
+	using Quat4	 = SimpleGameEngine::Quat4<T>;
 
 	using DATA::cx;
 	using DATA::cy;
@@ -52,8 +54,11 @@ struct Mat4_Basic : public DATA {
 	static SGE_INLINE		Mat4	s_scale		(const Vec3 & s);
 	static SGE_INLINE		Mat4	s_shear		(const Vec3 & v);
 
-	static SGE_INLINE		Mat4	s_TRS(const Vec3 & translate, const Vec3 & rotate, const Vec3 & scale);
-	static SGE_INLINE		Mat4	s_TS (const Vec3 & translate, const Vec3 & scale);
+	static SGE_INLINE		Mat4	s_quat(const Quat4& q);
+
+	static SGE_INLINE		Mat4	s_TRS(const Vec3& translate, const Vec3 & rotate, const Vec3& scale);
+	static SGE_INLINE		Mat4	s_TRS(const Vec3& translate, const Quat4& rotate, const Vec3& scale);
+	static SGE_INLINE		Mat4	s_TS (const Vec3& translate, const Vec3 & scale);
 
 	static SGE_INLINE		Mat4	s_perspective	(T fovy_rad, T aspect, T zNear, T zFar);
 	static SGE_INLINE		Mat4	s_ortho			(T left, T right, T bottom, T top, T zNear, T zFar);
@@ -163,6 +168,24 @@ Mat4_Basic<T, DATA> Mat4_Basic<T, DATA>::s_rotate(const Vec3& rad) {
 }
 
 template<class T, class DATA> SGE_INLINE
+Mat4_Basic<T, DATA> Mat4_Basic<T, DATA>::s_quat(const Quat4& q) {
+	T qxx(q.x * q.x);
+	T qyy(q.y * q.y);
+	T qzz(q.z * q.z);
+	T qxz(q.x * q.z);
+	T qxy(q.x * q.y);
+	T qyz(q.y * q.z);
+	T qwx(q.w * q.x);
+	T qwy(q.w * q.y);
+	T qwz(q.w * q.z);
+
+	return Mat4({ T(1) - T(2) * (qyy + qzz),	T(2) * (qxy + qwz),			T(2) * (qxz - qwy),			T(0) },
+				{ T(2) * (qxy - qwz),			T(1) - T(2) * (qxx + qzz),	T(2) * (qyz + qwx),			T(0) },
+				{ T(2) * (qxz + qwy),			T(2) * (qyz - qwx),			T(1) - T(2) * (qxx + qyy),	T(0) },
+				{ T(0),							T(0),						T(0),						T(1) });
+}
+
+template<class T, class DATA> SGE_INLINE
 Mat4_Basic<T, DATA> Mat4_Basic<T, DATA>::s_rotateX(const T& rad) {
 	if (Math::equals0(rad)) return s_identity();
 
@@ -228,6 +251,12 @@ Mat4_Basic<T, DATA> Mat4_Basic<T, DATA>::s_TRS(const Vec3& translate, const Vec3
 		{scale.z * (s.x*s.z + c.x*s.y*c.z),	scale.z * (c.x*s.y*s.z - s.x*c.z),	scale.z * (c.x*c.y),	0},
 		{translate.x,						translate.y,						translate.z,			1});
 }
+
+template<class T, class DATA> SGE_INLINE
+Mat4_Basic<T, DATA> Mat4_Basic<T, DATA>::s_TRS(const Vec3& translate, const Quat4& rotate, const Vec3& scale) {
+	return s_translate(translate) * s_quat(rotate) * s_scale(scale);
+}
+
 
 template<class T, class DATA> SGE_INLINE 
 Mat4_Basic<T, DATA> Mat4_Basic<T, DATA>::s_TS(const Vec3& translate, const Vec3& scale) {

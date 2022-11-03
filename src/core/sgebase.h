@@ -72,7 +72,7 @@ namespace SimpleGameEngine {
 	template<class T> SGE_INLINE T* constCast(const T* v) { return const_cast<T*>(v); }
 	template<class T> SGE_INLINE T& constCast(const T& v) { return const_cast<T&>(v); }
 	
-	template<class T> SGE_INLINE void swap(T& a, T& b) { T tmp = a; a = b; b = tmp; }
+	template<class T> SGE_INLINE void swap(T& a, T& b) { T tmp = std::move(a); a = std::move(b); b = std::move(tmp); }
 
 	using u8  = uint8_t;
 	using u16 = uint16_t;
@@ -137,6 +137,8 @@ namespace SimpleGameEngine {
 
 		Span<      T> subspan(size_t offset) {		 return subspan(offset, size() - offset); }
 		Span<const T> subspan(size_t offset) const { return subspan(offset, size() - offset); }
+	
+		void remove(const T& value) { eastl::remove(begin(), end(), value); }
 	};
 
 	template<class KEY, class VALUE> using Map = eastl::map<KEY, VALUE>;
@@ -261,7 +263,7 @@ namespace SimpleGameEngine {
 	class ScopedValue : public NonCopyable {
 	public:
 		ScopedValue() = default;
-		ScopedValue(T* p) : _p(p) { _oldValue = p; }
+		ScopedValue(T* p) : _p(p) { _oldValue = *p; }
 		ScopedValue(T* p, const T& newValue) : ScopedValue(p) { *p = newValue; }
 
 		ScopedValue(ScopedValue&& r) {
@@ -270,9 +272,9 @@ namespace SimpleGameEngine {
 			r._p = nullptr;
 		}
 
-		~ScopedValue() { detach(); }
+		~ScopedValue() { discard(); }
 
-		void detach() {
+		void discard() {
 			if (_p) {
 				*_p = _oldValue;
 				_p = nullptr;

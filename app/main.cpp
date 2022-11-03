@@ -79,10 +79,17 @@ namespace SimpleGameEngine {
 			}
 
 			{ // ECS
-				for (int i = 0; i < 10; i++) {
-					auto* e = _scene.addEntity("Object 1");
-					auto* t = e->addComponent<CTransform>();
-					t->position.set(static_cast<float>(i), 5, 10);
+				Vector<Entity*> entities;
+
+				for (int i = 0; i < 100; i++) {
+					auto* e = _scene.addEntity("Entity");
+					auto* t = e->transform();
+					t->setLocalPos(static_cast<float>(i), 5, 10);
+					entities.emplace_back(e);
+
+					if (i > 5) {
+						e->transform()->setParent(entities[i / 5]->transform());
+					}
 				}
 
 				editor->entitySelection.add(EntityId(1));
@@ -201,6 +208,7 @@ namespace SimpleGameEngine {
 
 		virtual void onQuit() {
 			EditorContext::destroyContext();
+			EngineContext::destroy();
 			Base::onQuit();
 		}
 

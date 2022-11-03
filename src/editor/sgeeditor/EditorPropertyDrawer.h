@@ -14,7 +14,7 @@ struct EditorPropertyDrawRequest {
 
 	template<class T>
 	bool isMixedValue() {
-		if (objects.size() <= 0)
+		if (objects.size() <= 1)
 			return false;
 
 		auto& v = field->getValue<T>(objects[0]);
@@ -31,6 +31,15 @@ struct EditorPropertyDrawRequest {
 			field->setValue<T>(o, v);
 		}
 	}
+
+	void createChildRequest(EditorPropertyDrawRequest& cr) {
+		cr.objectType = field->fieldType;
+		cr.objects.clear();
+		cr.objects.reserve(objects.size());
+		for (auto& o : objects) {
+			cr.objects.emplace_back(field->getValuePtr(o));
+		}
+	}
 };
 
 class EditorPropertyDrawer : public NonCopyable {
@@ -45,6 +54,11 @@ public:
 };
 
 class EditorPropertyDrawer_float : public EditorPropertyDrawer {
+public:
+	virtual void draw(DrawRequest& req) override;
+};
+
+class EditorPropertyDrawer_Vec3f : public EditorPropertyDrawer {
 public:
 	virtual void draw(DrawRequest& req) override;
 };

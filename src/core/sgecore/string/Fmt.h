@@ -37,6 +37,18 @@
 	namespace SimpleGameEngine { \
 //-----
 
+#define SGE_FORMATTER_ENUM_AS_INT(T) \
+	} /* namespace SimpleGameEngine */ \
+	template<> \
+	struct fmt::formatter<SimpleGameEngine::T> { \
+		auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); } \
+		auto format(const SimpleGameEngine::T& v, fmt::format_context& ctx) { \
+			return fmt::format_to(ctx.out(), "{}", SimpleGameEngine::enumInt(v)); \
+		} \
+	}; \
+	namespace SimpleGameEngine { \
+//-----
+
 namespace SimpleGameEngine {
 
 	template<class STR, class... ARGS> inline

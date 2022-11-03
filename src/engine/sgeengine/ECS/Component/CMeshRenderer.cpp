@@ -27,7 +27,7 @@ namespace SimpleGameEngine {
 			return;
 		}
 
-		_renderRequest.matrix_model = entity()->transform()->localToWorldMatrix();
+		_renderRequest.matrix_model = entity()->transform()->worldMatrix();
 		_renderRequest.drawMesh(SGE_LOC, _renderMesh, _material);
 		_renderRequest.matrix_model = Mat4f::s_identity(); // temp reset
 	}

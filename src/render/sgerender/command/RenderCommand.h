@@ -10,13 +10,14 @@ namespace SimpleGameEngine {
 	class RenderSubMesh;
 	class RenderTerrain;
 
-	enum class RenderCommandType {
-		None,
-		ClearFrameBuffers,
-		SwapBuffers,
-		DrawCall,
-		SetScissorRect,
-	};
+	#define RenderCommandType_ENUM_LIST(E) \
+		E(None,) \
+		E(ClearFrameBuffers,) \
+		E(SwapBuffers,) \
+		E(DrawCall,) \
+		E(SetScissorRect,) \
+	//----
+	SGE_ENUM_CLASS(RenderCommandType, u32)
 
 	class RenderCommand : NonCopyable {
 	public:
@@ -134,12 +135,11 @@ namespace SimpleGameEngine {
 			if (!cmdBuf) return;
 			_rect = cmdBuf->scissorRect();
 			_cmdBuf = cmdBuf;
-			cmdBuf->setScissorRect(_rect);
 		}
 
-		~RenderScissorRectScope() { detach(); }
+		~RenderScissorRectScope() { discard(); }
 
-		void detach() {
+		void discard() {
 			if (!_cmdBuf) return;
 			_cmdBuf->setScissorRect(_rect);
 			_cmdBuf = nullptr;

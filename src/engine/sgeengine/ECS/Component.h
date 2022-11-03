@@ -6,8 +6,9 @@ namespace SimpleGameEngine {
 	class Component : public Object {
 		SGE_OBJECT_TYPE(Component, Object)
 	public:
+		void _internalSetEntity(Entity* e) { _entity = e; }
+
 		Entity* entity() { return _entity; }
-		void internal_setEntity(Entity* e) { _entity = e; }
 	private:
 		Entity* _entity;
 	};

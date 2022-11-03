@@ -3,12 +3,13 @@
 #include <render-pch.h>
 
 namespace SimpleGameEngine {
-	enum class RenderGpuBufferType {
-		None,
-		Vertex,
-		Index,
-		Const,
-	};
+	#define RenderGpuBufferType_ENUM_LIST(E) \
+		E(None,) \
+		E(Vertex,) \
+		E(Index,) \
+		E(Const,) \
+	//----
+	SGE_ENUM_CLASS(RenderGpuBufferType, u8)
 
 	struct RenderGpuBufferCreateDesc {
 		using Type = RenderGpuBufferType;
